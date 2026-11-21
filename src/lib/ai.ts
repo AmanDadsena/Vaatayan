@@ -1,21 +1,27 @@
 import "server-only";
-import Anthropic from "@anthropic-ai/sdk";
-import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { categorize } from "./aqi";
 import { formatHour } from "./breathWindow";
 import { candidateActions, MODES, type ImpactContext } from "./impact";
-import { modelPlanSchema, type AskRequest, type ModelPlan, type Place } from "./schemas";
+import { CONDITION_LABELS, COOKING_LABELS, HEATING_LABELS } from "./labels";
+import { createAnthropicProvider } from "./providers/anthropic";
+import { createGeminiProvider, geminiApiKey } from "./providers/gemini";
+import { AiUnavailableError, type AiProvider } from "./providers/types";
+import type { AskRequest, ModelPlan, Place } from "./schemas";
 
-export const AI_MODEL = process.env.AI_MODEL || "claude-opus-5-5";
+export { AiUnavailableError };
 
-export function isAiConfigured(): boolean {
-  return Boolean(process.env.ANTHROPIC_API_KEY);
+/**
+ * Picks the language model from the keys present on the server:
+ * Anthropic first, then Google Gemini; with neither, the app uses built-in rules.
+ */
+export function getProvider(): AiProvider | null {
+  if (process.env.ANTHROPIC_API_KEY) return createAnthropicProvider();
+  if (geminiApiKey()) return createGeminiProvider();
+  return null;
 }
 
-let client: Anthropic | null = null;
-function getClient(): Anthropic {
-  client ??= new Anthropic({ maxRetries: 1, timeout: 45_000 });
-  return client;
+export function isAiConfigured(): boolean {
+  return getProvider() !== null;
 }
 
 /** Kept byte-stable across requests so it can be served from the prompt cache. */
@@ -45,11 +51,11 @@ function describeHousehold(ctx: ImpactContext): string {
   const h = ctx.household;
   const lines = [
     `Members: ${h.adults} adult(s), ${h.children} child(ren), ${h.elders} older adult(s).`,
-    `Health conditions: ${h.conditions.length ? h.conditions.join(", ") : "none listed"}.`,
+    `Health conditions: ${h.conditions.length ? h.conditions.map((c) => CONDITION_LABELS[c]).join(", ") : "none listed"}.`,
     h.commuteMode === "home" || h.commuteKm === 0
       ? "Commute: works or studies from home."
       : `Commute: ${h.commuteKm} km each way by ${MODES[h.commuteMode].label}, 5 days a week.`,
-    `Home: ${h.hasPurifier ? "has an air purifier" : "no air purifier"}; cooks with ${h.cookingFuel}; heating: ${h.heating}.`,
+    `Home: ${h.hasPurifier ? "has an air purifier" : "no air purifier"}; cooks with ${COOKING_LABELS[h.cookingFuel].toLowerCase()}; heating: ${HEATING_LABELS[h.heating].toLowerCase()}.`,
     `Exercise: ${h.exercise === "none" ? "no regular outdoor exercise" : `usually exercises outdoors in the ${h.exercise}`}.`,
   ];
   if (h.notes) lines.push(`<household_notes>${h.notes}</household_notes>`);
@@ -85,36 +91,10 @@ export function buildPlanPrompt(place: Place, ctx: ImpactContext): string {
   return `<air>\n${describeAir(place, ctx)}\n</air>\n\n<household>\n${describeHousehold(ctx)}\n</household>\n\n<candidates>\n${candidates}\n</candidates>\n\nWrite today's plan.`;
 }
 
-export class AiUnavailableError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "AiUnavailableError";
-  }
-}
-
 export async function generateModelPlan(place: Place, ctx: ImpactContext, signal?: AbortSignal): Promise<ModelPlan> {
-  try {
-    const response = await getClient().messages.parse(
-      {
-        model: AI_MODEL,
-        max_tokens: 8000,
-        output_config: { effort: "low", format: zodOutputFormat(modelPlanSchema) },
-        system: [{ type: "text", text: PLAN_SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
-        messages: [{ role: "user", content: buildPlanPrompt(place, ctx) }],
-      },
-      { signal },
-    );
-    if (response.stop_reason === "refusal" || !response.parsed_output) {
-      throw new AiUnavailableError(`No usable plan (stop reason: ${response.stop_reason}).`);
-    }
-    return response.parsed_output;
-  } catch (error) {
-    if (error instanceof AiUnavailableError) throw error;
-    if (error instanceof Anthropic.RateLimitError) throw new AiUnavailableError("The AI service is busy.");
-    if (error instanceof Anthropic.AuthenticationError) throw new AiUnavailableError("The AI key is not valid.");
-    if (error instanceof Anthropic.APIError) throw new AiUnavailableError(`The AI service returned ${error.status}.`);
-    throw new AiUnavailableError("The AI service could not be reached.");
-  }
+  const provider = getProvider();
+  if (!provider) throw new AiUnavailableError("No AI key is configured.");
+  return provider.generatePlan(PLAN_SYSTEM_PROMPT, buildPlanPrompt(place, ctx), signal);
 }
 
 export function buildAskPrompt(req: AskRequest, ctx: ImpactContext): string {
@@ -122,40 +102,25 @@ export function buildAskPrompt(req: AskRequest, ctx: ImpactContext): string {
   return `<air>\n${describeAir(req.place, ctx)}\n</air>\n\n<household>\n${describeHousehold(ctx)}\n</household>${plan}\n\n<question>${req.question}</question>`;
 }
 
-/** Streams the answer as plain UTF-8 text chunks. */
+/** Streams the answer as plain UTF-8 text chunks, whichever provider is configured. */
 export function streamAnswer(req: AskRequest, ctx: ImpactContext, signal?: AbortSignal): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder();
-  const stream = getClient().messages.stream(
-    {
-      model: AI_MODEL,
-      max_tokens: 4000,
-      output_config: { effort: "low" },
-      system: [{ type: "text", text: ASK_SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
-      messages: [{ role: "user", content: buildAskPrompt(req, ctx) }],
-    },
-    { signal },
-  );
+  const provider = getProvider();
+  let iterator: AsyncGenerator<string> | null = null;
 
   return new ReadableStream<Uint8Array>({
     async start(controller) {
       try {
-        for await (const event of stream) {
-          if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
-            controller.enqueue(encoder.encode(event.delta.text));
-          }
-        }
-        const final = await stream.finalMessage();
-        if (final.stop_reason === "refusal") {
-          controller.enqueue(encoder.encode("\n\nI can't help with that one. Try asking about your air or your plan."));
-        }
-        controller.close();
+        if (!provider) throw new AiUnavailableError("No AI key is configured.");
+        iterator = provider.streamText(ASK_SYSTEM_PROMPT, buildAskPrompt(req, ctx), signal);
+        for await (const text of iterator) controller.enqueue(encoder.encode(text));
       } catch {
         controller.enqueue(encoder.encode("\n\nThe answer was cut off. Please try again."));
-        controller.close();
       }
+      controller.close();
     },
-    cancel() {
-      stream.abort();
+    async cancel() {
+      await iterator?.return(undefined);
     },
   });
 }

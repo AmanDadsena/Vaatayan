@@ -38,13 +38,14 @@ household ─────┼─▶ deterministic impact model ─▶ candidate a
                     server-side validation and merge ─▶ plan
 ```
 
+- **Two providers, one contract.** Plans and answers come from Anthropic (`ANTHROPIC_API_KEY`) or Google Gemini (`GOOGLE_API_KEY`, default `gemini-2.5-flash`), chosen by which key is on the server. Both sit behind the same interface (`src/lib/providers/`), so prompts, validation and numbers are identical.
 - **The model chooses and explains; it never invents numbers.** Every figure on screen (µg of PM2.5 not inhaled, kg CO₂, g of smog) comes from a tested, deterministic model in `src/lib/impact.ts`. The model receives the candidate actions and writes the personal *why*, the steps and the routine.
-- **Structured output.** Plans are requested with a JSON schema (`messages.parse` + Zod). Action ids the model invents, or that don't apply, are dropped. Text is length-clipped and malformed times are discarded.
+- **Structured output.** Plans are requested with a JSON schema built from the Zod schema, then validated again with Zod on the server before use. Action ids the model invents, or that don't apply, are dropped. Text is length-clipped and malformed times are discarded.
 - **Grounded in live data.** Each prompt carries the current AQI, pollutants, the 24-hour forecast and the computed clean and worst windows.
 - **Always works, with or without a key.** With no key, after a refusal or during an outage, a rule-based planner produces the same kind of plan with the same numbers, and follow-up questions are answered by a built-in engine (`src/lib/quickAnswers.ts`) grounded in the live reading. The UI labels every plan and answer with where it came from.
 - **Streaming follow-ups.** "Ask a follow-up" streams answers grounded in your air, household and current plan.
 - **Prompt-injection containment.** User text is fenced in tags that the system prompt says to treat as data, never instructions.
-- **Efficient.** Stable system prompts are cached and requests use low effort for fast, inexpensive responses.
+- **Efficient.** Stable system prompts are cached, plans use a capped thinking budget, and follow-ups skip thinking for answers in about a second.
 
 ## Accessibility
 
@@ -74,7 +75,7 @@ household ─────┼─▶ deterministic impact model ─▶ candidate a
 ## Testing
 
 ```bash
-npm test               # 176 tests: domain logic, GenAI module, API routes, components + axe
+npm test               # 189 tests: domain logic, GenAI module, API routes, components + axe
 npm run test:coverage
 npm run lint
 npm run typecheck
@@ -84,7 +85,7 @@ npm run typecheck
 
 ```bash
 npm install
-cp .env.example .env.local   # optional: add ANTHROPIC_API_KEY for AI-written plans and answers
+cp .env.example .env.local   # optional: add GOOGLE_API_KEY or ANTHROPIC_API_KEY for AI plans
 npm run dev                  # http://localhost:3000
 ```
 
@@ -102,7 +103,8 @@ src/
     impact.ts          action catalogue and deterministic impact model
     planner.ts         rule-based planner and model-output merge
     simulator.ts       Impact Lab and purifier maths
-    ai.ts              prompts, structured output and streaming
+    ai.ts              prompts, provider selection and streaming
+    providers/         Anthropic and Gemini clients behind one interface
     airQuality.ts      Open-Meteo client with retry and last-good cache
     schemas.ts         Zod schemas for every input and output
 tests/                 unit, API and component tests

@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const sdk = vi.hoisted(() => {
   class APIError extends Error {
@@ -49,6 +49,13 @@ const validPlan = {
 beforeEach(() => {
   sdk.parse.mockReset();
   sdk.stream.mockReset();
+  vi.stubEnv("ANTHROPIC_API_KEY", "test-key");
+  vi.stubEnv("GOOGLE_API_KEY", "");
+  vi.stubEnv("GEMINI_API_KEY", "");
+});
+
+afterEach(() => {
+  vi.unstubAllEnvs();
 });
 
 describe("prompts", () => {
