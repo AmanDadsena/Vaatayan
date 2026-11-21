@@ -5,6 +5,7 @@ import { minutesToClean, requiredCadr } from "@/lib/simulator";
 import { NumberField } from "./NumberField";
 import styles from "../HomeAir.module.css";
 
+/** Works out the clean air delivery rate a room needs from its size, and how quickly a given purifier cleans it. */
 export function PurifierSizer() {
   const id = useId();
   const [length, setLength] = useState(4);
@@ -16,7 +17,7 @@ export function PurifierSizer() {
   const enough = owned >= need.cadrM3h;
 
   return (
-    <section className={styles.card} aria-labelledby={`${id}-t`}>
+    <section className="panel" aria-labelledby={`${id}-t`}>
       <h2 id={`${id}-t`}>What size purifier does a room need?</h2>
       <p className={styles.lede}>
         Aim for about five complete air changes an hour. Check the purifier&apos;s CADR (clean air delivery rate) on the

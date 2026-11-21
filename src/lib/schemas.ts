@@ -53,7 +53,7 @@ export const locationSchema = z.object({
 
 export type Place = z.infer<typeof locationSchema>;
 
-export const hourlySchema = z.object({
+const hourlySchema = z.object({
   time: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/),
   aqi: z.number().min(0).max(1000),
   pm25: z.number().min(0).max(2000),
@@ -79,8 +79,6 @@ export const planRequestSchema = z.object({
   air: airSnapshotSchema,
   household: householdSchema,
 });
-
-export type PlanRequest = z.infer<typeof planRequestSchema>;
 
 export const askRequestSchema = z.object({
   place: locationSchema,

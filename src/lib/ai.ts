@@ -22,6 +22,7 @@ export function getProvider(): AiProvider | null {
   return null;
 }
 
+/** True when an AI key is set, so plans and answers can come from a model. */
 export function isAiConfigured(): boolean {
   return getProvider() !== null;
 }
@@ -86,6 +87,7 @@ function describeAir(place: Place, ctx: ImpactContext): string {
     .join("\n");
 }
 
+/** The user turn for a plan: live air, the household and the actions the model may choose from. */
 export function buildPlanPrompt(place: Place, ctx: ImpactContext): string {
   const candidates = candidateActions(ctx)
     .map((c) => `- ${c.id} [${c.kind}]: ${c.title}`)
@@ -114,6 +116,7 @@ export function cacheKey(provider: AiProvider, system: string, prompt: string): 
   return `${provider.name}:${provider.model}:${digest}`;
 }
 
+/** Asks the configured model for a plan, served from cache when the same air and household were seen recently. */
 export async function generateModelPlan(place: Place, ctx: ImpactContext, signal?: AbortSignal): Promise<ModelPlan> {
   const provider = getProvider();
   if (!provider) throw new AiUnavailableError("No AI key is configured.");
@@ -126,6 +129,7 @@ export async function generateModelPlan(place: Place, ctx: ImpactContext, signal
   return plan;
 }
 
+/** The user turn for a follow-up question, grounded in the same air, household and plan. */
 export function buildAskPrompt(req: AskRequest, ctx: ImpactContext): string {
   const plan = req.planSummary ? `\n\n<current_plan>\n${req.planSummary}\n</current_plan>` : "";
   return `<air>\n${describeAir(req.place, ctx)}\n</air>\n\n<household>\n${describeHousehold(ctx)}\n</household>${plan}\n\n<question>${req.question}</question>`;

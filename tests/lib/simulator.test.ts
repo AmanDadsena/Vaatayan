@@ -15,25 +15,29 @@ import {
 
 describe("compareCommute", () => {
   it("shows a car-to-metro switch as better on every count", () => {
-    const d = compareCommute("car", "metro", 10, 5, 90);
+    const d = compareCommute({ from: "car", to: "metro", km: 10, days: 5, pm25: 90 });
     expect(d.co2KgPerWeek).toBe(15);
     expect(d.smogGPerWeek).toBe(2.4);
     expect(d.lungsUgPerDay).toBeGreaterThan(0);
   });
 
   it("is honest that cycling in smog means breathing more", () => {
-    const d = compareCommute("car", "walk-cycle", 10, 5, 90);
+    const d = compareCommute({ from: "car", to: "walk-cycle", km: 10, days: 5, pm25: 90 });
     expect(d.co2KgPerWeek).toBeGreaterThan(0);
     expect(d.lungsUgPerDay).toBeLessThan(0);
   });
 
   it("is zero when nothing changes", () => {
-    expect(compareCommute("bus", "bus", 8, 5, 60)).toEqual({ lungsUgPerDay: 0, co2KgPerWeek: 0, smogGPerWeek: 0 });
+    expect(compareCommute({ from: "bus", to: "bus", km: 8, days: 5, pm25: 60 })).toEqual({
+      lungsUgPerDay: 0,
+      co2KgPerWeek: 0,
+      smogGPerWeek: 0,
+    });
   });
 
   it("treats working from home as no trip", () => {
     expect(commuteDose("home", 20, 200)).toBe(0);
-    expect(compareCommute("car", "home", 10, 5, 90).co2KgPerWeek).toBe(17);
+    expect(compareCommute({ from: "car", to: "home", km: 10, days: 5, pm25: 90 }).co2KgPerWeek).toBe(17);
   });
 });
 

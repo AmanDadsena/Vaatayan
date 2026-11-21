@@ -1,8 +1,8 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { z } from "zod";
 import { searchPlaces, UpstreamError } from "@/lib/airQuality";
-import { jsonError, validationMessage } from "@/lib/http";
-import { clientKey, createRateLimiter } from "@/lib/rateLimit";
+import { checkQuery, jsonError } from "@/lib/http";
+import { createRateLimiter } from "@/lib/rateLimit";
 
 const limiter = createRateLimiter({ limit: 90, windowMs: 60_000 });
 
@@ -15,16 +15,18 @@ const querySchema = z.object({
     .regex(/^[\p{L}\p{M}\s'.,-]+$/u, "Use letters only."),
 });
 
-export async function GET(request: NextRequest) {
-  const rate = limiter.check(clientKey(request.headers));
-  if (!rate.ok)
-    return jsonError(429, "Too many searches. Try again shortly.", { "Retry-After": String(rate.retryAfterSeconds) });
-
-  const parsed = querySchema.safeParse({ q: request.nextUrl.searchParams.get("q") ?? "" });
-  if (!parsed.success) return jsonError(400, validationMessage(parsed.error));
+/** Place names matching a search, with coordinates, for the location picker. */
+export async function GET(request: Request) {
+  const query = checkQuery(request, {
+    limiter,
+    schema: querySchema,
+    keys: ["q"],
+    busy: "Too many searches. Try again shortly.",
+  });
+  if (!query.ok) return query.response;
 
   try {
-    const places = await searchPlaces(parsed.data.q);
+    const places = await searchPlaces(query.data.q);
     return NextResponse.json({ places }, { headers: { "Cache-Control": "public, max-age=3600" } });
   } catch (error) {
     return jsonError(502, error instanceof UpstreamError ? error.message : "Place search is unavailable.");

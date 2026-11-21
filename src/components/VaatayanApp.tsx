@@ -1,12 +1,13 @@
 "use client";
 
 import { useRef } from "react";
-import { DEFAULT_HOUSEHOLD, readStoredHousehold, readStoredPlace, STORAGE_KEYS } from "@/lib/domain";
+import { DEFAULT_HOUSEHOLD, DEFAULT_PLACE, readStoredHousehold, readStoredPlace, STORAGE_KEYS } from "@/lib/domain";
 import type { Plan } from "@/lib/planner";
 import type { Place } from "@/lib/schemas";
 import { AirHero } from "./AirHero";
 import { AskCoach } from "./AskCoach";
 import { EmptyPlan } from "./EmptyPlan";
+import { ErrorNotice } from "./ErrorNotice";
 import { HouseholdForm } from "./HouseholdForm";
 import { PlanLoading } from "./PlanLoading";
 import { PlanView } from "./PlanView";
@@ -15,8 +16,6 @@ import { useLiveAir } from "@/hooks/useLiveAir";
 import { usePlanRequest } from "@/hooks/usePlanRequest";
 import { useStoredState } from "@/hooks/useStoredState";
 import styles from "./VaatayanApp.module.css";
-
-export const DEFAULT_PLACE: Place = { name: "New Delhi, Delhi, India", latitude: 28.61, longitude: 77.21 };
 
 function summarizePlan(plan: Plan): string {
   return [plan.headline, ...plan.items.map((i) => `- ${i.title}`)].join("\n").slice(0, 1200);
@@ -57,7 +56,7 @@ export function VaatayanApp() {
         onRetry={live.retry}
       />
 
-      <main id="main" className={styles.workspace}>
+      <main id="main" tabIndex={-1} className={`page-wrap ${styles.workspace}`}>
         <div className={styles.formCol}>
           <HouseholdForm
             value={household}
@@ -69,14 +68,7 @@ export function VaatayanApp() {
         </div>
 
         <div className={styles.planCol} ref={planColumn} aria-busy={loading}>
-          {error && (
-            <div className={styles.error} role="alert">
-              <p>{error}</p>
-              <button type="button" onClick={makePlan}>
-                Try again
-              </button>
-            </div>
-          )}
+          {error && <ErrorNotice message={error} onRetry={makePlan} />}
 
           {loading && <PlanLoading />}
 

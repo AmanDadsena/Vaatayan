@@ -26,6 +26,15 @@ const eslintConfig = defineConfig([
       complexity: ["error", 15],
       "max-lines": ["error", { max: 200, skipBlankLines: true, skipComments: true }],
       "max-depth": ["error", 4],
+      "max-params": ["error", 4],
+      "max-lines-per-function": ["error", { max: 50, skipBlankLines: true, skipComments: true }],
+    },
+  },
+  {
+    // Components are mostly markup, which is long but flat; allow more lines, still capped.
+    files: ["src/**/*.tsx"],
+    rules: {
+      "max-lines-per-function": ["error", { max: 70, skipBlankLines: true, skipComments: true }],
     },
   },
   {

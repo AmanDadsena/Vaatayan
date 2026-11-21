@@ -34,6 +34,12 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: No duplicated code
+        run: npm run lint:dupes
+
+      - name: No unused files, exports or dependencies
+        run: npm run lint:unused
+
       - name: Type check
         run: npm run typecheck
 

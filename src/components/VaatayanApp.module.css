@@ -1,8 +1,5 @@
 .workspace {
-  max-width: var(--page);
-  margin: 0 auto;
-  padding: var(--space-7) var(--space-5);
-  display: grid;
+  padding-block: var(--space-7);
   grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
   gap: var(--space-7);
   align-items: start;
@@ -17,27 +14,6 @@
   display: grid;
   gap: var(--space-7);
   scroll-margin-top: var(--space-4);
-}
-
-.error {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  background: var(--paper);
-  border-left: 4px solid var(--alert);
-  border-radius: var(--radius-s);
-}
-
-.error button {
-  min-height: 44px;
-  padding: 0 var(--space-4);
-  border: 2px solid var(--ink);
-  border-radius: var(--radius-s);
-  background: transparent;
-  font-weight: 700;
-  cursor: pointer;
 }
 
 @media (max-width: 900px) {

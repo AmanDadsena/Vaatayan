@@ -1,6 +1,6 @@
 import { useId } from "react";
 import { categorize, hazeDensity } from "@/lib/aqi";
-import { skyFor } from "@/lib/sky";
+import { skyFor, type SkyPalette } from "@/lib/sky";
 import styles from "./HeroWindow.module.css";
 
 interface Props {
@@ -21,6 +21,54 @@ const PARTICLES = Array.from({ length: 48 }, (_, i) => {
   return { x, y, r, delay: (i % 8) * -0.9 };
 });
 
+/** Alt text that says what the painted sky shows, so the picture carries meaning without sight. */
+function describeSky(aqi: number | null, place: string): string {
+  if (aqi === null) return "A window onto the sky, waiting for live air data.";
+  const scene =
+    aqi > 150
+      ? "a hazy, brownish sky with a dim orange sun"
+      : aqi > 50
+        ? "a pale, slightly hazy sky"
+        : "a clear blue sky with a bright sun";
+  return `Illustration of the sky over ${place} at US AQI ${aqi}, ${categorize(aqi).label.toLowerCase()}: ${scene}.`;
+}
+
+/** Gradients for the sky, the sun's glow and the haze band, plus the clip for the window opening. */
+function SkyDefs({ id, sky }: { id: string; sky: SkyPalette }) {
+  return (
+    <defs>
+      <linearGradient id={`${id}-sky`} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stopColor={sky.top} />
+        <stop offset="1" stopColor={sky.horizon} />
+      </linearGradient>
+      <radialGradient id={`${id}-glow`}>
+        <stop offset="0" stopColor={sky.sun} stopOpacity="0.85" />
+        <stop offset="1" stopColor={sky.sun} stopOpacity="0" />
+      </radialGradient>
+      <linearGradient id={`${id}-haze`} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stopColor={sky.horizon} stopOpacity="0" />
+        <stop offset="1" stopColor={sky.horizon} stopOpacity="0.95" />
+      </linearGradient>
+      <clipPath id={`${id}-clip`}>
+        <path d={OPENING} />
+      </clipPath>
+    </defs>
+  );
+}
+
+/** The carved balcony rail under the window. */
+function Rail() {
+  return (
+    <g className={styles.rail}>
+      <rect x="24" y="370" width="252" height="9" rx="4.5" />
+      <rect x="18" y="406" width="264" height="14" rx="4" />
+      {Array.from({ length: 11 }, (_, i) => (
+        <rect key={i} x={45 + i * 21} y="379" width="4" height="27" rx="2" />
+      ))}
+    </g>
+  );
+}
+
 /** A jharokha window painted with the live sky: the brand idea made visible. */
 export function HeroWindow({ aqi, place }: Props) {
   const id = useId().replace(/:/g, "");
@@ -28,37 +76,11 @@ export function HeroWindow({ aqi, place }: Props) {
   const sky = skyFor(value);
   const haze = hazeDensity(value);
   const visible = aqi === null ? 0 : Math.min(PARTICLES.length, Math.round(value / 9));
-  const label =
-    aqi === null
-      ? "A window onto the sky, waiting for live air data."
-      : `Illustration of the sky over ${place} at US AQI ${aqi}, ${categorize(aqi).label.toLowerCase()}: ${
-          aqi > 150
-            ? "a hazy, brownish sky with a dim orange sun"
-            : aqi > 50
-              ? "a pale, slightly hazy sky"
-              : "a clear blue sky with a bright sun"
-        }.`;
 
   return (
     <figure className={styles.figure}>
-      <svg className={styles.svg} viewBox="0 0 300 420" role="img" aria-label={label}>
-        <defs>
-          <linearGradient id={`${id}-sky`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor={sky.top} />
-            <stop offset="1" stopColor={sky.horizon} />
-          </linearGradient>
-          <radialGradient id={`${id}-glow`}>
-            <stop offset="0" stopColor={sky.sun} stopOpacity="0.85" />
-            <stop offset="1" stopColor={sky.sun} stopOpacity="0" />
-          </radialGradient>
-          <linearGradient id={`${id}-haze`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor={sky.horizon} stopOpacity="0" />
-            <stop offset="1" stopColor={sky.horizon} stopOpacity="0.95" />
-          </linearGradient>
-          <clipPath id={`${id}-clip`}>
-            <path d={OPENING} />
-          </clipPath>
-        </defs>
+      <svg className={styles.svg} viewBox="0 0 300 420" role="img" aria-label={describeSky(aqi, place)}>
+        <SkyDefs id={id} sky={sky} />
 
         {/* Outer carved frame */}
         <path d={OUTER} className={styles.outer} />
@@ -86,13 +108,7 @@ export function HeroWindow({ aqi, place }: Props) {
 
         {/* Frame and balcony rail */}
         <path d={OPENING} className={styles.frame} />
-        <g className={styles.rail}>
-          <rect x="24" y="370" width="252" height="9" rx="4.5" />
-          <rect x="18" y="406" width="264" height="14" rx="4" />
-          {Array.from({ length: 11 }, (_, i) => (
-            <rect key={i} x={45 + i * 21} y="379" width="4" height="27" rx="2" />
-          ))}
-        </g>
+        <Rail />
       </svg>
       <figcaption className={styles.caption}>The view from your window, painted from live data</figcaption>
     </figure>

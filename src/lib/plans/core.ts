@@ -45,10 +45,13 @@ export const MAX_ITEMS = 8;
 export const MIN_ITEMS = 4;
 export const MAX_ROUTINE = 7;
 
+/** Shortens text to a maximum length, ending with an ellipsis when cut. */
 export const clip = (s: string, max: number) => (s.length > max ? `${s.slice(0, max - 1).trimEnd()}…` : s).trim();
 export const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
+/** "2026-11-21T14:00" -> "14:00". */
 export const hhmm = (time: string) => time.slice(11, 16);
 
+/** A plan item from a candidate action, with the model's reason and steps when given, clipped to safe lengths. */
 export function toItem(candidate: Candidate, why?: string, steps?: string[]): PlanItem {
   const def = getAction(candidate.id);
   const cleanSteps = (steps ?? [])
@@ -81,6 +84,7 @@ export function defaultSelection(candidates: Candidate[], max = 6): Candidate[] 
   return chosen.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
 }
 
+/** Completes a plan from its parts: adds the totals, cigarettes avoided and today's clean and worst windows. */
 export function finalize(
   ctx: ImpactContext,
   source: Plan["source"],

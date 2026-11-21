@@ -49,13 +49,14 @@ household ─────┼─▶ deterministic impact model ─▶ candidate a
 
 ## Accessibility
 
-- Semantic landmarks, a skip link, one `h1` per page, and labelled form controls throughout.
+- Semantic landmarks, one `h1` per page inside a named region, and labelled form controls throughout. The skip link moves keyboard focus into the main content, not just the scroll position.
+- Link names contain their visible text (WCAG 2.5.3), so speech-input users can say what they see.
 - The place search follows the WAI-ARIA 1.2 combobox pattern (arrow keys, Enter, Escape, live result counts).
 - Charts have text alternatives: the breath ribbon has a spoken summary and an hour-by-hour table, and the Impact Lab bar chart _is_ a data table.
-- Colour is never the only signal. Every AQI colour step is at least 3:1 against the background, and text is at least 4.5:1 (body text 13:1).
+- Colour is never the only signal. Every AQI colour step is at least 3:1 against the background and at least 4.5:1 under white text. All text is at least 4.5:1 (body text 13:1), including over the hero sky at maximum smog haze: secondary text is set in full ink rather than faded, and dimmed states change colour instead of opacity.
 - Body type is **Atkinson Hyperlegible**, designed by the Braille Institute for low-vision readers.
 - Visible focus rings, 44 px touch targets, `prefers-reduced-motion` respected, and fully responsive down to 320 px.
-- Automated axe audits run in the test suite for every interactive component.
+- Automated axe audits run in the test suite for every interactive component. Every page was also audited in a real browser against WCAG 2.2 AA and axe best practices, at desktop and 375 px widths, with zero violations.
 
 ## Security
 
@@ -90,9 +91,11 @@ Measured on a production build:
 ## Testing
 
 ```bash
-npm test               # 320 tests: domain logic, both AI providers, API routes, full page flows + axe
-npm run test:coverage  # about 98% lines, 97% statements, 96% functions, 85% branches (enforced floors)
-npm run lint
+npm test               # 325 tests: domain logic, both AI providers, API routes, full page flows + axe
+npm run test:coverage  # about 99% lines, 98% statements, 99% functions, 89% branches (enforced floors)
+npm run lint           # ESLint, including size and complexity limits
+npm run lint:dupes     # jscpd: fails on any duplicated block
+npm run lint:unused    # knip: fails on unused files, exports or dependencies
 npm run typecheck
 npm run format:check
 ```
@@ -114,11 +117,15 @@ src/
   app/                    pages and API routes (air, places, plan, ask), icons, social card
   proxy.ts                per-request nonce Content-Security-Policy
   components/             UI components, each with a CSS module
+    air-hero/             the live reading under the place name
+    breath-ribbon/        24-hour forecast chart and its data table
     home-air/             purifier sizer, checklist, buying guide, DIY filter, myths
-    impact-lab/           before/after figures, mode comparison, scale-up section
-    plan/                 impact ledger, day timeline, action cards
-    smog/                 inversion lab and particle-size scale
-    use*.ts               hooks: stored state, live air, plan requests, number input
+    household/            household form field groups
+    impact-lab/           commute and fuel simulators, mode comparison, scale-up section
+    place-search/         location button and the combobox option list
+    plan-view/            impact ledger, day timeline, action cards
+    smog/                 inversion lab, its scene, and the particle-size scale
+  hooks/                  stored state, live air, plan requests, the ask thread, place search
   content/                page copy kept apart from components
   lib/
     exposure.ts           physical constants, emission factors, exposure helpers
@@ -136,9 +143,18 @@ tests/                    unit, API, security and component tests
 
 ### Quality gates
 
-`npm run check` runs everything CI runs on every push: Prettier, ESLint (complexity ≤ 15, files ≤ 200 lines, no
-non-null assertions in app code), strict TypeScript (`noUncheckedIndexedAccess`, `noUnusedLocals` and more),
-tests with coverage floors, and a production build.
+`npm run check` runs everything CI runs on every push:
+
+- Prettier formatting.
+- ESLint: complexity ≤ 15, files ≤ 200 lines, functions ≤ 50 lines (70 for components), at most 4 parameters, no
+  non-null assertions in app code.
+- jscpd: zero duplicated blocks. Shared surfaces (`.panel`, `.page-wrap`, `.button-outline`) live once, in a CSS
+  cascade layer, so component rules always win.
+- knip: no unused files, exports or dependencies.
+- Strict TypeScript (`noUncheckedIndexedAccess`, `noUnusedLocals` and more).
+- Tests with coverage floors, and a production build.
+
+Every exported function carries a doc comment.
 
 ## Data, method and credits
 

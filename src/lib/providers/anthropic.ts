@@ -4,7 +4,7 @@ import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { modelPlanSchema, type ModelPlan } from "../schemas";
 import { AiUnavailableError, DECLINED_NOTE, type AiProvider } from "./types";
 
-export const ANTHROPIC_DEFAULT_MODEL = "claude-opus-5-5";
+const DEFAULT_MODEL = "claude-opus-5-5";
 
 let client: Anthropic | null = null;
 function getClient(): Anthropic {
@@ -20,7 +20,18 @@ function toUnavailable(error: unknown): AiUnavailableError {
   return new AiUnavailableError("The AI service could not be reached.");
 }
 
-export function createAnthropicProvider(model = process.env.AI_MODEL || ANTHROPIC_DEFAULT_MODEL): AiProvider {
+/** The request fields both calls share; the stable system prompt is cached across requests. */
+function baseRequest(model: string, system: string, prompt: string, maxTokens: number) {
+  return {
+    model,
+    max_tokens: maxTokens,
+    system: [{ type: "text" as const, text: system, cache_control: { type: "ephemeral" as const } }],
+    messages: [{ role: "user" as const, content: prompt }],
+  };
+}
+
+/** A provider backed by the Anthropic Messages API, with structured output for plans. */
+export function createAnthropicProvider(model = process.env.AI_MODEL || DEFAULT_MODEL): AiProvider {
   return {
     name: "anthropic",
     model,
@@ -29,12 +40,8 @@ export function createAnthropicProvider(model = process.env.AI_MODEL || ANTHROPI
       try {
         const response = await getClient().messages.parse(
           {
-            model,
-            max_tokens: 8000,
+            ...baseRequest(model, system, prompt, 8000),
             output_config: { effort: "low", format: zodOutputFormat(modelPlanSchema) },
-            // Stable system prompt, cached across requests.
-            system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
-            messages: [{ role: "user", content: prompt }],
           },
           { signal },
         );
@@ -49,13 +56,7 @@ export function createAnthropicProvider(model = process.env.AI_MODEL || ANTHROPI
 
     async *streamText(system, prompt, signal) {
       const stream = getClient().messages.stream(
-        {
-          model,
-          max_tokens: 4000,
-          output_config: { effort: "low" },
-          system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
-          messages: [{ role: "user", content: prompt }],
-        },
+        { ...baseRequest(model, system, prompt, 4000), output_config: { effort: "low" } },
         { signal },
       );
       try {

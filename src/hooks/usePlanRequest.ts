@@ -6,13 +6,13 @@ import { isAbortError } from "@/lib/errors";
 import type { Plan } from "@/lib/planner";
 import type { AirSnapshot, Household, Place } from "@/lib/schemas";
 
-export interface PlanResult {
+interface PlanResult {
   plan: Plan;
   /** Set when the AI was unavailable and the built-in rules wrote the plan. */
   notice?: string;
 }
 
-export interface PlanRequest {
+interface PlanRequestState {
   result: PlanResult | null;
   loading: boolean;
   error: string | null;
@@ -21,7 +21,7 @@ export interface PlanRequest {
 }
 
 /** Requests a plan, cancelling any request still in flight, and exposes its state. */
-export function usePlanRequest(): PlanRequest {
+export function usePlanRequest(): PlanRequestState {
   const [result, setResult] = useState<PlanResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -29,7 +29,7 @@ export function usePlanRequest(): PlanRequest {
 
   useEffect(() => () => controller.current?.abort(), []);
 
-  const request = useCallback<PlanRequest["request"]>(async (body) => {
+  const request = useCallback<PlanRequestState["request"]>(async (body) => {
     controller.current?.abort();
     const current = new AbortController();
     controller.current = current;

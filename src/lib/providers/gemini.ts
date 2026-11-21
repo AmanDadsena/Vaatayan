@@ -1,15 +1,16 @@
 import "server-only";
-import { ApiError, FinishReason, GoogleGenAI } from "@google/genai";
+import { ApiError, FinishReason, GoogleGenAI, type GenerateContentResponse } from "@google/genai";
 import { z } from "zod";
 import { modelPlanSchema, type ModelPlan } from "../schemas";
 import { AiUnavailableError, DECLINED_NOTE, type AiProvider } from "./types";
 
-export const GEMINI_DEFAULT_MODEL = "gemini-2.5-flash";
+const GEMINI_DEFAULT_MODEL = "gemini-2.5-flash";
 
 /** The plan schema as JSON Schema, for Gemini's JSON mode. Built once. */
 const PLAN_JSON_SCHEMA: Record<string, unknown> = { ...z.toJSONSchema(modelPlanSchema) };
 delete PLAN_JSON_SCHEMA.$schema;
 
+/** The Google AI key from the environment, under either of its usual names. */
 export function geminiApiKey(): string | undefined {
   return process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY || undefined;
 }
@@ -39,6 +40,25 @@ const BLOCKED: ReadonlySet<string> = new Set([
   FinishReason.SPII,
 ]);
 
+/** True when the prompt or the answer was stopped by a safety or policy filter. */
+function isBlocked(response: GenerateContentResponse): boolean {
+  const finish = response.candidates?.[0]?.finishReason;
+  return Boolean(response.promptFeedback?.blockReason) || (finish !== undefined && BLOCKED.has(finish));
+}
+
+/** Parses and re-validates the model's JSON: never trust the shape of model output. */
+function readPlan(text: string | undefined): ModelPlan {
+  let json: unknown;
+  try {
+    json = JSON.parse(text ?? "");
+  } catch {
+    throw new AiUnavailableError("The AI returned an incomplete plan.");
+  }
+  const parsed = modelPlanSchema.safeParse(json);
+  if (!parsed.success) throw new AiUnavailableError("The AI returned a plan in the wrong shape.");
+  return parsed.data;
+}
+
 /**
  * Gemini 2.5 models think by default. A modest budget keeps plans thoughtful
  * but quick; follow-up answers skip thinking for a near-instant reply.
@@ -48,6 +68,7 @@ function thinking(model: string, budget: number) {
   return model.startsWith("gemini-2.5") ? { thinkingConfig: { thinkingBudget: budget } } : {};
 }
 
+/** A provider backed by the Gemini API, using JSON mode with the plan schema for plans. */
 export function createGeminiProvider(model = process.env.GEMINI_MODEL || GEMINI_DEFAULT_MODEL): AiProvider {
   return {
     name: "gemini",
@@ -67,20 +88,8 @@ export function createGeminiProvider(model = process.env.GEMINI_MODEL || GEMINI_
             abortSignal: signal,
           },
         });
-        const finish = response.candidates?.[0]?.finishReason;
-        if (response.promptFeedback?.blockReason || (finish && BLOCKED.has(finish))) {
-          throw new AiUnavailableError("The AI declined to write a plan.");
-        }
-        let json: unknown;
-        try {
-          json = JSON.parse(response.text ?? "");
-        } catch {
-          throw new AiUnavailableError("The AI returned an incomplete plan.");
-        }
-        // Validate again on our side: never trust model output's shape.
-        const parsed = modelPlanSchema.safeParse(json);
-        if (!parsed.success) throw new AiUnavailableError("The AI returned a plan in the wrong shape.");
-        return parsed.data;
+        if (isBlocked(response)) throw new AiUnavailableError("The AI declined to write a plan.");
+        return readPlan(response.text);
       } catch (error) {
         throw toUnavailable(error);
       }
@@ -95,8 +104,7 @@ export function createGeminiProvider(model = process.env.GEMINI_MODEL || GEMINI_
       let blocked = false;
       for await (const chunk of stream) {
         if (chunk.text) yield chunk.text;
-        const finish = chunk.candidates?.[0]?.finishReason;
-        if (chunk.promptFeedback?.blockReason || (finish && BLOCKED.has(finish))) blocked = true;
+        blocked ||= isBlocked(chunk);
       }
       if (blocked) yield DECLINED_NOTE;
     },

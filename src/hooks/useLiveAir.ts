@@ -12,7 +12,7 @@ interface Result {
   error: string | null;
 }
 
-export interface LiveAir {
+interface LiveAir {
   air: AirSnapshot | null;
   loading: boolean;
   error: string | null;

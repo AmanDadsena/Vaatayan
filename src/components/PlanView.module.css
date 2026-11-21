@@ -347,7 +347,9 @@ li[data-clean] .node {
 }
 
 .item[data-off] > :not(.itemHead) {
-  opacity: 0.6;
+  /* Dimmed by colour, not opacity, so the text keeps at least 4.5:1. */
+  color: var(--slate);
+  filter: grayscale(1);
 }
 
 .itemHead {

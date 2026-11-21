@@ -14,6 +14,7 @@ function readChecklist(value: unknown): string[] | null {
   return Array.isArray(value) ? value.filter((x): x is string => typeof x === "string" && ALL_IDS.includes(x)) : null;
 }
 
+/** A room-by-room checklist of fixes, with progress saved on this device. */
 export function RoomChecklist() {
   const id = useId();
   const [done, setDone] = useStoredState<readonly string[]>(STORAGE_KEYS.checklist, readChecklist, NONE_DONE);
@@ -24,7 +25,7 @@ export function RoomChecklist() {
   const pct = Math.round((done.length / ALL_IDS.length) * 100);
 
   return (
-    <section className={styles.card} aria-labelledby={`${id}-t`}>
+    <section className="panel" aria-labelledby={`${id}-t`}>
       <div className={styles.checkHead}>
         <h2 id={`${id}-t`}>Room by room</h2>
         <p aria-live="polite">

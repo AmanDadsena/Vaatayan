@@ -8,13 +8,14 @@
  * forecast bar heights, the AQI marker) are inline style attributes, which a
  * nonce cannot cover, and style injection cannot execute code.
  */
-export interface CspOptions {
+interface CspOptions {
   /** Development needs eval (React debugging) and websockets (hot reload). */
   dev: boolean;
   /** Only ask browsers to upgrade requests when the page itself is served over HTTPS. */
   https: boolean;
 }
 
+/** The page Content-Security-Policy: scripts only by nonce, no framing, no plugins. Dev adds eval for hot reload. */
 export function buildCsp(nonce: string, { dev, https }: CspOptions): string {
   const directives: Record<string, string[]> = {
     "default-src": ["'self'"],

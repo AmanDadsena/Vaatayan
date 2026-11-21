@@ -1,12 +1,3 @@
-.ask {
-  display: grid;
-  gap: var(--space-4);
-  padding: var(--space-5);
-  background: var(--paper);
-  border: 1px solid var(--fog);
-  border-radius: var(--radius-m);
-}
-
 .head {
   display: grid;
   gap: var(--space-1);
@@ -66,9 +57,10 @@
   animation: pulse 1.4s ease-in-out infinite;
 }
 
+/* Pulses between two colours that both pass 4.5:1, rather than fading the text. */
 @keyframes pulse {
   50% {
-    opacity: 0.45;
+    color: var(--ink);
   }
 }
 

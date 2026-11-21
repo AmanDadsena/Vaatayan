@@ -113,10 +113,12 @@ export const round = (n: number, digits = 0) => {
   return Math.round(Math.max(0, n) * f) / f;
 };
 
+/** Everyone in the household. */
 export function people(h: Household): number {
   return h.adults + h.children + h.elders;
 }
 
+/** Estimated indoor PM2.5: outdoor air through a closed home, lowered by a purifier if there is one. */
 export function indoorPm(ctx: ImpactContext): number {
   const purifier = ctx.household.hasPurifier ? 1 - HEPA_REDUCTION : 1;
   return ctx.air.pm25 * INDOOR_RATIO * purifier;
@@ -128,11 +130,13 @@ export function pmAtHour(air: AirSnapshot, hour: number): number {
   return match ? match.pm25 : air.pm25;
 }
 
+/** Hours a day spent commuting, both ways, by this mode. */
 export function commuteHoursPerDay(h: Household, mode: CommuteMode = h.commuteMode): number {
   if (mode === "home" || h.commuteKm === 0) return 0;
   return (TRIPS_PER_COMMUTE_DAY * h.commuteKm) / MODES[mode].speedKmh;
 }
 
+/** PM2.5 breathed in on the commute each day, in micrograms. */
 export function commuteDose(h: Household, pm: number, mode: CommuteMode = h.commuteMode): number {
   const m = MODES[mode];
   return commuteHoursPerDay(h, mode) * m.ventilation * pm * m.exposureFactor;
@@ -140,4 +144,5 @@ export function commuteDose(h: Household, pm: number, mode: CommuteMode = h.comm
 
 export const EXPOSED_MODES: CommuteMode[] = ["two-wheeler", "auto", "bus", "walk-cycle"];
 export const PRIVATE_MOTOR: CommuteMode[] = ["car", "two-wheeler", "auto"];
+/** True when someone in the household travels to work or school. */
 export const commutes = (h: Household) => h.commuteMode !== "home" && h.commuteKm > 0;

@@ -32,12 +32,6 @@
 }
 
 .result {
-  display: grid;
-  gap: var(--space-4);
-  padding: var(--space-5);
-  background: var(--paper);
-  border: 1px solid var(--fog);
-  border-radius: var(--radius-m);
   position: sticky;
   top: var(--space-4);
 }
@@ -98,16 +92,8 @@
   font-size: 0.9rem;
 }
 
-.presets {
-  border: 0;
-  margin: 0;
-  padding: 0;
-}
-
 .presets legend {
-  font-weight: 700;
   margin-bottom: var(--space-3);
-  padding: 0;
 }
 
 .presets div {

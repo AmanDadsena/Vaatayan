@@ -2,9 +2,9 @@
  * US EPA Air Quality Index categories (2024 revision of the PM2.5 breakpoints
  * does not change the category boundaries on the 0–500 index itself).
  */
-export type AqiLevel = "good" | "moderate" | "sensitive" | "unhealthy" | "very-unhealthy" | "hazardous";
+type AqiLevel = "good" | "moderate" | "sensitive" | "unhealthy" | "very-unhealthy" | "hazardous";
 
-export interface AqiCategory {
+interface AqiCategory {
   level: AqiLevel;
   label: string;
   /** Upper bound of the category on the US AQI scale (inclusive). */
@@ -97,8 +97,9 @@ export function hazeDensity(aqi: number): number {
  * Berkeley Earth rule of thumb: breathing air at 22 µg/m³ of PM2.5 for a day
  * is roughly comparable to smoking one cigarette.
  */
-export const PM25_PER_CIGARETTE_DAY = 22;
+const PM25_PER_CIGARETTE_DAY = 22;
 
+/** A day breathing this PM2.5, as cigarettes smoked (Berkeley Earth equivalence). */
 export function cigarettesPerDay(pm25: number): number {
   if (!Number.isFinite(pm25) || pm25 <= 0) return 0;
   return Math.round((pm25 / PM25_PER_CIGARETTE_DAY) * 10) / 10;

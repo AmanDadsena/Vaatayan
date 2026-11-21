@@ -4,6 +4,7 @@ import { useId } from "react";
 import { MYTHS } from "@/content/homeAir";
 import styles from "../HomeAir.module.css";
 
+/** Common smog remedies, each with what the evidence says. */
 export function Myths() {
   const id = useId();
   return (

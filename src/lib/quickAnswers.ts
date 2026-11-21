@@ -9,7 +9,7 @@ import { minutesToClean, requiredCadr } from "./simulator";
  * deterministic numbers the rest of the app shows.
  */
 
-export type Topic =
+type Topic =
   | "children"
   | "exercise"
   | "purifier"
@@ -44,6 +44,7 @@ const RULES: Rule[] = [
   { topic: "heating", pattern: /\b(heater|heaters|heating|angithi|bonfire|fireplace|keep warm)\b/ },
 ];
 
+/** What a question is about, from keywords; "general" when nothing matches. */
 export function detectTopic(question: string): Topic {
   const q = question.toLowerCase();
   return RULES.find((r) => r.pattern.test(q))?.topic ?? "general";
@@ -131,6 +132,7 @@ const ANSWERS: Record<Topic, (f: Facts) => string> = {
     `${f.rightNow} ${f.window} Indoors in a typical home it is probably around ${Math.round(indoorPm(f.ctx))} µg/m³ of PM2.5, so sealing gaps and filtering the bedroom help most. I can answer quick questions about children playing outside, exercise timing, masks, purifier size, opening windows, cooking and heating.`,
 };
 
+/** An answer from built-in guidance, using the live air and household, for when no AI key is set. */
 export function quickAnswer(question: string, ctx: ImpactContext): { topic: Topic; text: string } {
   const topic = detectTopic(question);
   const aqi = ctx.air.aqi;

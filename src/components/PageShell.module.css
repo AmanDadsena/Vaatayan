@@ -19,11 +19,7 @@
 }
 
 .inner {
-  max-width: var(--page);
-  margin: 0 auto;
-  grid-template-columns: minmax(0, 1fr);
-  padding: var(--space-5) var(--space-5) var(--space-7);
-  display: grid;
+  padding-block: var(--space-5) var(--space-7);
   gap: var(--space-7);
 }
 
@@ -45,11 +41,7 @@
 }
 
 .main {
-  max-width: var(--page);
-  margin: 0 auto;
-  grid-template-columns: minmax(0, 1fr);
-  padding: 0 var(--space-5) var(--space-8);
-  display: grid;
+  padding-block: 0 var(--space-8);
   gap: var(--space-8);
 }
 

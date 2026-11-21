@@ -1,13 +1,14 @@
 "use client";
 
 import { useId } from "react";
-import { CONDITIONS, COOKING_FUELS, HEATING_SOURCES } from "@/lib/domain";
-import { keysOf, pickOption } from "@/lib/objects";
-import type { Condition, Household } from "@/lib/schemas";
-import { COMMUTE_LABELS, CONDITION_LABELS, COOKING_LABELS, EXERCISE_LABELS, HEATING_LABELS } from "@/lib/labels";
-import { ChoicePills } from "./ChoicePills";
+import type { Household } from "@/lib/schemas";
+import { COMMUTE_LABELS, CONDITION_LABELS, EXERCISE_LABELS } from "@/lib/labels";
+import { CheckPills, ChoicePills } from "./ChoicePills";
+import { HomeFields } from "./household/HomeFields";
+import { NotesField } from "./household/NotesField";
+import { PeopleFields } from "./household/PeopleFields";
+import type { SetField } from "./household/fields";
 import { RangeField } from "./RangeField";
-import { Stepper } from "./Stepper";
 import styles from "./HouseholdForm.module.css";
 
 interface Props {
@@ -18,19 +19,14 @@ interface Props {
   disabled: boolean;
 }
 
+/** The household details the plan is tailored to: people, health, commute, home and habits. */
 export function HouseholdForm({ value, onChange, onSubmit, busy, disabled }: Props) {
   const id = useId();
-  const set = <K extends keyof Household>(key: K, v: Household[K]) => onChange({ ...value, [key]: v });
-
-  const toggleCondition = (c: Condition) =>
-    set(
-      "conditions",
-      value.conditions.includes(c) ? value.conditions.filter((x) => x !== c) : [...value.conditions, c],
-    );
+  const set: SetField = (key, v) => onChange({ ...value, [key]: v });
 
   return (
     <form
-      className={styles.form}
+      className={`panel ${styles.form}`}
       aria-labelledby={`${id}-title`}
       onSubmit={(e) => {
         e.preventDefault();
@@ -42,47 +38,14 @@ export function HouseholdForm({ value, onChange, onSubmit, busy, disabled }: Pro
         <p className={styles.lede}>A few details so the plan fits your day. They stay on this device.</p>
       </div>
 
-      <fieldset className={styles.group}>
-        <legend>Who lives with you</legend>
-        <div className={styles.steppers}>
-          <Stepper
-            label="Adults"
-            hint="18 to 64"
-            value={value.adults}
-            min={1}
-            max={12}
-            onChange={(n) => set("adults", n)}
-          />
-          <Stepper
-            label="Children"
-            hint="under 18"
-            value={value.children}
-            min={0}
-            max={12}
-            onChange={(n) => set("children", n)}
-          />
-          <Stepper
-            label="Elders"
-            hint="65 and over"
-            value={value.elders}
-            min={0}
-            max={12}
-            onChange={(n) => set("elders", n)}
-          />
-        </div>
-      </fieldset>
+      <PeopleFields value={value} set={set} />
 
-      <fieldset className={styles.group}>
-        <legend>Anyone with these conditions?</legend>
-        <div className={styles.pills}>
-          {CONDITIONS.map((c) => (
-            <label key={c} className={styles.pill}>
-              <input type="checkbox" checked={value.conditions.includes(c)} onChange={() => toggleCondition(c)} />
-              <span>{CONDITION_LABELS[c]}</span>
-            </label>
-          ))}
-        </div>
-      </fieldset>
+      <CheckPills
+        legend="Anyone with these conditions?"
+        options={CONDITION_LABELS}
+        value={value.conditions}
+        onChange={(v) => set("conditions", v)}
+      />
 
       <ChoicePills
         legend="How do you usually get to work or school?"
@@ -103,46 +66,7 @@ export function HouseholdForm({ value, onChange, onSubmit, busy, disabled }: Pro
         />
       )}
 
-      <fieldset className={styles.group}>
-        <legend>At home</legend>
-        <label className={styles.switch}>
-          <input
-            type="checkbox"
-            role="switch"
-            checked={value.hasPurifier}
-            onChange={(e) => set("hasPurifier", e.target.checked)}
-          />
-          <span>We have an air purifier</span>
-        </label>
-        <div className={styles.selects}>
-          <label>
-            Cooking fuel
-            <select
-              value={value.cookingFuel}
-              onChange={(e) => set("cookingFuel", pickOption(COOKING_FUELS, e.target.value, value.cookingFuel))}
-            >
-              {keysOf(COOKING_LABELS).map((k) => (
-                <option key={k} value={k}>
-                  {COOKING_LABELS[k]}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Winter heating
-            <select
-              value={value.heating}
-              onChange={(e) => set("heating", pickOption(HEATING_SOURCES, e.target.value, value.heating))}
-            >
-              {keysOf(HEATING_LABELS).map((k) => (
-                <option key={k} value={k}>
-                  {HEATING_LABELS[k]}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-      </fieldset>
+      <HomeFields value={value} set={set} />
 
       <ChoicePills
         legend="When do you exercise outdoors?"
@@ -152,23 +76,7 @@ export function HouseholdForm({ value, onChange, onSubmit, busy, disabled }: Pro
         onChange={(v) => set("exercise", v)}
       />
 
-      <div className={styles.notes}>
-        <label htmlFor={`${id}-notes`}>
-          Anything else? <span className={styles.hint}>Optional</span>
-        </label>
-        <textarea
-          id={`${id}-notes`}
-          rows={3}
-          maxLength={280}
-          aria-describedby={`${id}-notes-count`}
-          placeholder="e.g. Grandmother walks to the temple at 6 am; school bus at 7:15"
-          value={value.notes}
-          onChange={(e) => set("notes", e.target.value)}
-        />
-        <span id={`${id}-notes-count`} className={styles.hint}>
-          {280 - value.notes.length} characters left
-        </span>
-      </div>
+      <NotesField value={value.notes} onChange={(notes) => set("notes", notes)} />
 
       <button
         type="submit"

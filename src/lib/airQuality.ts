@@ -125,6 +125,7 @@ export function toSnapshot(raw: unknown): AirSnapshot {
   });
 }
 
+/** Live air for a coordinate. If the upstream fails, the last good reading for that spot is returned if it is under three hours old. */
 export async function fetchAir(latitude: number, longitude: number): Promise<AirSnapshot> {
   const key = `${roundCoord(latitude)},${roundCoord(longitude)}`;
   try {
@@ -155,6 +156,7 @@ async function fetchAirFresh(latitude: number, longitude: number): Promise<AirSn
   }
 }
 
+/** Up to six places matching a name, from the Open-Meteo geocoder. */
 export async function searchPlaces(query: string): Promise<Place[]> {
   const url = new URL(GEO_URL);
   url.searchParams.set("name", query);

@@ -6,6 +6,7 @@ export interface RateLimiter {
   check(key: string, now?: number): { ok: boolean; retryAfterSeconds: number };
 }
 
+/** A limiter allowing `limit` requests per key in each window of `windowMs`. */
 export function createRateLimiter({ limit, windowMs }: { limit: number; windowMs: number }): RateLimiter {
   const hits = new Map<string, { count: number; resetAt: number }>();
   const MAX_KEYS = 10_000;

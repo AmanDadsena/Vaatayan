@@ -27,15 +27,16 @@ export function PageShell({ title, lede, children }: Props) {
             );
           })}
         </svg>
-        <div className={styles.inner}>
+        <div className={`page-wrap ${styles.inner}`}>
           <SiteHeader />
-          <div className={styles.intro}>
-            <h1>{title}</h1>
+          {/* A named region, so the page title is reachable by landmark navigation. */}
+          <section className={styles.intro} aria-labelledby="page-title">
+            <h1 id="page-title">{title}</h1>
             <p>{lede}</p>
-          </div>
+          </section>
         </div>
       </div>
-      <main id="main" className={styles.main}>
+      <main id="main" tabIndex={-1} className={`page-wrap ${styles.main}`}>
         {children}
       </main>
       <SiteFooter />

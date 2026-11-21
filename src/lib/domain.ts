@@ -26,6 +26,9 @@ export const LIMITS = {
   placeName: { max: 120 },
 } as const;
 
+/** Where the app opens before the visitor picks a place: the city most affected by winter smog. */
+export const DEFAULT_PLACE: Place = { name: "New Delhi, Delhi, India", latitude: 28.61, longitude: 77.21 };
+
 export const DEFAULT_HOUSEHOLD: Household = {
   adults: 2,
   children: 1,

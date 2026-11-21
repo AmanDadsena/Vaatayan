@@ -4,6 +4,7 @@ import { useId } from "react";
 import { useNumberInput } from "@/hooks/useNumberInput";
 import styles from "../HomeAir.module.css";
 
+/** A labelled number input with a unit, clamped to a range as the user types. */
 export function NumberField({
   label,
   value,

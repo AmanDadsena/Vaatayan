@@ -20,10 +20,12 @@ export const ACTIONS: readonly ActionDefinition[] = [...ROUTINE_ACTIONS, ...INDO
 
 export const ACTION_IDS = ACTIONS.map((a) => a.id);
 
+/** The catalogue entry for an action id, if it exists. */
 export function getAction(id: string): ActionDefinition | undefined {
   return ACTIONS.find((a) => a.id === id);
 }
 
+/** Everything the planner needs in one object: the household, the air and today's clean and worst windows. */
 export function buildContext(household: Household, air: AirSnapshot): ImpactContext {
   return {
     household,
@@ -85,6 +87,7 @@ export function totalImpact(items: { impact: Impact; group?: string }[]): Omit<I
  */
 export const UG_PER_CIGARETTE = 22 * 12;
 
+/** PM2.5 kept out of the lungs each day, as cigarettes not smoked. */
 export function cigarettesAvoided(lungsUgPerDay: number): number {
   return Math.round((lungsUgPerDay / UG_PER_CIGARETTE) * 10) / 10;
 }

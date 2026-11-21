@@ -32,5 +32,6 @@ export function logoSvg(size: number): string {
 </svg>`;
 }
 
+/** The logo as a base64 SVG data URI, for generated images. */
 export const logoDataUri = (size: number) =>
   `data:image/svg+xml;base64,${Buffer.from(logoSvg(size)).toString("base64")}`;

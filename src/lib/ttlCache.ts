@@ -3,13 +3,14 @@
  * used entries are dropped first). Map keeps insertion order, so re-inserting
  * on read moves an entry to the "most recent" end.
  */
-export interface TtlCache<V> {
+interface TtlCache<V> {
   get(key: string, now?: number): V | undefined;
   set(key: string, value: V, now?: number): void;
   clear(): void;
   readonly size: number;
 }
 
+/** An in-memory cache whose entries expire after `ttlMs`, holding at most `maxEntries`. */
 export function createTtlCache<V>({ ttlMs, maxEntries }: { ttlMs: number; maxEntries: number }): TtlCache<V> {
   const entries = new Map<string, { value: V; expires: number }>();
 

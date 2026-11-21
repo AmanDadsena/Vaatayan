@@ -2,7 +2,7 @@
 
 import { useId } from "react";
 import { useNumberInput } from "@/hooks/useNumberInput";
-import styles from "./HouseholdForm.module.css";
+import styles from "./Stepper.module.css";
 
 /** A whole-number field with − and + buttons, clamped to a range. */
 export function Stepper({

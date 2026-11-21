@@ -1,10 +1,5 @@
 .form {
-  display: grid;
   gap: var(--space-5);
-  padding: var(--space-5);
-  background: var(--paper);
-  border: 1px solid var(--fog);
-  border-radius: var(--radius-m);
 }
 
 .head {
@@ -24,17 +19,11 @@
 }
 
 .group {
-  border: 0;
-  margin: 0;
-  padding: 0;
-  min-width: 0;
   display: grid;
   gap: var(--space-3);
 }
 
 .group legend {
-  font-weight: 700;
-  padding: 0;
   margin-bottom: var(--space-3);
 }
 
@@ -42,115 +31,6 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
   gap: var(--space-3);
-}
-
-.stepper {
-  display: grid;
-  gap: var(--space-2);
-}
-
-.stepLabel {
-  display: grid;
-  font-size: var(--step-0);
-}
-
-.stepControls {
-  display: grid;
-  grid-template-columns: 44px 1fr 44px;
-  border: 1px solid var(--slate);
-  border-radius: var(--radius-s);
-  overflow: hidden;
-  background: var(--mist);
-}
-
-.stepControls button {
-  border: 0;
-  background: transparent;
-  font-size: 1.25rem;
-  min-height: 44px;
-  cursor: pointer;
-}
-
-.stepControls button:hover:not(:disabled) {
-  background: var(--clear-tint);
-}
-
-.stepControls button:disabled {
-  color: var(--fog);
-  cursor: not-allowed;
-}
-
-.stepControls input {
-  width: 100%;
-  border: 0;
-  border-inline: 1px solid var(--fog);
-  background: var(--paper);
-  text-align: center;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  -moz-appearance: textfield;
-  appearance: textfield;
-}
-
-.stepControls input::-webkit-inner-spin-button,
-.stepControls input::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-.pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-.pill {
-  position: relative;
-}
-
-.pill input {
-  position: absolute;
-  opacity: 0;
-  inset: 0;
-  margin: 0;
-  cursor: pointer;
-}
-
-.pill span {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 0 var(--space-4);
-  border: 1px solid var(--slate);
-  border-radius: 999px;
-  background: var(--paper);
-  transition:
-    background-color 160ms,
-    color 160ms;
-}
-
-.pill input:hover + span {
-  background: var(--clear-tint);
-}
-
-.pill input:checked + span {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--paper);
-}
-
-.pill input:checked + span::before {
-  content: "";
-  width: 0.45em;
-  height: 0.8em;
-  margin-right: 0.55em;
-  border: solid currentColor;
-  border-width: 0 2.5px 2.5px 0;
-  transform: translateY(-0.1em) rotate(45deg);
-}
-
-.pill input:focus-visible + span {
-  box-shadow: var(--focus);
 }
 
 .switch {

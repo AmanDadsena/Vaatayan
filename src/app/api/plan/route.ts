@@ -1,51 +1,43 @@
 import { NextResponse } from "next/server";
 import { AiUnavailableError, generateModelPlan, isAiConfigured } from "@/lib/ai";
-import { guardJsonPost, jsonError, readJson, validationMessage } from "@/lib/http";
-import { buildContext } from "@/lib/impact";
+import { checkJsonPost } from "@/lib/http";
+import { buildContext, type ImpactContext } from "@/lib/impact";
 import { buildRulePlan, mergeModelPlan, type Plan } from "@/lib/planner";
-import { clientKey, createRateLimiter } from "@/lib/rateLimit";
-import { planRequestSchema } from "@/lib/schemas";
+import { createRateLimiter } from "@/lib/rateLimit";
+import { planRequestSchema, type Place } from "@/lib/schemas";
 
 export const maxDuration = 60;
 
 const limiter = createRateLimiter({ limit: 8, windowMs: 60_000 });
 
-export async function POST(request: Request) {
-  const refused = guardJsonPost(request);
-  if (refused) return refused;
+interface PlanResponse {
+  plan: Plan;
+  /** Set when the AI was asked but failed, so the rules plan was used instead. */
+  notice?: string;
+}
 
-  const rate = limiter.check(clientKey(request.headers));
-  if (!rate.ok) {
-    return jsonError(429, "You've asked for several plans in a row. Try again in a minute.", {
-      "Retry-After": String(rate.retryAfterSeconds),
-    });
-  }
-
-  let body: unknown;
+/** The AI plan when a model is configured and answers; otherwise the rules plan. */
+async function choosePlan(place: Place, ctx: ImpactContext, signal: AbortSignal): Promise<PlanResponse> {
+  if (!isAiConfigured()) return { plan: buildRulePlan(ctx) };
   try {
-    body = await readJson(request);
+    return { plan: mergeModelPlan(ctx, await generateModelPlan(place, ctx, signal)) };
   } catch (error) {
-    return jsonError(error instanceof RangeError ? 413 : 400, "Send the plan request as JSON under 32 KB.");
+    const notice = error instanceof AiUnavailableError ? error.message : "The AI service failed.";
+    return { plan: buildRulePlan(ctx), notice };
   }
+}
 
-  const parsed = planRequestSchema.safeParse(body);
-  if (!parsed.success) return jsonError(400, validationMessage(parsed.error));
+/** Builds a household's smog plan for today's air. */
+export async function POST(request: Request) {
+  const input = await checkJsonPost(request, {
+    limiter,
+    schema: planRequestSchema,
+    busy: "You've asked for several plans in a row. Try again in a minute.",
+    badBody: "Send the plan request as JSON under 32 KB.",
+  });
+  if (!input.ok) return input.response;
 
-  const { place, air, household } = parsed.data;
-  const ctx = buildContext(household, air);
-
-  let plan: Plan;
-  let notice: string | undefined;
-  if (isAiConfigured()) {
-    try {
-      plan = mergeModelPlan(ctx, await generateModelPlan(place, ctx, request.signal));
-    } catch (error) {
-      plan = buildRulePlan(ctx);
-      notice = error instanceof AiUnavailableError ? error.message : "The AI service failed.";
-    }
-  } else {
-    plan = buildRulePlan(ctx);
-  }
-
-  return NextResponse.json({ plan, notice }, { headers: { "Cache-Control": "no-store" } });
+  const { place, air, household } = input.data;
+  const result = await choosePlan(place, buildContext(household, air), request.signal);
+  return NextResponse.json(result, { headers: { "Cache-Control": "no-store" } });
 }

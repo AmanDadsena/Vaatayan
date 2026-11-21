@@ -4,10 +4,11 @@ import { NAV_LINKS } from "@/lib/nav";
 import { LogoMark } from "./LogoMark";
 import styles from "./SiteFooter.module.css";
 
+/** Site footer: what the name means, navigation, the data source and a medical disclaimer. */
 export function SiteFooter() {
   return (
     <footer className={styles.footer}>
-      <div className={styles.inner}>
+      <div className={`page-wrap ${styles.inner}`}>
         <div className={styles.brand}>
           <LogoMark size={56} />
           <p className={styles.meaning}>

@@ -8,8 +8,7 @@ import type { CommuteMode } from "./schemas";
  * numbers on screen are reproducible and covered by tests.
  */
 
-export { COOKING, HEATING, type FuelProfile } from "./fuels";
-export { GRID_CO2_PER_KWH } from "./assumptions";
+export { COOKING, HEATING } from "./fuels";
 
 export interface Delta {
   /** Positive numbers mean the change is better (less breathed, less emitted). */
@@ -27,6 +26,7 @@ export function commuteDose(mode: CommuteMode, km: number, pm25: number): number
   return ((TRIPS_PER_COMMUTE_DAY * km) / m.speedKmh) * m.ventilation * pm25 * m.exposureFactor;
 }
 
+/** CO₂ and smog particles one person's commute emits in a week. */
 export function commuteWeekly(mode: CommuteMode, km: number, days: number) {
   const weeklyKm = mode === "home" ? 0 : TRIPS_PER_COMMUTE_DAY * km * days;
   return {
@@ -35,7 +35,19 @@ export function commuteWeekly(mode: CommuteMode, km: number, days: number) {
   };
 }
 
-export function compareCommute(from: CommuteMode, to: CommuteMode, km: number, days: number, pm25: number): Delta {
+/** A commute switch to compare: the same trip, taken two ways, on a day with this outdoor PM2.5. */
+interface CommuteSwitch {
+  from: CommuteMode;
+  to: CommuteMode;
+  /** One-way distance. */
+  km: number;
+  /** Commuting days a week. */
+  days: number;
+  pm25: number;
+}
+
+/** How much CO₂, smog and breathed PM2.5 a commute switch saves; positive means the new mode is better. */
+export function compareCommute({ from, to, km, days, pm25 }: CommuteSwitch): Delta {
   const a = commuteWeekly(from, km, days);
   const b = commuteWeekly(to, km, days);
   return {
@@ -49,6 +61,7 @@ function fuelDose(p: FuelProfile, people: number): number {
   return p.hoursPerDay * VENTILATION.rest * p.indoorSpike * people;
 }
 
+/** What switching a home from one fuel to another saves, for this many people. */
 export function compareFuel(from: FuelProfile, to: FuelProfile, people: number): Delta {
   return {
     lungsUgPerDay: Math.round(fuelDose(from, people) - fuelDose(to, people)),
@@ -57,6 +70,7 @@ export function compareFuel(from: FuelProfile, to: FuelProfile, people: number):
   };
 }
 
+/** Adds several savings into one. */
 export function addDeltas(...deltas: Delta[]): Delta {
   return deltas.reduce(
     (t, d) => ({
@@ -71,7 +85,7 @@ export function addDeltas(...deltas: Delta[]): Delta {
 /** A typical Indian petrol car: ~10,000 km a year at 0.17 kg CO₂/km. */
 export const CAR_CO2_KG_PER_YEAR = 1700;
 
-export interface ScaledImpact {
+interface ScaledImpact {
   co2TonnesPerYear: number;
   smogKgPerYear: number;
   carsEquivalent: number;

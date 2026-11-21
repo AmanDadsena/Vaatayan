@@ -46,6 +46,7 @@ const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const toHex = ([r, g, b]: Rgb) => `#${[r, g, b].map((v) => Math.round(v).toString(16).padStart(2, "0")).join("")}`;
 const mix = (a: Rgb, b: Rgb, t: number): Rgb => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
 
+/** Sky, sun and skyline colours for an AQI, blended between fixed stops. */
 export function skyFor(aqi: number): SkyPalette {
   const value = Number.isFinite(aqi) ? Math.min(500, Math.max(0, aqi)) : 0;
   // The first stop at or above the value, and the one before it (the first stop for value 0).

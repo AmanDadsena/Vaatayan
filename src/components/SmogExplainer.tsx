@@ -10,6 +10,7 @@ import { SizeScale } from "./smog/SizeScale";
 import { Photo } from "./Photo";
 import styles from "./SmogExplainer.module.css";
 
+/** The why-smog page: how inversions trap pollution, and how small the particles are. */
 export function SmogExplainer() {
   const id = useId();
   return (

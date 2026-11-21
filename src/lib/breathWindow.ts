@@ -13,7 +13,7 @@ export interface BreathWindow {
   averagePm25: number;
 }
 
-export interface WindowOptions {
+interface WindowOptions {
   /** Length of the window in hours. */
   hours?: number;
   /** Earliest local hour a window may start (inclusive). */
@@ -73,10 +73,12 @@ function findWindow(
   return best;
 }
 
+/** The cleanest stretch of waking hours in the forecast, or null when the forecast is too short. */
 export function findCleanestWindow(readings: HourlyReading[], options?: WindowOptions) {
   return findWindow(readings, "cleanest", options);
 }
 
+/** The dirtiest stretch of waking hours in the forecast, or null when the forecast is too short. */
 export function findWorstWindow(readings: HourlyReading[], options?: WindowOptions) {
   return findWindow(readings, "worst", options);
 }

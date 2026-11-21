@@ -7,7 +7,7 @@ import { RangeField } from "../RangeField";
 import styles from "../ImpactLab.module.css";
 
 /** Slider stops for "how many households": one step per order of magnitude. */
-export const HOUSEHOLD_STEPS = [1, 10, 100, 1_000, 10_000, 100_000] as const;
+const HOUSEHOLD_STEPS = [1, 10, 100, 1_000, 10_000, 100_000] as const;
 
 interface Props {
   /** The household's own weekly change, before multiplying. */

@@ -1,0 +1,58 @@
+.hint {
+  color: var(--slate);
+  font-size: var(--step--1);
+}
+
+.stepper {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.stepLabel {
+  display: grid;
+  font-size: var(--step-0);
+}
+
+.stepControls {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  border: 1px solid var(--slate);
+  border-radius: var(--radius-s);
+  overflow: hidden;
+  background: var(--mist);
+}
+
+.stepControls button {
+  border: 0;
+  background: transparent;
+  font-size: 1.25rem;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.stepControls button:hover:not(:disabled) {
+  background: var(--clear-tint);
+}
+
+.stepControls button:disabled {
+  color: var(--fog);
+  cursor: not-allowed;
+}
+
+.stepControls input {
+  width: 100%;
+  border: 0;
+  border-inline: 1px solid var(--fog);
+  background: var(--paper);
+  text-align: center;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.stepControls input::-webkit-inner-spin-button,
+.stepControls input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

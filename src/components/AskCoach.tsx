@@ -1,17 +1,8 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
-import { askQuestion, FriendlyError, type AnswerSource } from "@/lib/client";
-import { isAbortError } from "@/lib/errors";
-import type { AirSnapshot, Household, Place } from "@/lib/schemas";
+import { useId, useState } from "react";
+import { MIN_QUESTION, useAskThread, type AskContext, type Turn } from "@/hooks/useAskThread";
 import styles from "./AskCoach.module.css";
-
-interface Props {
-  place: Place;
-  air: AirSnapshot;
-  household: Household;
-  planSummary: string;
-}
 
 const SUGGESTIONS = [
   "Is it safe for the kids to play outside this evening?",
@@ -20,85 +11,53 @@ const SUGGESTIONS = [
   "Should I still go for my morning walk?",
 ];
 
-interface Turn {
-  question: string;
-  answer: string;
-  source?: AnswerSource;
-  failed?: boolean;
+/** The questions asked so far, each with its streamed answer and where the answer came from. */
+function Thread({ turns, busy }: { turns: Turn[]; busy: boolean }) {
+  return (
+    <ol className={styles.thread} aria-live="polite" aria-busy={busy}>
+      {turns.map((turn, i) => (
+        <li key={i}>
+          <p className={styles.q}>{turn.question}</p>
+          <p className={styles.a} data-failed={turn.failed || undefined}>
+            {turn.answer || <span className={styles.thinking}>Thinking about your air…</span>}
+          </p>
+          {turn.source && !turn.failed && (
+            <p className={styles.source}>
+              {turn.source === "ai"
+                ? "Answered by AI from your live data"
+                : "Quick answer from built-in guidance and your live data"}
+            </p>
+          )}
+        </li>
+      ))}
+    </ol>
+  );
 }
 
-export function AskCoach({ place, air, household, planSummary }: Props) {
+/** Follow-up questions about the plan, answered from the same live air and household data. */
+export function AskCoach(context: AskContext) {
   const id = useId();
   const [question, setQuestion] = useState("");
-  const [turns, setTurns] = useState<Turn[]>([]);
-  const [busy, setBusy] = useState(false);
-  const controllerRef = useRef<AbortController | null>(null);
+  const { turns, busy, ask } = useAskThread(context);
 
-  useEffect(() => () => controllerRef.current?.abort(), []);
-
-  async function ask(text: string) {
-    const q = text.trim();
-    if (q.length < 3 || busy) return;
-    controllerRef.current?.abort();
-    const controller = new AbortController();
-    controllerRef.current = controller;
-
-    setBusy(true);
+  const submit = (text: string) => {
     setQuestion("");
-    setTurns((t) => [...t, { question: q, answer: "" }]);
-    const update = (patch: Partial<Turn>) =>
-      setTurns((t) => t.map((turn, i) => (i === t.length - 1 ? { ...turn, ...patch } : turn)));
-
-    try {
-      const { source } = await askQuestion(
-        { place, air, household, question: q, planSummary },
-        (answer) => update({ answer }),
-        controller.signal,
-      );
-      update({ source });
-    } catch (error) {
-      if (!isAbortError(error)) {
-        update({
-          answer: error instanceof FriendlyError ? error.message : "Something went wrong. Try asking again.",
-          failed: true,
-        });
-      }
-    } finally {
-      setBusy(false);
-    }
-  }
+    void ask(text);
+  };
 
   return (
-    <section className={styles.ask} aria-labelledby={`${id}-title`}>
+    <section className="panel" aria-labelledby={`${id}-title`}>
       <div className={styles.head}>
         <h2 id={`${id}-title`}>Ask a follow-up</h2>
         <p className={styles.lede}>Answers use your live air data and household details.</p>
       </div>
 
-      {turns.length > 0 && (
-        <ol className={styles.thread} aria-live="polite" aria-busy={busy}>
-          {turns.map((turn, i) => (
-            <li key={i}>
-              <p className={styles.q}>{turn.question}</p>
-              <p className={styles.a} data-failed={turn.failed || undefined}>
-                {turn.answer || <span className={styles.thinking}>Thinking about your air…</span>}
-              </p>
-              {turn.source && !turn.failed && (
-                <p className={styles.source}>
-                  {turn.source === "ai"
-                    ? "Answered by AI from your live data"
-                    : "Quick answer from built-in guidance and your live data"}
-                </p>
-              )}
-            </li>
-          ))}
-        </ol>
-      )}
+      {turns.length > 0 && <Thread turns={turns} busy={busy} />}
 
       <ul className={styles.suggestions} aria-label="Suggested questions">
         {SUGGESTIONS.map((s) => (
           <li key={s}>
-            <button type="button" onClick={() => ask(s)} disabled={busy}>
+            <button type="button" onClick={() => submit(s)} disabled={busy}>
               {s}
             </button>
           </li>
@@ -109,7 +68,7 @@ export function AskCoach({ place, air, household, planSummary }: Props) {
         className={styles.form}
         onSubmit={(e) => {
           e.preventDefault();
-          void ask(question);
+          submit(question);
         }}
       >
         <label htmlFor={`${id}-q`} className="visually-hidden">
@@ -123,7 +82,7 @@ export function AskCoach({ place, air, household, planSummary }: Props) {
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
         />
-        <button type="submit" disabled={busy || question.trim().length < 3}>
+        <button type="submit" disabled={busy || question.trim().length < MIN_QUESTION}>
           {busy ? "Answering…" : "Ask"}
         </button>
       </form>

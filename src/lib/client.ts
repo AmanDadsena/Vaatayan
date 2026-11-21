@@ -28,6 +28,7 @@ async function request<T>(input: string, init: RequestInit, fallback: string): P
   return (await res.json()) as T;
 }
 
+/** Calls /api/places; resolves to the matching places. */
 export function searchPlaces(query: string, signal?: AbortSignal) {
   return request<{ places: Place[] }>(
     `/api/places?q=${encodeURIComponent(query)}`,
@@ -36,11 +37,13 @@ export function searchPlaces(query: string, signal?: AbortSignal) {
   ).then((d) => d.places);
 }
 
+/** Calls /api/air for a place's current and hourly air. */
 export function getAir(place: Place, signal?: AbortSignal) {
   const qs = new URLSearchParams({ lat: String(place.latitude), lon: String(place.longitude) });
   return request<AirSnapshot>(`/api/air?${qs}`, { signal }, "Could not load air quality for this place.");
 }
 
+/** Calls /api/plan; resolves to the plan and, if the AI failed, a notice. */
 export function getPlan(body: { place: Place; air: AirSnapshot; household: Household }, signal?: AbortSignal) {
   return request<{ plan: Plan; notice?: string }>(
     "/api/plan",

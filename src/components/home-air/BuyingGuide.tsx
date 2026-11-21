@@ -6,6 +6,7 @@ import { Photo } from "../Photo";
 import { BUYING_TIPS } from "@/content/homeAir";
 import styles from "../HomeAir.module.css";
 
+/** What to check before buying a purifier: true HEPA, a stated CADR, no ozone, and filter cost and noise. */
 export function BuyingGuide() {
   const id = useId();
   return (
