@@ -75,7 +75,7 @@ household ─────┼─▶ deterministic impact model ─▶ candidate a
 ## Testing
 
 ```bash
-npm test               # 189 tests: domain logic, GenAI module, API routes, components + axe
+npm test               # 201 tests: domain logic, GenAI module, API routes, components + axe
 npm run test:coverage
 npm run lint
 npm run typecheck

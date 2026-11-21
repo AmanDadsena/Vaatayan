@@ -19,28 +19,6 @@
   scroll-margin-top: var(--space-4);
 }
 
-.loading {
-  display: grid;
-  gap: var(--space-3);
-  padding: var(--space-6) 0;
-  font-size: var(--step-1);
-}
-
-.loadingBar {
-  display: block;
-  height: 6px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--clear-tint) 0%, var(--clear) 50%, var(--clear-tint) 100%);
-  background-size: 200% 100%;
-  animation: sweep 1.6s linear infinite;
-}
-
-@keyframes sweep {
-  to {
-    background-position: -200% 0;
-  }
-}
-
 .error {
   display: flex;
   flex-wrap: wrap;

@@ -1,0 +1,153 @@
+.loading {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-5) var(--space-6);
+  align-items: center;
+  padding: var(--space-5) 0;
+}
+
+.art {
+  width: 120px;
+  height: auto;
+}
+
+.frame {
+  fill: var(--clear-tint);
+  stroke: var(--ink);
+  stroke-width: 4;
+  stroke-linejoin: round;
+}
+
+.sun {
+  fill: #e9b44c;
+  animation: glow 2.4s ease-in-out infinite;
+}
+
+.wind {
+  fill: none;
+  stroke: var(--clear);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 22 120;
+  animation: flow 1.8s linear infinite;
+}
+
+.windLate {
+  stroke: #7fd1bd;
+  animation-delay: -0.9s;
+}
+
+@keyframes flow {
+  from {
+    stroke-dashoffset: 142;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes glow {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.text {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--step-2);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.stages {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.stages li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--slate);
+  transition: color 300ms;
+}
+
+.stages li[data-state="active"] {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.stages li[data-state="done"] {
+  color: var(--clear-deep);
+}
+
+.dot {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--fog);
+  transition: background-color 300ms, border-color 300ms;
+}
+
+li[data-state="active"] .dot {
+  border-color: var(--clear);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+li[data-state="done"] .dot {
+  background: var(--clear);
+  border-color: var(--clear);
+}
+
+@keyframes pulse {
+  50% {
+    box-shadow: 0 0 0 5px rgb(14 110 98 / 0.18);
+  }
+}
+
+.skeleton {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.skeleton span {
+  display: block;
+  height: 14px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--fog) 0%, #e8eeed 50%, var(--fog) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+.skeleton .block {
+  height: 120px;
+  border-radius: var(--radius-m);
+  margin: var(--space-2) 0;
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .loading {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+  .art {
+    width: 88px;
+  }
+}

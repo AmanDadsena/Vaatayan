@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { formatHour } from "@/lib/breathWindow";
+import { categorize } from "@/lib/aqi";
+import { clockInWindow, formatHour, readingAtClock, type HourlyReading } from "@/lib/breathWindow";
 import { cigarettesAvoided, METHOD_NOTES, totalImpact, type ActionKind } from "@/lib/impact";
 import type { Plan, PlanItem } from "@/lib/planner";
 import styles from "./PlanView.module.css";
@@ -9,6 +10,30 @@ import styles from "./PlanView.module.css";
 interface Props {
   plan: Plan;
   notice?: string;
+  /** Hourly forecast, so each routine step can show the air at that hour. */
+  hourly?: HourlyReading[];
+}
+
+const MAX_CIGARETTES = 20;
+
+/** One glyph per cigarette's worth avoided, the last one partial. Decorative: the number is in text. */
+function CigaretteRow({ count }: { count: number }) {
+  const shown = Math.min(count, MAX_CIGARETTES);
+  const whole = Math.floor(shown);
+  const part = shown - whole;
+  const glyphs = Array.from({ length: Math.ceil(shown) }, (_, i) => (i < whole ? 1 : part));
+  return (
+    <span className={styles.cigs}>
+      {glyphs.map((fill, i) => (
+        <svg key={i} viewBox="0 0 48 12" className={styles.cig} style={{ opacity: fill < 1 ? 0.35 + fill * 0.65 : 1 }}>
+          <rect x="1" y="2" width="34" height="8" rx="2" className={styles.cigBody} />
+          <rect x="35" y="2" width="12" height="8" rx="2" className={styles.cigTip} />
+          <line x1="2" y1="11" x2="46" y2="1" className={styles.cigStrike} />
+        </svg>
+      ))}
+      {count > MAX_CIGARETTES && <span className={styles.more}>+{fmt(count - MAX_CIGARETTES, 0)}</span>}
+    </span>
+  );
 }
 
 const KIND_HEADINGS: Record<ActionKind, { title: string; lede: string }> = {
@@ -38,7 +63,7 @@ function ImpactChips({ item }: { item: PlanItem }) {
   );
 }
 
-export function PlanView({ plan, notice }: Props) {
+export function PlanView({ plan, notice, hourly = [] }: Props) {
   const [committed, setCommitted] = useState<Set<string>>(() => new Set(plan.items.map((i) => i.id)));
 
   const totals = useMemo(
@@ -79,10 +104,14 @@ export function PlanView({ plan, notice }: Props) {
       <section className={styles.ledger} aria-labelledby="ledger-title">
         <h3 id="ledger-title">If you do the {committed.size} things you&apos;ve ticked</h3>
         <dl className={styles.ledgerGrid} aria-live="polite">
-          <div data-tone="lungs">
-            <dt>Kept out of your family&apos;s lungs</dt>
-            <dd>
-              <span className={styles.big}>{fmt(cigarettes, 1)}</span> cigarettes&apos; worth of PM2.5 a day
+          <div data-tone="lungs" className={styles.hero}>
+            <dt>Kept out of your family&apos;s lungs, every day</dt>
+            <dd className={styles.heroLine}>
+              <span className={styles.huge}>{fmt(cigarettes, 1)}</span>
+              <span>cigarettes&apos; worth of PM2.5</span>
+            </dd>
+            <dd aria-hidden="true">
+              <CigaretteRow count={cigarettes} />
             </dd>
             <dd className={styles.small}>{fmt(totals.lungsUgPerDay)} µg of fine particles not inhaled</dd>
           </div>
@@ -120,15 +149,35 @@ export function PlanView({ plan, notice }: Props) {
           )}
         </div>
         <ol className={styles.timeline}>
-          {plan.routine.map((step) => (
-            <li key={`${step.time}-${step.title}`}>
-              <time className={styles.time}>{step.time}</time>
-              <div>
-                <p className={styles.stepTitle}>{step.title}</p>
-                <p className={styles.stepDetail}>{step.detail}</p>
-              </div>
-            </li>
-          ))}
+          {plan.routine.map((step) => {
+            const reading = readingAtClock(hourly, step.time);
+            const level = reading ? categorize(reading.aqi).level : null;
+            const clean = clockInWindow(step.time, plan.cleanWindow);
+            return (
+              <li key={`${step.time}-${step.title}`} data-clean={clean || undefined}>
+                <time className={styles.time}>{step.time}</time>
+                <span
+                  className={styles.node}
+                  aria-hidden="true"
+                  style={level ? { background: `var(--aqi-${level})` } : undefined}
+                />
+                <div className={styles.stepBody}>
+                  <p className={styles.stepTitle}>{step.title}</p>
+                  <p className={styles.stepDetail}>{step.detail}</p>
+                  {(reading || clean) && (
+                    <p className={styles.stepMeta}>
+                      {reading && (
+                        <span className={styles.stepAqi}>
+                          Forecast AQI {reading.aqi}, {categorize(reading.aqi).label.toLowerCase()}
+                        </span>
+                      )}
+                      {clean && <span className={styles.cleanTag}>In your clean window</span>}
+                    </p>
+                  )}
+                </div>
+              </li>
+            );
+          })}
         </ol>
       </section>
 

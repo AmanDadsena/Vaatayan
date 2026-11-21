@@ -86,3 +86,28 @@ export function formatHour(time: string): string {
   if (h === 12) return "12 pm";
   return h < 12 ? `${h} am` : `${h - 12} pm`;
 }
+
+/** Hour of day from a "HH:MM" clock string, or NaN if malformed. */
+function clockHour(clock: string): number {
+  return /^\d{2}:\d{2}$/.test(clock) ? Number.parseInt(clock.slice(0, 2), 10) : Number.NaN;
+}
+
+/**
+ * The forecast reading for the next occurrence of a clock time ("HH:MM").
+ * Readings start at the current hour and cover 24 hours, so each hour of the
+ * day appears once: an hour earlier than now refers to tomorrow.
+ */
+export function readingAtClock(readings: HourlyReading[], clock: string): HourlyReading | null {
+  const hour = clockHour(clock);
+  if (Number.isNaN(hour)) return null;
+  return readings.find((r) => hourOf(r.time) === hour) ?? null;
+}
+
+/** Whether a clock time falls inside a window's hours. */
+export function clockInWindow(clock: string, window: { start: string; end: string } | null): boolean {
+  const hour = clockHour(clock);
+  if (!window || Number.isNaN(hour)) return false;
+  const start = hourOf(window.start);
+  const end = start + Math.round((Date.parse(`${window.end}:00Z`) - Date.parse(`${window.start}:00Z`)) / 3_600_000);
+  return (hour >= start && hour < end) || hour + 24 < end;
+}

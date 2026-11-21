@@ -15,6 +15,7 @@ import { AirHero } from "./AirHero";
 import { AskCoach } from "./AskCoach";
 import { EmptyPlan } from "./EmptyPlan";
 import { HouseholdForm } from "./HouseholdForm";
+import { PlanLoading } from "./PlanLoading";
 import { PlanView } from "./PlanView";
 import { SiteFooter } from "./SiteFooter";
 import styles from "./VaatayanApp.module.css";
@@ -147,16 +148,16 @@ export function VaatayanApp() {
             </div>
           )}
 
-          {planLoading && (
-            <div className={styles.loading} role="status">
-              <span className={styles.loadingBar} aria-hidden="true" />
-              <p>Reading the forecast and writing a plan for your household…</p>
-            </div>
-          )}
+          {planLoading && <PlanLoading />}
 
           {!planLoading && plan && (
             <>
-              <PlanView key={`${plan.plan.headline}-${plan.plan.items.length}`} plan={plan.plan} notice={plan.notice} />
+              <PlanView
+                key={`${plan.plan.headline}-${plan.plan.items.length}`}
+                plan={plan.plan}
+                notice={plan.notice}
+                hourly={air?.hourly}
+              />
               {air && (
                 <AskCoach place={place} air={air} household={household} planSummary={summarizePlan(plan.plan)} />
               )}
