@@ -1,0 +1,21 @@
+.footer {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-5) var(--space-7);
+  border-top: 1px solid var(--fog);
+  display: grid;
+  gap: var(--space-2);
+  font-size: var(--step--1);
+  color: var(--slate);
+}
+
+.meaning {
+  font-family: var(--font-display);
+  font-size: var(--step-0);
+  color: var(--ink);
+}
+
+.meaning span {
+  font-family: var(--font-devanagari), serif;
+  font-size: var(--step-1);
+}

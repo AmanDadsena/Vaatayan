@@ -1,0 +1,304 @@
+.plan {
+  display: grid;
+  gap: var(--space-7);
+}
+
+.header {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.source {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: fit-content;
+  font-size: var(--step--1);
+  font-weight: 700;
+  color: var(--clear-deep);
+}
+
+.source::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--clear);
+}
+
+.source[data-source="rules"] {
+  color: var(--slate);
+}
+
+.source[data-source="rules"]::before {
+  background: var(--slate);
+}
+
+.headline {
+  font-size: clamp(var(--step-2), 3.2vw, var(--step-4));
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.headline:focus {
+  outline: none;
+}
+
+.summary {
+  font-size: var(--step-1);
+  line-height: 1.45;
+}
+
+.notice {
+  font-size: var(--step--1);
+  color: var(--slate);
+  border-left: 3px solid var(--fog);
+  padding-left: var(--space-3);
+}
+
+/* Ledger: the one dark surface on the page, so impact reads as the payoff */
+.ledger {
+  container-type: inline-size;
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: var(--radius-m);
+}
+
+.ledger h3 {
+  font-size: var(--step-1);
+  font-weight: 500;
+}
+
+.ledgerGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+  margin: 0;
+}
+
+.ledgerGrid div {
+  display: grid;
+  align-content: start;
+  gap: var(--space-1);
+  padding-top: var(--space-3);
+  border-top: 2px solid rgb(249 251 250 / 0.25);
+}
+
+.ledgerGrid div[data-tone="lungs"] {
+  border-top-color: #7fd1bd;
+}
+
+.ledgerGrid dt {
+  font-size: var(--step--1);
+  font-weight: 700;
+  color: #c6dcd8;
+}
+
+.ledgerGrid dd {
+  margin: 0;
+}
+
+.big {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--step-4);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  display: block;
+}
+
+.small {
+  font-size: var(--step--1);
+  color: #c6dcd8;
+}
+
+.care {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-5);
+  border-left: 6px solid var(--aqi-very-unhealthy);
+  background: #f3e9ee;
+  border-radius: 0 var(--radius-m) var(--radius-m) 0;
+}
+
+.care h3 {
+  font-size: var(--step-1);
+}
+
+.section {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.sectionHead {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.sectionHead h3 {
+  font-size: var(--step-2);
+}
+
+.lede {
+  color: var(--slate);
+}
+
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+}
+
+.timeline li {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  position: relative;
+}
+
+.timeline li + li {
+  border-top: 1px dashed var(--fog);
+}
+
+.time {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--step-1);
+  font-variant-numeric: tabular-nums;
+  color: var(--clear-deep);
+}
+
+.stepTitle {
+  font-weight: 700;
+}
+
+.stepDetail {
+  color: var(--slate);
+}
+
+.items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-4);
+}
+
+.item {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  background: var(--paper);
+  border: 1px solid var(--fog);
+  border-left: 4px solid var(--clear);
+  border-radius: var(--radius-s);
+  transition: opacity 200ms, border-color 200ms;
+}
+
+.item[data-off] {
+  border-left-color: var(--fog);
+}
+
+.item[data-off] > :not(.itemHead) {
+  opacity: 0.6;
+}
+
+.itemHead {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-2) var(--space-4);
+}
+
+.itemHead h4 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  line-height: 1.2;
+  flex: 1 1 14rem;
+}
+
+.commit {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  font-size: var(--step--1);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.commit input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--clear);
+  cursor: pointer;
+}
+
+.steps {
+  margin: 0;
+  padding-left: 1.3em;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.chips li {
+  font-size: var(--step--1);
+  padding: 2px var(--space-3);
+  border-radius: 999px;
+  background: var(--clear-tint);
+  color: var(--clear-deep);
+  font-weight: 700;
+}
+
+.chips li[data-kind="co2"],
+.chips li[data-kind="smog"] {
+  background: #ece6d8;
+  color: #5c4a14;
+}
+
+.basis summary,
+.method summary {
+  cursor: pointer;
+  font-size: var(--step--1);
+  font-weight: 700;
+  color: var(--clear-deep);
+  width: fit-content;
+}
+
+.basis p {
+  margin-top: var(--space-2);
+  font-size: var(--step--1);
+  color: var(--slate);
+}
+
+.method ul {
+  margin: var(--space-3) 0 0;
+  padding-left: 1.2em;
+  font-size: var(--step--1);
+  color: var(--slate);
+  display: grid;
+  gap: var(--space-1);
+}
+
+@container (min-width: 30rem) {
+  .ledgerGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+}

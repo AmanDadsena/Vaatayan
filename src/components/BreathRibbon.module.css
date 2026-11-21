@@ -1,0 +1,152 @@
+.figure {
+  margin: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.caption {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-5);
+}
+
+.captionTitle {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--step-1);
+}
+
+.cleanNote strong {
+  color: var(--clear-deep);
+  font-size: var(--step-1);
+  font-family: var(--font-display);
+}
+
+.chart {
+  display: grid;
+  grid-template-columns: repeat(24, minmax(0, 1fr));
+  align-items: end;
+  gap: 3px;
+  height: 148px;
+  padding-top: 18px;
+}
+
+.col {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+  padding-bottom: 22px;
+  isolation: isolate;
+}
+
+.bar {
+  width: 100%;
+  border-radius: 3px 3px 1px 1px;
+  transform-origin: bottom;
+  animation: rise 700ms var(--ease-out) both;
+}
+
+/* Clean window: a clear-air bracket above the bars */
+.col[data-clean]::before {
+  content: "";
+  position: absolute;
+  inset: 0 -1.5px 22px;
+  background: var(--clear-tint);
+  border-top: 3px solid var(--clear);
+  z-index: -1;
+}
+
+/* Worst window: hatched backdrop */
+.col[data-worst]::before {
+  content: "";
+  position: absolute;
+  inset: 0 -1.5px 22px;
+  background: repeating-linear-gradient(135deg, rgb(155 47 34 / 0.12) 0 4px, transparent 4px 8px);
+  border-top: 3px dashed var(--alert);
+  z-index: -1;
+}
+
+.tick {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  font-size: 0.75rem;
+  color: var(--slate);
+  white-space: nowrap;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  font-size: var(--step--1);
+  color: var(--slate);
+}
+
+.legendClean::before,
+.legendWorst::before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 10px;
+  margin-right: var(--space-2);
+  vertical-align: middle;
+}
+
+.legendClean::before {
+  background: var(--clear-tint);
+  border-top: 3px solid var(--clear);
+}
+
+.legendWorst::before {
+  border-top: 3px dashed var(--alert);
+  background: repeating-linear-gradient(135deg, rgb(155 47 34 / 0.18) 0 3px, transparent 3px 6px);
+}
+
+.details summary {
+  cursor: pointer;
+  font-size: var(--step--1);
+  font-weight: 700;
+  color: var(--clear-deep);
+  width: fit-content;
+}
+
+.tableWrap {
+  max-height: 16rem;
+  overflow: auto;
+  margin-top: var(--space-2);
+}
+
+.table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: var(--step--1);
+  font-variant-numeric: tabular-nums;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: var(--space-1) var(--space-3);
+  border-bottom: 1px solid var(--fog);
+}
+
+@keyframes rise {
+  from {
+    transform: scaleY(0.05);
+  }
+}
+
+@media (max-width: 560px) {
+  .chart {
+    gap: 2px;
+    height: 120px;
+  }
+  .tick {
+    font-size: 0.68rem;
+  }
+}

@@ -1,0 +1,94 @@
+.workspace {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: var(--space-7) var(--space-5);
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: var(--space-7);
+  align-items: start;
+}
+
+.formCol {
+  position: sticky;
+  top: var(--space-4);
+}
+
+.planCol {
+  display: grid;
+  gap: var(--space-7);
+  scroll-margin-top: var(--space-4);
+}
+
+.empty {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-6) 0;
+}
+
+.empty h2 {
+  font-size: var(--step-3);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.empty ul {
+  margin: 0;
+  padding-left: 1.2em;
+  display: grid;
+  gap: var(--space-2);
+  color: var(--slate);
+}
+
+.loading {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-6) 0;
+  font-size: var(--step-1);
+}
+
+.loadingBar {
+  display: block;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--clear-tint) 0%, var(--clear) 50%, var(--clear-tint) 100%);
+  background-size: 200% 100%;
+  animation: sweep 1.6s linear infinite;
+}
+
+@keyframes sweep {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--paper);
+  border-left: 4px solid var(--alert);
+  border-radius: var(--radius-s);
+}
+
+.error button {
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-s);
+  background: transparent;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .workspace {
+    grid-template-columns: 1fr;
+    padding: var(--space-5) var(--space-4);
+    gap: var(--space-6);
+  }
+  .formCol {
+    position: static;
+  }
+}

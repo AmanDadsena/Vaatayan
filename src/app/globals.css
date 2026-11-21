@@ -1,0 +1,140 @@
+:root {
+  /* Base palette: a misty winter morning with a clear-air accent */
+  --mist: #edf1f0;
+  --paper: #f9fbfa;
+  --fog: #d3dcda;
+  --ink: #142b2a;
+  --slate: #4a605e;
+  --clear: #0e6e62;
+  --clear-deep: #0a5249;
+  --clear-tint: #d7ebe6;
+  --sky: #cfe3e6;
+  --smog: #b9afa3;
+  --alert: #9b2f22;
+
+  /* AQI scale: muted, every step ≥ 3:1 against --mist */
+  --aqi-good: #3f8a71;
+  --aqi-moderate: #9a7e15;
+  --aqi-sensitive: #b9651f;
+  --aqi-unhealthy: #b8483a;
+  --aqi-very-unhealthy: #86395f;
+  --aqi-hazardous: #5b2338;
+
+  /* Type scale (major third) */
+  --step--1: 0.875rem;
+  --step-0: 1.0625rem;
+  --step-1: 1.3rem;
+  --step-2: 1.625rem;
+  --step-3: 2.03rem;
+  --step-4: 2.55rem;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+
+  --radius-s: 6px;
+  --radius-m: 14px;
+  --measure: 68ch;
+  --page: 1180px;
+  --focus: 0 0 0 3px var(--paper), 0 0 0 6px var(--clear);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--mist);
+  color: var(--ink);
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: var(--step-0);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display), system-ui, sans-serif;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  margin: 0;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+  max-width: var(--measure);
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--clear-deep);
+  text-underline-offset: 0.18em;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+  border-radius: var(--radius-s);
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--space-4);
+  top: -100px;
+  z-index: 100;
+  background: var(--ink);
+  color: var(--paper);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-s);
+}
+
+.skip-link:focus {
+  top: var(--space-4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

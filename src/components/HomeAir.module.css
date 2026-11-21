@@ -1,0 +1,394 @@
+.twoUp {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.card {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--paper);
+  border: 1px solid var(--fog);
+  border-radius: var(--radius-m);
+}
+
+.card h2,
+.mythSection h2 {
+  font-size: var(--step-2);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+.lede {
+  color: var(--slate);
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.numberField {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.numberField label {
+  font-weight: 700;
+  font-size: var(--step--1);
+}
+
+.numberField div {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--slate);
+  border-radius: var(--radius-s);
+  background: var(--paper);
+  overflow: hidden;
+}
+
+.numberField div:focus-within {
+  box-shadow: var(--focus);
+}
+
+.numberField input {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border: 0;
+  background: transparent;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.numberField input:focus-visible {
+  box-shadow: none;
+}
+
+.numberField span {
+  padding: 0 var(--space-3);
+  color: var(--slate);
+  font-size: var(--step--1);
+  white-space: nowrap;
+}
+
+.answer {
+  padding: var(--space-4);
+  border-radius: var(--radius-s);
+  background: var(--clear-tint);
+}
+
+.bigAnswer {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--step-4);
+  line-height: 1.05;
+  color: var(--clear-deep);
+}
+
+.bigAnswer span {
+  font-size: var(--step-1);
+}
+
+.small {
+  font-size: var(--step--1);
+  color: var(--slate);
+}
+
+.check {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.check p {
+  padding-left: var(--space-3);
+  border-left: 4px solid var(--aqi-sensitive);
+}
+
+.check p[data-ok] {
+  border-left-color: var(--clear);
+}
+
+.diy {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  gap: var(--space-6);
+  align-items: center;
+}
+
+.diyFigure {
+  margin: 0;
+  padding: var(--space-4);
+  border-radius: var(--radius-m);
+  background: linear-gradient(180deg, var(--sky), var(--mist));
+}
+
+.diyFigure svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.blades {
+  animation: spin 1.4s linear infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.flowIn path {
+  animation: inflow 1.8s ease-in-out infinite;
+}
+
+.flowOut path {
+  stroke-dasharray: 6 6;
+  animation: outflow 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes inflow {
+  50% {
+    transform: translateX(6px);
+    opacity: 0.6;
+  }
+}
+
+.flowIn path:last-child {
+  animation-name: inflowRight;
+}
+
+@keyframes inflowRight {
+  50% {
+    transform: translateX(-6px);
+    opacity: 0.6;
+  }
+}
+
+@keyframes outflow {
+  to {
+    stroke-dashoffset: -12;
+  }
+}
+
+.steps {
+  margin: 0;
+  padding-left: 1.4em;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.steps li::marker {
+  font-family: var(--font-display);
+  font-weight: 800;
+  color: var(--clear-deep);
+}
+
+.checkHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.checkHead p {
+  font-weight: 700;
+  color: var(--clear-deep);
+}
+
+.progress {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--fog);
+  overflow: hidden;
+}
+
+.progress span {
+  display: block;
+  height: 100%;
+  background: var(--clear);
+  border-radius: inherit;
+  transition: width 360ms var(--ease-out);
+}
+
+.rooms {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.room {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.room legend {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--step-1);
+  padding: 0;
+  margin-bottom: var(--space-1);
+}
+
+.checkItem {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  min-height: 40px;
+  padding: var(--space-1) 0;
+  cursor: pointer;
+}
+
+.checkItem input {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin-top: 2px;
+  accent-color: var(--clear);
+  cursor: pointer;
+}
+
+.checkItem input:checked + span {
+  color: var(--slate);
+  text-decoration: line-through;
+  text-decoration-color: var(--clear);
+  text-decoration-thickness: 2px;
+}
+
+.mythSection {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.myths {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.myths details {
+  height: 100%;
+  padding: var(--space-4);
+  background: var(--paper);
+  border: 1px solid var(--fog);
+  border-radius: var(--radius-s);
+}
+
+.myths details[open] {
+  border-color: var(--clear);
+}
+
+.myths summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+  cursor: pointer;
+  list-style: none;
+}
+
+.myths summary::-webkit-details-marker {
+  display: none;
+}
+
+.claim {
+  font-weight: 700;
+}
+
+.claim::before {
+  content: "“";
+  font-family: var(--font-display);
+  color: var(--slate);
+}
+
+.claim::after {
+  content: "”";
+  font-family: var(--font-display);
+  color: var(--slate);
+}
+
+.verdict {
+  flex: none;
+  padding: 2px var(--space-3);
+  border-radius: 999px;
+  font-size: var(--step--1);
+  font-weight: 700;
+  background: #f6e4e0;
+  color: var(--alert);
+}
+
+.verdict[data-verdict="nuance"] {
+  background: #f3ecd7;
+  color: #5c4a14;
+}
+
+.myths details p {
+  margin-top: var(--space-3);
+  color: var(--slate);
+}
+
+.guide {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: center;
+}
+
+.guide > div {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.guide h2 {
+  font-size: var(--step-3);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.tips {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.tips div {
+  padding-left: var(--space-4);
+  border-left: 3px solid var(--clear);
+}
+
+.tips dt {
+  font-weight: 700;
+}
+
+.tips dd {
+  margin: 0;
+  color: var(--slate);
+}
+
+@media (max-width: 900px) {
+  .guide,
+  .twoUp,
+  .diy,
+  .myths {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .fields {
+    grid-template-columns: 1fr 1fr;
+  }
+}
