@@ -4,7 +4,8 @@ import { useEffect, useId, useMemo, useState } from "react";
 import { cigarettesAvoided, MODES } from "@/lib/impact";
 import { COMMUTE_LABELS } from "@/lib/labels";
 import { loadLocal } from "@/lib/client";
-import { householdSchema, type CommuteMode, type CookingFuel, type HeatingSource } from "@/lib/schemas";
+import { readStoredHousehold } from "@/lib/domain";
+import type { CommuteMode, CookingFuel, HeatingSource } from "@/lib/schemas";
 import {
   addDeltas,
   commuteDose,
@@ -164,7 +165,7 @@ export function ImpactLab() {
 
   // Start from the household saved on the Today page, if there is one.
   useEffect(() => {
-    const saved = loadLocal("vaatayan.household.v1", (v) => householdSchema.safeParse(v).data ?? null);
+    const saved = loadLocal("vaatayan.household.v1", readStoredHousehold);
     if (!saved) return;
     /* eslint-disable react-hooks/set-state-in-effect -- one-time hydration from localStorage */
     if (saved.commuteMode !== "home") {

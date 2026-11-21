@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Atkinson_Hyperlegible, Bricolage_Grotesque, Tiro_Devanagari_Hindi } from "next/font/google";
+import { Atkinson_Hyperlegible, Bricolage_Grotesque } from "next/font/google";
+import localFont from "next/font/local";
 import { connection } from "next/server";
 import { BRAND } from "@/lib/brand";
 import { siteUrl } from "@/lib/site";
@@ -20,13 +21,15 @@ const body = Atkinson_Hyperlegible({
   weight: ["400", "700"],
 });
 
-/* Literary Devanagari face, used only for the वातायन wordmark. */
-const devanagari = Tiro_Devanagari_Hindi({
-  subsets: ["devanagari"],
+/*
+ * Tiro Devanagari Hindi, subset to the six letters of the वातायन wordmark:
+ * about 3 KB instead of 62 KB for the full Devanagari set. SIL OFL (see fonts/OFL.txt).
+ */
+const devanagari = localFont({
+  src: "./fonts/tiro-devanagari-wordmark.woff2",
   variable: "--font-devanagari",
   display: "swap",
   weight: "400",
-  preload: false,
 });
 
 export const metadata: Metadata = {

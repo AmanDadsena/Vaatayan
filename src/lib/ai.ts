@@ -1,11 +1,13 @@
 import "server-only";
+import { createHash } from "node:crypto";
 import { categorize } from "./aqi";
 import { formatHour } from "./breathWindow";
 import { candidateActions, MODES, type ImpactContext } from "./impact";
 import { CONDITION_LABELS, COOKING_LABELS, HEATING_LABELS } from "./labels";
 import { createAnthropicProvider } from "./providers/anthropic";
 import { createGeminiProvider, geminiApiKey } from "./providers/gemini";
-import { AiUnavailableError, type AiProvider } from "./providers/types";
+import { AiUnavailableError, DECLINED_NOTE, type AiProvider } from "./providers/types";
+import { createTtlCache } from "./ttlCache";
 import type { AskRequest, ModelPlan, Place } from "./schemas";
 
 export { AiUnavailableError };
@@ -91,10 +93,37 @@ export function buildPlanPrompt(place: Place, ctx: ImpactContext): string {
   return `<air>\n${describeAir(place, ctx)}\n</air>\n\n<household>\n${describeHousehold(ctx)}\n</household>\n\n<candidates>\n${candidates}\n</candidates>\n\nWrite today's plan.`;
 }
 
+/*
+ * Identical inputs build identical prompts, so validated results are cached
+ * briefly: asking again is instant and does not spend AI quota. Air data
+ * changes hourly, so 30 minutes keeps answers current. Sizes are capped.
+ */
+const CACHE_TTL_MS = 30 * 60 * 1000;
+const planCache = createTtlCache<ModelPlan>({ ttlMs: CACHE_TTL_MS, maxEntries: 300 });
+const answerCache = createTtlCache<string>({ ttlMs: CACHE_TTL_MS, maxEntries: 500 });
+
+/** Empties both caches (used by tests, and safe to call at any time). */
+export function clearAiCaches(): void {
+  planCache.clear();
+  answerCache.clear();
+}
+
+/** Cache key: provider, model and a SHA-256 of the full prompt (no raw text is kept as a key). */
+export function cacheKey(provider: AiProvider, system: string, prompt: string): string {
+  const digest = createHash("sha256").update(system).update("\n---\n").update(prompt).digest("hex");
+  return `${provider.name}:${provider.model}:${digest}`;
+}
+
 export async function generateModelPlan(place: Place, ctx: ImpactContext, signal?: AbortSignal): Promise<ModelPlan> {
   const provider = getProvider();
   if (!provider) throw new AiUnavailableError("No AI key is configured.");
-  return provider.generatePlan(PLAN_SYSTEM_PROMPT, buildPlanPrompt(place, ctx), signal);
+  const prompt = buildPlanPrompt(place, ctx);
+  const key = cacheKey(provider, PLAN_SYSTEM_PROMPT, prompt);
+  const cached = planCache.get(key);
+  if (cached) return cached;
+  const plan = await provider.generatePlan(PLAN_SYSTEM_PROMPT, prompt, signal);
+  planCache.set(key, plan);
+  return plan;
 }
 
 export function buildAskPrompt(req: AskRequest, ctx: ImpactContext): string {
@@ -112,8 +141,22 @@ export function streamAnswer(req: AskRequest, ctx: ImpactContext, signal?: Abort
     async start(controller) {
       try {
         if (!provider) throw new AiUnavailableError("No AI key is configured.");
-        iterator = provider.streamText(ASK_SYSTEM_PROMPT, buildAskPrompt(req, ctx), signal);
-        for await (const text of iterator) controller.enqueue(encoder.encode(text));
+        const prompt = buildAskPrompt(req, ctx);
+        const key = cacheKey(provider, ASK_SYSTEM_PROMPT, prompt);
+        const cached = answerCache.get(key);
+        if (cached !== undefined) {
+          controller.enqueue(encoder.encode(cached));
+          controller.close();
+          return;
+        }
+        let answer = "";
+        iterator = provider.streamText(ASK_SYSTEM_PROMPT, prompt, signal);
+        for await (const text of iterator) {
+          answer += text;
+          controller.enqueue(encoder.encode(text));
+        }
+        // Only complete answers the model did not decline are worth repeating.
+        if (answer.trim() && !answer.includes(DECLINED_NOTE.trim())) answerCache.set(key, answer);
       } catch {
         controller.enqueue(encoder.encode("\n\nThe answer was cut off. Please try again."));
       }

@@ -1,12 +1,13 @@
 import { z } from "zod";
+import { COMMUTE_MODES, CONDITIONS, COOKING_FUELS, EXERCISE_TIMES, HEATING_SOURCES, LIMITS } from "./domain";
+
+/*
+ * Server-side validation. Browser code imports the plain constants from
+ * ./domain instead, so this library never ships to the client.
+ */
+export { COMMUTE_MODES, CONDITIONS, COOKING_FUELS, DEFAULT_HOUSEHOLD, EXERCISE_TIMES, HEATING_SOURCES } from "./domain";
 
 /* ---------- Household profile (user input) ---------- */
-
-export const COMMUTE_MODES = ["car", "two-wheeler", "auto", "bus", "metro", "walk-cycle", "home"] as const;
-export const COOKING_FUELS = ["lpg", "electric", "biomass"] as const;
-export const HEATING_SOURCES = ["none", "electric", "gas", "wood-coal", "kerosene"] as const;
-export const EXERCISE_TIMES = ["none", "morning", "evening"] as const;
-export const CONDITIONS = ["asthma-copd", "heart", "pregnancy"] as const;
 
 export type CommuteMode = (typeof COMMUTE_MODES)[number];
 export type CookingFuel = (typeof COOKING_FUELS)[number];
@@ -27,39 +28,25 @@ const cleanText = (max: number) =>
     );
 
 export const householdSchema = z.object({
-  adults: z.number().int().min(1).max(12),
-  children: z.number().int().min(0).max(12),
-  elders: z.number().int().min(0).max(12),
+  adults: z.number().int().min(1).max(LIMITS.people.max),
+  children: z.number().int().min(0).max(LIMITS.people.max),
+  elders: z.number().int().min(0).max(LIMITS.people.max),
   conditions: z.array(z.enum(CONDITIONS)).max(CONDITIONS.length),
   commuteMode: z.enum(COMMUTE_MODES),
-  commuteKm: z.number().min(0).max(150),
+  commuteKm: z.number().min(LIMITS.commuteKm.min).max(LIMITS.commuteKm.max),
   hasPurifier: z.boolean(),
   cookingFuel: z.enum(COOKING_FUELS),
   heating: z.enum(HEATING_SOURCES),
   exercise: z.enum(EXERCISE_TIMES),
-  notes: cleanText(280).default(""),
+  notes: cleanText(LIMITS.notes.max).default(""),
 });
 
 export type Household = z.infer<typeof householdSchema>;
 
-export const DEFAULT_HOUSEHOLD: Household = {
-  adults: 2,
-  children: 1,
-  elders: 1,
-  conditions: [],
-  commuteMode: "car",
-  commuteKm: 12,
-  hasPurifier: false,
-  cookingFuel: "lpg",
-  heating: "electric",
-  exercise: "morning",
-  notes: "",
-};
-
 /* ---------- Air quality snapshot (from our /api/air) ---------- */
 
 export const locationSchema = z.object({
-  name: cleanText(120),
+  name: cleanText(LIMITS.placeName.max),
   latitude: z.number().min(-90).max(90),
   longitude: z.number().min(-180).max(180),
 });

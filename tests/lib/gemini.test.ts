@@ -30,7 +30,14 @@ vi.mock("@google/genai", () => ({
   },
 }));
 
-import { generateModelPlan, getProvider, isAiConfigured, streamAnswer, AiUnavailableError } from "@/lib/ai";
+import {
+  generateModelPlan,
+  getProvider,
+  isAiConfigured,
+  streamAnswer,
+  AiUnavailableError,
+  clearAiCaches,
+} from "@/lib/ai";
 import { buildContext } from "@/lib/impact";
 import { makeAir, makeHousehold, PLACE } from "../fixtures";
 
@@ -44,6 +51,7 @@ const validPlan = {
 };
 
 beforeEach(() => {
+  clearAiCaches();
   genai.generateContent.mockReset();
   genai.generateContentStream.mockReset();
   vi.stubEnv("ANTHROPIC_API_KEY", "");

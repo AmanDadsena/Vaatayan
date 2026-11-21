@@ -32,6 +32,7 @@ import {
   generateModelPlan,
   PLAN_SYSTEM_PROMPT,
   streamAnswer,
+  clearAiCaches,
 } from "@/lib/ai";
 import { buildContext, candidateActions } from "@/lib/impact";
 import { makeAir, makeHousehold, PLACE } from "../fixtures";
@@ -47,6 +48,7 @@ const validPlan = {
 };
 
 beforeEach(() => {
+  clearAiCaches();
   sdk.parse.mockReset();
   sdk.stream.mockReset();
   vi.stubEnv("ANTHROPIC_API_KEY", "test-key");

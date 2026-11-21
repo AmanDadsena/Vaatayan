@@ -3,14 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { FriendlyError, getAir, getPlan, loadLocal, saveLocal } from "@/lib/client";
 import type { Plan } from "@/lib/planner";
-import {
-  DEFAULT_HOUSEHOLD,
-  householdSchema,
-  locationSchema,
-  type AirSnapshot,
-  type Household,
-  type Place,
-} from "@/lib/schemas";
+import { DEFAULT_HOUSEHOLD, readStoredHousehold, readStoredPlace } from "@/lib/domain";
+import type { AirSnapshot, Household, Place } from "@/lib/schemas";
 import { AirHero } from "./AirHero";
 import { AskCoach } from "./AskCoach";
 import { EmptyPlan } from "./EmptyPlan";
@@ -44,8 +38,8 @@ export function VaatayanApp() {
 
   // Restore saved choices once on the client.
   useEffect(() => {
-    const savedPlace = loadLocal(PLACE_KEY, (v) => locationSchema.safeParse(v).data ?? null);
-    const savedHousehold = loadLocal(HOUSEHOLD_KEY, (v) => householdSchema.safeParse(v).data ?? null);
+    const savedPlace = loadLocal(PLACE_KEY, readStoredPlace);
+    const savedHousehold = loadLocal(HOUSEHOLD_KEY, readStoredHousehold);
     /* eslint-disable react-hooks/set-state-in-effect -- one-time hydration from localStorage */
     if (savedPlace) setPlace(savedPlace);
     if (savedHousehold) setHousehold(savedHousehold);

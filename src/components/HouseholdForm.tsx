@@ -1,7 +1,8 @@
 "use client";
 
 import { useId } from "react";
-import { CONDITIONS, type Condition, type CookingFuel, type HeatingSource, type Household } from "@/lib/schemas";
+import { CONDITIONS } from "@/lib/domain";
+import type { Condition, CookingFuel, HeatingSource, Household } from "@/lib/schemas";
 import { COMMUTE_LABELS, CONDITION_LABELS, COOKING_LABELS, EXERCISE_LABELS, HEATING_LABELS } from "@/lib/labels";
 import { ChoicePills } from "./ChoicePills";
 import { useNumberInput } from "./useNumberInput";

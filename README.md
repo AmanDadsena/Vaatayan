@@ -70,15 +70,27 @@ household ─────┼─▶ deterministic impact model ─▶ candidate a
 
 ## Efficiency
 
-- Pages render per request so each can carry its own CSP nonce; that work is light and the data behind it is cached. Icons and the social card are prebuilt.
-- Air data is cached for 15 minutes server-side and 2 minutes in the browser. Geocoding is cached for a day.
-- Self-hosted fonts via `next/font`, and photos optimised to AVIF/WebP by `next/image`. Charts are CSS and SVG, with no chart library.
+Measured on a production build:
+
+|                                     | Before     | After                                                           |
+| ----------------------------------- | ---------- | --------------------------------------------------------------- |
+| Repeated AI plan                    | 11.6 s     | **12 ms** (cached, no AI quota used)                            |
+| Repeated follow-up answer           | 1.2 s      | **13 ms**                                                       |
+| JavaScript on the Today page (gzip) | 229 KB     | **202 KB** (validation library kept server-side)                |
+| Fonts                               | 124 KB     | **65 KB** (wordmark font subset to its 6 letters: 62 KB → 3 KB) |
+| Hero photo                          | 29 KB WebP | **16 KB AVIF**                                                  |
+| Time to first byte per page         |            | **~16–22 ms** with a fresh CSP nonce                            |
+
+- AI plans and answers are cached for 30 minutes, keyed by a SHA-256 of provider, model and prompt, in a size-capped LRU cache (`src/lib/ttlCache.ts`).
+- Zod validates every request on the server; the browser checks saved data with tiny validators that tests prove agree with the schemas (`src/lib/domain.ts`).
+- Air data is cached for 15 minutes server-side and 2 minutes in the browser; geocoding for a day.
+- Self-hosted fonts, AVIF photos cached for 30 days, and charts drawn with CSS and SVG instead of a chart library.
 - The place search is debounced and cancels stale requests with `AbortController`.
 
 ## Testing
 
 ```bash
-npm test               # 264 tests: domain logic, both AI providers, API routes, full page flows + axe
+npm test               # 306 tests: domain logic, both AI providers, API routes, full page flows + axe
 npm run test:coverage  # about 98% lines, 97% statements, 96% functions, 85% branches (enforced floors)
 npm run lint
 npm run typecheck

@@ -29,6 +29,11 @@ const nextConfig: NextConfig = {
   agentRules: false,
   poweredByHeader: false,
   reactStrictMode: true,
+  images: {
+    // AVIF first (smallest), WebP as the fallback. The photos never change, so keep optimised copies a month.
+    formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 60 * 60 * 24 * 30,
+  },
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
