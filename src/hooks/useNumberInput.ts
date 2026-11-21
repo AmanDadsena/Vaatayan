@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
 
 interface Options {
   min: number;
@@ -27,7 +27,7 @@ export function useNumberInput(value: number, onChange: (n: number) => void, { m
 
   return {
     value: draft,
-    onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
+    onChange: (event: ChangeEvent<HTMLInputElement>) => {
       const text = event.target.value;
       setDraft(text);
       const n = parse(text);

@@ -1,6 +1,6 @@
 import { cigarettesAvoided } from "@/lib/impact";
 import { formatNumber } from "@/lib/format";
-import { type Delta } from "@/lib/simulator";
+import type { Delta } from "@/lib/simulator";
 import styles from "../ImpactLab.module.css";
 
 /** Three before/after figures. Positive = better; negative values are shown as costs. */

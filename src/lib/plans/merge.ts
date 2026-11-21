@@ -1,5 +1,5 @@
 import { candidateActions, type ImpactContext } from "../impact";
-import { type ModelPlan } from "../schemas";
+import type { ModelPlan } from "../schemas";
 import {
   MAX_ITEMS,
   MIN_ITEMS,

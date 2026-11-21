@@ -1,4 +1,4 @@
-import { type BreathWindow } from "../breathWindow";
+import type { BreathWindow } from "../breathWindow";
 import {
   cigarettesAvoided,
   getAction,
@@ -26,6 +26,13 @@ export interface RoutineStep {
   title: string;
   detail: string;
   actionId: string;
+}
+
+/** What /api/plan returns. */
+export interface PlanResponse {
+  plan: Plan;
+  /** Set when the AI was asked but failed, so the built-in rules wrote the plan instead. */
+  notice?: string;
 }
 
 export interface Plan {

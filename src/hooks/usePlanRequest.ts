@@ -3,26 +3,20 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FriendlyError, getPlan } from "@/lib/client";
 import { isAbortError } from "@/lib/errors";
-import type { Plan } from "@/lib/planner";
-import type { AirSnapshot, Household, Place } from "@/lib/schemas";
-
-interface PlanResult {
-  plan: Plan;
-  /** Set when the AI was unavailable and the built-in rules wrote the plan. */
-  notice?: string;
-}
+import type { PlanResponse } from "@/lib/planner";
+import type { PlanRequest } from "@/lib/schemas";
 
 interface PlanRequestState {
-  result: PlanResult | null;
+  result: PlanResponse | null;
   loading: boolean;
   error: string | null;
-  request: (body: { place: Place; air: AirSnapshot; household: Household }) => Promise<void>;
+  request: (body: PlanRequest) => Promise<void>;
   reset: () => void;
 }
 
 /** Requests a plan, cancelling any request still in flight, and exposes its state. */
 export function usePlanRequest(): PlanRequestState {
-  const [result, setResult] = useState<PlanResult | null>(null);
+  const [result, setResult] = useState<PlanResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const controller = useRef<AbortController | null>(null);

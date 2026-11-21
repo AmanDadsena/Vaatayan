@@ -3,7 +3,7 @@
  * browser bundle stays small. The server builds its strict Zod schemas from
  * these same constants (src/lib/schemas.ts); tests keep the two in agreement.
  */
-import { keysOf } from "./objects";
+import { isOneOf, keysOf } from "./objects";
 import type { Household, Place } from "./schemas";
 
 export const COMMUTE_MODES = ["car", "two-wheeler", "auto", "bus", "metro", "walk-cycle", "home"] as const;
@@ -46,11 +46,9 @@ export const DEFAULT_HOUSEHOLD: Household = {
 /* ---------- Lightweight checks for data the browser saved earlier ---------- */
 
 const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v);
-const intIn = (v: unknown, min: number, max: number) =>
-  Number.isInteger(v) && (v as number) >= min && (v as number) <= max;
-const numIn = (v: unknown, min: number, max: number) =>
+const numIn = (v: unknown, min: number, max: number): v is number =>
   typeof v === "number" && Number.isFinite(v) && v >= min && v <= max;
-const oneOf = <T extends string>(options: readonly T[], v: unknown): v is T => options.includes(v as T);
+const intIn = (v: unknown, min: number, max: number): v is number => numIn(v, min, max) && Number.isInteger(v);
 
 /**
  * One check per household field. Typed as a Record over every key, so adding a
@@ -60,13 +58,13 @@ const HOUSEHOLD_CHECKS: Record<keyof Household, (v: unknown) => boolean> = {
   adults: (v) => intIn(v, 1, LIMITS.people.max),
   children: (v) => intIn(v, 0, LIMITS.people.max),
   elders: (v) => intIn(v, 0, LIMITS.people.max),
-  conditions: (v) => Array.isArray(v) && v.length <= CONDITIONS.length && v.every((c) => oneOf(CONDITIONS, c)),
-  commuteMode: (v) => oneOf(COMMUTE_MODES, v),
+  conditions: (v) => Array.isArray(v) && v.length <= CONDITIONS.length && v.every((c) => isOneOf(CONDITIONS, c)),
+  commuteMode: (v) => isOneOf(COMMUTE_MODES, v),
   commuteKm: (v) => numIn(v, LIMITS.commuteKm.min, LIMITS.commuteKm.max),
   hasPurifier: (v) => typeof v === "boolean",
-  cookingFuel: (v) => oneOf(COOKING_FUELS, v),
-  heating: (v) => oneOf(HEATING_SOURCES, v),
-  exercise: (v) => oneOf(EXERCISE_TIMES, v),
+  cookingFuel: (v) => isOneOf(COOKING_FUELS, v),
+  heating: (v) => isOneOf(HEATING_SOURCES, v),
+  exercise: (v) => isOneOf(EXERCISE_TIMES, v),
   notes: (v) => v === undefined || (typeof v === "string" && v.length <= LIMITS.notes.max),
 };
 
@@ -93,16 +91,18 @@ export function readStoredHousehold(h: unknown): Household | null {
   };
 }
 
-/** Returns the saved place if it has a name and valid coordinates, otherwise null. */
-export function readStoredPlace(v: unknown): Place | null {
-  if (!isRecord(v)) return null;
-  const valid =
+function isStoredPlace(v: unknown): v is Place {
+  return (
+    isRecord(v) &&
     typeof v.name === "string" &&
     v.name.trim().length > 0 &&
     v.name.length <= LIMITS.placeName.max &&
     numIn(v.latitude, -90, 90) &&
-    numIn(v.longitude, -180, 180);
-  return valid
-    ? { name: (v.name as string).trim(), latitude: v.latitude as number, longitude: v.longitude as number }
-    : null;
+    numIn(v.longitude, -180, 180)
+  );
+}
+
+/** Returns the saved place if it has a name and valid coordinates, otherwise null. */
+export function readStoredPlace(v: unknown): Place | null {
+  return isStoredPlace(v) ? { name: v.name.trim(), latitude: v.latitude, longitude: v.longitude } : null;
 }

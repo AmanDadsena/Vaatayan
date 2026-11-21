@@ -1,3 +1,6 @@
+import "server-only";
+import { dropOldest } from "./objects";
+
 /**
  * Fixed-window rate limiter kept in memory. Good enough for a single instance;
  * swap the Map for Redis or similar when running several instances.
@@ -18,7 +21,7 @@ export function createRateLimiter({ limit, windowMs }: { limit: number; windowMs
         if (hits.size >= MAX_KEYS) {
           // Drop expired entries first; if still full, drop the oldest insert.
           for (const [k, v] of hits) if (v.resetAt <= now) hits.delete(k);
-          if (hits.size >= MAX_KEYS) hits.delete(hits.keys().next().value as string);
+          if (hits.size >= MAX_KEYS) dropOldest(hits);
         }
         hits.set(key, { count: 1, resetAt: now + windowMs });
         return { ok: true, retryAfterSeconds: 0 };

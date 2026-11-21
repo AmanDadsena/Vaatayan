@@ -1,3 +1,4 @@
+import "server-only";
 import { NextResponse } from "next/server";
 import type { ZodError, ZodType } from "zod";
 import { clientKey, type RateLimiter } from "./rateLimit";

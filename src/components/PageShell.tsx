@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { SiteFooter } from "./SiteFooter";
 import { SiteHeader } from "./SiteHeader";
 import styles from "./PageShell.module.css";
@@ -5,7 +6,7 @@ import styles from "./PageShell.module.css";
 interface Props {
   title: string;
   lede: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 /** Layout for the secondary pages: header, a page introduction, content and footer. */

@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import type { ReactNode } from "react";
 import { Atkinson_Hyperlegible, Bricolage_Grotesque } from "next/font/google";
 import localFont from "next/font/local";
 import { connection } from "next/server";
@@ -49,7 +50,7 @@ export const viewport: Viewport = {
  * Pages render per request so each one can carry the fresh CSP nonce from
  * src/proxy.ts; Next.js attaches it to every script it renders.
  */
-export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   await connection();
   return (
     <html lang="en" className={`${display.variable} ${body.variable} ${devanagari.variable}`}>

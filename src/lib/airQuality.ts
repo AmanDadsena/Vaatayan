@@ -2,6 +2,7 @@ import "server-only";
 import { z } from "zod";
 import { aqiFromPm25 } from "./aqi";
 import { airSnapshotSchema, type AirSnapshot, type Place } from "./schemas";
+import { createTtlCache } from "./ttlCache";
 
 const AIR_URL = "https://air-quality-api.open-meteo.com/v1/air-quality";
 const GEO_URL = "https://geocoding-api.open-meteo.com/v1/search";
@@ -83,10 +84,8 @@ async function getJson(url: URL, revalidate: number): Promise<unknown> {
   }
 }
 
-/** Last good reading per rounded location, served if the upstream is briefly down. */
-const lastGood = new Map<string, { snapshot: AirSnapshot; at: number }>();
-const LAST_GOOD_MAX_AGE_MS = 3 * 60 * 60 * 1000;
-const LAST_GOOD_MAX_ENTRIES = 500;
+/** Last good reading per rounded location, served for up to three hours if the upstream is briefly down. */
+const lastGood = createTtlCache<AirSnapshot>({ ttlMs: 3 * 60 * 60 * 1000, maxEntries: 500 });
 
 /** Rounds coordinates to ~1 km: better cache hit rate and less precise location data leaves the server. */
 export const roundCoord = (n: number) => Math.round(n * 100) / 100;
@@ -130,12 +129,11 @@ export async function fetchAir(latitude: number, longitude: number): Promise<Air
   const key = `${roundCoord(latitude)},${roundCoord(longitude)}`;
   try {
     const snapshot = await fetchAirFresh(latitude, longitude);
-    if (lastGood.size >= LAST_GOOD_MAX_ENTRIES) lastGood.delete(lastGood.keys().next().value as string);
-    lastGood.set(key, { snapshot, at: Date.now() });
+    lastGood.set(key, snapshot);
     return snapshot;
   } catch (error) {
     const cached = lastGood.get(key);
-    if (cached && Date.now() - cached.at < LAST_GOOD_MAX_AGE_MS) return cached.snapshot;
+    if (cached) return cached;
     throw error;
   }
 }

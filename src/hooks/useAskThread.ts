@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { askQuestion, FriendlyError, type AnswerSource } from "@/lib/client";
 import { isAbortError } from "@/lib/errors";
-import type { AirSnapshot, Household, Place } from "@/lib/schemas";
+import type { AskRequest } from "@/lib/schemas";
 
 /** Questions shorter than this are ignored; the API rejects them too. */
 export const MIN_QUESTION = 3;
@@ -16,13 +16,8 @@ export interface Turn {
   failed?: boolean;
 }
 
-/** The live data every question is answered against. */
-export interface AskContext {
-  place: Place;
-  air: AirSnapshot;
-  household: Household;
-  planSummary: string;
-}
+/** The live data every question is answered against: an ask request without the question. */
+export type AskContext = Omit<AskRequest, "question">;
 
 /**
  * A question-and-answer thread. Answers stream into the newest turn; asking

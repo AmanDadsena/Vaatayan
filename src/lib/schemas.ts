@@ -1,3 +1,4 @@
+import "server-only";
 import { z } from "zod";
 import { COMMUTE_MODES, CONDITIONS, COOKING_FUELS, EXERCISE_TIMES, HEATING_SOURCES, LIMITS } from "./domain";
 
@@ -79,6 +80,8 @@ export const planRequestSchema = z.object({
   air: airSnapshotSchema,
   household: householdSchema,
 });
+
+export type PlanRequest = z.infer<typeof planRequestSchema>;
 
 export const askRequestSchema = z.object({
   place: locationSchema,

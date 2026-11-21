@@ -2,19 +2,13 @@ import { NextResponse } from "next/server";
 import { AiUnavailableError, generateModelPlan, isAiConfigured } from "@/lib/ai";
 import { checkJsonPost } from "@/lib/http";
 import { buildContext, type ImpactContext } from "@/lib/impact";
-import { buildRulePlan, mergeModelPlan, type Plan } from "@/lib/planner";
+import { buildRulePlan, mergeModelPlan, type PlanResponse } from "@/lib/planner";
 import { createRateLimiter } from "@/lib/rateLimit";
 import { planRequestSchema, type Place } from "@/lib/schemas";
 
 export const maxDuration = 60;
 
 const limiter = createRateLimiter({ limit: 8, windowMs: 60_000 });
-
-interface PlanResponse {
-  plan: Plan;
-  /** Set when the AI was asked but failed, so the rules plan was used instead. */
-  notice?: string;
-}
 
 /** The AI plan when a model is configured and answers; otherwise the rules plan. */
 async function choosePlan(place: Place, ctx: ImpactContext, signal: AbortSignal): Promise<PlanResponse> {

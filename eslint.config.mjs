@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
       "object-shorthand": "error",
       "no-implicit-coercion": "error",
       "@typescript-eslint/consistent-type-imports": ["error", { fixStyle: "inline-type-imports" }],
+      // `import { type X }` can leave an empty runtime import behind; type-only imports must be `import type`.
+      "@typescript-eslint/no-import-type-side-effects": "error",
       "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
     },
@@ -35,6 +37,15 @@ const eslintConfig = defineConfig([
     files: ["src/**/*.tsx"],
     rules: {
       "max-lines-per-function": ["error", { max: 70, skipBlankLines: true, skipComments: true }],
+    },
+  },
+  {
+    // Type declarations extend library interfaces by merging, which needs empty bodies and the original
+    // generic parameters even when unused.
+    files: ["**/*.d.ts"],
+    rules: {
+      "@typescript-eslint/no-empty-object-type": "off",
+      "@typescript-eslint/no-unused-vars": "off",
     },
   },
   {

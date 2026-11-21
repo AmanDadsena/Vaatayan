@@ -1,3 +1,4 @@
+import "server-only";
 import type { ModelPlan } from "../schemas";
 
 /** Thrown when a model cannot produce a usable result; callers fall back to built-in rules. */

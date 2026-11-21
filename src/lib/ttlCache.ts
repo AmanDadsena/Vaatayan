@@ -1,3 +1,5 @@
+import { dropOldest } from "./objects";
+
 /**
  * A small in-memory cache with a time-to-live and a size cap (least recently
  * used entries are dropped first). Map keeps insertion order, so re-inserting
@@ -26,7 +28,7 @@ export function createTtlCache<V>({ ttlMs, maxEntries }: { ttlMs: number; maxEnt
     set(key, value, now = Date.now()) {
       entries.delete(key);
       entries.set(key, { value, expires: now + ttlMs });
-      while (entries.size > maxEntries) entries.delete(entries.keys().next().value as string);
+      while (entries.size > maxEntries) dropOldest(entries);
     },
     clear() {
       entries.clear();

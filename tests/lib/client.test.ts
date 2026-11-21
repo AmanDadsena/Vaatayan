@@ -21,7 +21,10 @@ describe("API client", () => {
   it("encodes search terms and returns places", async () => {
     fetchMock.mockResolvedValue(json({ places: [PLACE] }));
     await expect(searchPlaces("São Paulo")).resolves.toEqual([PLACE]);
-    expect(must(fetchMock.mock.calls[0], "fetch call")[0]).toBe("/api/places?q=S%C3%A3o%20Paulo");
+    const url = new URL(String(must(fetchMock.mock.calls[0], "fetch call")[0]), "http://localhost");
+    expect(url.pathname).toBe("/api/places");
+    // The server reads back exactly what was typed, accents and spaces included.
+    expect(url.searchParams.get("q")).toBe("São Paulo");
   });
 
   it("asks for air by coordinates", async () => {
@@ -78,6 +81,25 @@ describe("askQuestion", () => {
     const result = await askQuestion(ask, (t) => seen.push(t));
     expect(result).toEqual({ text: "Walk at noon.", source: "rules" });
     expect(seen.at(-1)).toBe("Walk at noon.");
+  });
+
+  it("reassembles characters split across chunks, and flags a stream cut off mid-character", async () => {
+    const bytes = new TextEncoder().encode("PM2.5 µg/m³");
+    const split = bytes.length - 1; // inside the two-byte "³"
+    const streamOf = (...chunks: Uint8Array[]) =>
+      new ReadableStream({
+        start(c) {
+          chunks.forEach((chunk) => c.enqueue(chunk));
+          c.close();
+        },
+      });
+
+    fetchMock.mockResolvedValueOnce(new Response(streamOf(bytes.slice(0, split), bytes.slice(split))));
+    await expect(askQuestion(ask, () => {})).resolves.toMatchObject({ text: "PM2.5 µg/m³" });
+
+    fetchMock.mockResolvedValueOnce(new Response(streamOf(bytes.slice(0, split))));
+    const cut = await askQuestion(ask, () => {});
+    expect(cut.text).toBe("PM2.5 µg/m�");
   });
 
   it("treats an unlabelled answer as AI-written", async () => {
