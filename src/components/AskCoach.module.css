@@ -50,6 +50,12 @@
   border-left: 3px solid var(--clear);
 }
 
+.source {
+  font-size: 0.8rem;
+  color: var(--slate);
+  padding-left: calc(var(--space-4) + 3px);
+}
+
 .a[data-failed] {
   border-left-color: var(--alert);
   color: var(--alert);

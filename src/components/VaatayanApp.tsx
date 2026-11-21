@@ -157,7 +157,7 @@ export function VaatayanApp() {
           {!planLoading && plan && (
             <>
               <PlanView key={`${plan.plan.headline}-${plan.plan.items.length}`} plan={plan.plan} notice={plan.notice} />
-              {air && plan.plan.source === "ai" && (
+              {air && (
                 <AskCoach place={place} air={air} household={household} planSummary={summarizePlan(plan.plan)} />
               )}
             </>

@@ -48,12 +48,14 @@ export function getPlan(body: { place: Place; air: AirSnapshot; household: House
   );
 }
 
+export type AnswerSource = "ai" | "rules";
+
 /** Streams a follow-up answer, calling onText with the full text so far. */
 export async function askQuestion(
   body: { place: Place; air: AirSnapshot; household: Household; question: string; planSummary: string },
   onText: (text: string) => void,
   signal?: AbortSignal,
-): Promise<string> {
+): Promise<{ text: string; source: AnswerSource }> {
   let res: Response;
   try {
     res = await fetch("/api/ask", {
@@ -67,6 +69,7 @@ export async function askQuestion(
     throw new FriendlyError("You seem to be offline. Check your connection and try again.");
   }
   if (!res.ok || !res.body) return readError(res, "Could not answer that right now.");
+  const source: AnswerSource = res.headers.get("X-Answer-Source") === "rules" ? "rules" : "ai";
 
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
@@ -77,7 +80,7 @@ export async function askQuestion(
     text += decoder.decode(value, { stream: true });
     onText(text);
   }
-  return text;
+  return { text, source };
 }
 
 /* ---------- Local persistence (never leaves the device) ---------- */

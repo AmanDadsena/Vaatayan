@@ -111,10 +111,14 @@ describe("POST /api/ask", () => {
   const askRequest = (body: unknown) =>
     new Request("http://localhost/api/ask", { method: "POST", headers: headers(), body: JSON.stringify(body) });
 
-  it("returns 503 with guidance when no AI key is configured", async () => {
+  it("answers from built-in guidance when no AI key is configured", async () => {
     mocks.isAiConfigured.mockReturnValue(false);
-    const res = await askPOST(askRequest({ ...validBody(), question: "Is it safe to run?" }));
-    expect(res.status).toBe(503);
+    const res = await askPOST(askRequest({ ...validBody(), question: "Is it safe for my kids to play outside?" }));
+    expect(res.status).toBe(200);
+    expect(res.headers.get("x-answer-source")).toBe("rules");
+    expect(res.headers.get("x-answer-topic")).toBe("children");
+    expect(await res.text()).toMatch(/AQI 211/);
+    expect(mocks.streamAnswer).not.toHaveBeenCalled();
   });
 
   it("streams plain text when configured", async () => {
@@ -124,6 +128,7 @@ describe("POST /api/ask", () => {
     expect(res.status).toBe(200);
     expect(res.headers.get("content-type")).toMatch(/text\/plain/);
     expect(res.headers.get("cache-control")).toBe("no-store");
+    expect(res.headers.get("x-answer-source")).toBe("ai");
     expect(await res.text()).toBe("Run indoors.");
   });
 

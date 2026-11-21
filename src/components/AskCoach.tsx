@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { askQuestion, FriendlyError } from "@/lib/client";
+import { askQuestion, FriendlyError, type AnswerSource } from "@/lib/client";
 import type { AirSnapshot, Household, Place } from "@/lib/schemas";
 import styles from "./AskCoach.module.css";
 
@@ -22,6 +22,7 @@ const SUGGESTIONS = [
 interface Turn {
   question: string;
   answer: string;
+  source?: AnswerSource;
   failed?: boolean;
 }
 
@@ -48,11 +49,12 @@ export function AskCoach({ place, air, household, planSummary }: Props) {
       setTurns((t) => t.map((turn, i) => (i === t.length - 1 ? { ...turn, ...patch } : turn)));
 
     try {
-      await askQuestion(
+      const { source } = await askQuestion(
         { place, air, household, question: q, planSummary },
         (answer) => update({ answer }),
         controller.signal,
       );
+      update({ source });
     } catch (error) {
       if ((error as Error).name !== "AbortError") {
         update({
@@ -80,6 +82,11 @@ export function AskCoach({ place, air, household, planSummary }: Props) {
               <p className={styles.a} data-failed={turn.failed || undefined}>
                 {turn.answer || <span className={styles.thinking}>Thinking about your air…</span>}
               </p>
+              {turn.source && !turn.failed && (
+                <p className={styles.source}>
+                  {turn.source === "ai" ? "Answered by AI from your live data" : "Quick answer from built-in guidance and your live data"}
+                </p>
+              )}
             </li>
           ))}
         </ol>
