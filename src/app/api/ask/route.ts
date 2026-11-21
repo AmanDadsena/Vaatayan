@@ -1,5 +1,5 @@
 import { isAiConfigured, streamAnswer } from "@/lib/ai";
-import { jsonError, readJson, validationMessage } from "@/lib/http";
+import { guardJsonPost, jsonError, readJson, validationMessage } from "@/lib/http";
 import { buildContext } from "@/lib/impact";
 import { quickAnswer } from "@/lib/quickAnswers";
 import { clientKey, createRateLimiter } from "@/lib/rateLimit";
@@ -16,6 +16,9 @@ const TEXT_HEADERS = {
 };
 
 export async function POST(request: Request) {
+  const refused = guardJsonPost(request);
+  if (refused) return refused;
+
   const rate = limiter.check(clientKey(request.headers));
   if (!rate.ok) {
     return jsonError(429, "That's a lot of questions at once. Try again in a minute.", {

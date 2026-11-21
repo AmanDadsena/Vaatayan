@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Atkinson_Hyperlegible, Bricolage_Grotesque, Tiro_Devanagari_Hindi } from "next/font/google";
+import { connection } from "next/server";
 import { BRAND } from "@/lib/brand";
 import { siteUrl } from "@/lib/site";
 import "./globals.css";
@@ -41,7 +42,12 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+/**
+ * Pages render per request so each one can carry the fresh CSP nonce from
+ * src/proxy.ts; Next.js attaches it to every script it renders.
+ */
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  await connection();
   return (
     <html lang="en" className={`${display.variable} ${body.variable} ${devanagari.variable}`}>
       <body>

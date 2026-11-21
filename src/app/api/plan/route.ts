@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { AiUnavailableError, generateModelPlan, isAiConfigured } from "@/lib/ai";
-import { jsonError, readJson, validationMessage } from "@/lib/http";
+import { guardJsonPost, jsonError, readJson, validationMessage } from "@/lib/http";
 import { buildContext } from "@/lib/impact";
 import { buildRulePlan, mergeModelPlan, type Plan } from "@/lib/planner";
 import { clientKey, createRateLimiter } from "@/lib/rateLimit";
@@ -11,6 +11,9 @@ export const maxDuration = 60;
 const limiter = createRateLimiter({ limit: 8, windowMs: 60_000 });
 
 export async function POST(request: Request) {
+  const refused = guardJsonPost(request);
+  if (refused) return refused;
+
   const rate = limiter.check(clientKey(request.headers));
   if (!rate.ok) {
     return jsonError(429, "You've asked for several plans in a row. Try again in a minute.", {

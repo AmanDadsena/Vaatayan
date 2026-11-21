@@ -59,15 +59,18 @@ household ─────┼─▶ deterministic impact model ─▶ candidate a
 
 ## Security
 
-- All third-party calls (air quality, geocoding, the language model) are made server-side. The API key never reaches the browser.
-- Strict Content-Security-Policy (`connect-src 'self'`, `frame-ancestors 'none'`), plus `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` and HSTS in production.
+- All third-party calls (air quality, geocoding, the language models) are made server-side. API keys never reach the browser.
+- **Per-request nonce Content-Security-Policy** (`src/proxy.ts`): only scripts the server rendered can run (`'strict-dynamic'`, no inline or eval code in production). API responses use `default-src 'none'`.
+- **Cross-site requests are refused.** The plan and follow-up endpoints check `Sec-Fetch-Site` and `Origin` and require a JSON body, so other websites cannot spend the AI quota through a visitor's browser.
+- Hardened headers: HSTS, `X-Frame-Options: DENY`, `nosniff`, strict `Referrer-Policy`, a restrictive `Permissions-Policy`, same-origin `Cross-Origin-Opener-Policy` and `Cross-Origin-Resource-Policy`, `Origin-Agent-Cluster`.
 - Every request is validated with Zod (types, ranges, lengths). Control characters are stripped. Request bodies are capped at 32 KB.
-- Per-client rate limits on every API route. Upstream timeouts with one retry and a last-good cache.
+- Per-client rate limits on every API route, with a bounded memory footprint. Upstream timeouts with one retry and a last-good cache.
 - Coordinates are rounded to about 1 km before leaving the server. Household details are stored only in the browser's `localStorage`.
+- Responsible disclosure via `/.well-known/security.txt` and [SECURITY.md](SECURITY.md).
 
 ## Efficiency
 
-- All four pages are prerendered static HTML. Only the four API routes run on the server.
+- Pages render per request so each can carry its own CSP nonce; that work is light and the data behind it is cached. Icons and the social card are prebuilt.
 - Air data is cached for 15 minutes server-side and 2 minutes in the browser. Geocoding is cached for a day.
 - Self-hosted fonts via `next/font`, and photos optimised to AVIF/WebP by `next/image`. Charts are CSS and SVG, with no chart library.
 - The place search is debounced and cancels stale requests with `AbortController`.
@@ -75,7 +78,7 @@ household ─────┼─▶ deterministic impact model ─▶ candidate a
 ## Testing
 
 ```bash
-npm test               # 246 tests: domain logic, both AI providers, API routes, full page flows + axe
+npm test               # 264 tests: domain logic, both AI providers, API routes, full page flows + axe
 npm run test:coverage  # about 98% lines, 97% statements, 96% functions, 85% branches (enforced floors)
 npm run lint
 npm run typecheck

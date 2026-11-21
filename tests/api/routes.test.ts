@@ -33,7 +33,11 @@ import { makeAir, makeHousehold, PLACE } from "../fixtures";
 
 let ip = 0;
 /** A fresh client address per request so rate limits don't leak between tests. */
-const headers = (extra: Record<string, string> = {}) => ({ "x-forwarded-for": `10.0.0.${++ip}`, ...extra });
+const headers = (extra: Record<string, string> = {}) => ({
+  "x-forwarded-for": `10.0.0.${++ip}`,
+  "content-type": "application/json",
+  ...extra,
+});
 
 const planRequest = (body: unknown, extra?: Record<string, string>) =>
   new Request("http://localhost/api/plan", {
@@ -101,7 +105,7 @@ describe("POST /api/plan", () => {
     for (let i = 0; i < 9; i++) {
       const req = new Request("http://localhost/api/plan", {
         method: "POST",
-        headers: fixed,
+        headers: { ...fixed, "content-type": "application/json" },
         body: JSON.stringify(validBody()),
       });
       statuses.push((await planPOST(req)).status);
@@ -212,7 +216,7 @@ describe("rate limits and failures on the other routes", () => {
     const ask = () =>
       new Request("http://localhost/api/ask", {
         method: "POST",
-        headers: { "x-forwarded-for": "198.51.100.8" },
+        headers: { "x-forwarded-for": "198.51.100.8", "content-type": "application/json" },
         body: JSON.stringify({ ...validBody(), question: "Can we walk?" }),
       });
     const statuses: number[] = [];
