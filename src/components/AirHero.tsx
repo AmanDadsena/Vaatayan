@@ -1,9 +1,12 @@
+import { BRAND } from "@/lib/brand";
 import { categorize, cigarettesPerDay, hazeDensity } from "@/lib/aqi";
 import type { AirSnapshot, Place } from "@/lib/schemas";
+import { formatHour } from "@/lib/breathWindow";
+import { AqiScale } from "./AqiScale";
 import { BreathRibbon } from "./BreathRibbon";
+import { HeroWindow } from "./HeroWindow";
 import { PlaceSearch } from "./PlaceSearch";
 import { SiteHeader } from "./SiteHeader";
-import { BRAND } from "@/lib/brand";
 import styles from "./AirHero.module.css";
 
 interface Props {
@@ -24,9 +27,6 @@ export function AirHero({ place, air, loading, error, onSelectPlace, onRetry }: 
   return (
     <section className={styles.hero} aria-labelledby="place-heading" style={{ "--haze": haze } as React.CSSProperties}>
       <div className={styles.sky} aria-hidden="true">
-        <svg className={styles.skyline} viewBox="0 0 1200 160" preserveAspectRatio="none">
-          <path d="M0 160V118h40V96h26v22h30V70h18V52h10v18h18v48h34V88h44v30h22V60l18-14 18 14v58h40V100h30V78h12v-8h8v8h12v40h50V92h20V66h36v52h26V84h56v34h18V40h6V24h4v16h6v78h40V104h48V74h22V56h14v18h22v44h36V90h60v28h30V64h40v54h44V96h30v22h40V80h24v38h50V102h36v58z" />
-        </svg>
         <div className={styles.haze} />
       </div>
 
@@ -36,6 +36,8 @@ export function AirHero({ place, air, loading, error, onSelectPlace, onRetry }: 
           {BRAND.tagline}
         </p>
 
+        <div className={styles.stage}>
+        <div className={styles.left}>
         <PlaceSearch onSelect={onSelectPlace} />
 
         <div className={styles.reading} aria-live="polite" aria-busy={loading}>
@@ -86,11 +88,22 @@ export function AirHero({ place, air, loading, error, onSelectPlace, onRetry }: 
                   </dd>
                 </div>
               </dl>
+              <AqiScale aqi={air.aqi} />
+              <p className={styles.updated}>
+                Updated {formatHour(air.time)} local time. Forecast from the CAMS atmosphere model.
+              </p>
             </>
           )}
         </div>
+        </div>
+        <HeroWindow aqi={air?.aqi ?? null} place={shortName} />
+        </div>
 
-        {air && <BreathRibbon hourly={air.hourly} />}
+        {air && (
+          <div className={styles.ribbonPanel}>
+            <BreathRibbon hourly={air.hourly} />
+          </div>
+        )}
       </div>
     </section>
   );

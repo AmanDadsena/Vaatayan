@@ -14,14 +14,20 @@
   text-decoration: none;
 }
 
-.logo {
-  display: inline-grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--ink);
-  color: var(--sky);
+.mark {
+  flex: none;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px -8px rgb(20 43 42 / 0.6);
+}
+
+/* A breath of wind through the window on hover */
+.mark path[stroke] {
+  transition: transform 420ms var(--ease-out);
+}
+
+.brand:hover .mark path[stroke],
+.brand:focus-visible .mark path[stroke] {
+  transform: translateX(2.5px);
 }
 
 .wordmark {

@@ -42,7 +42,7 @@ export function BreathRibbon({ hourly }: Props) {
       </figcaption>
 
       <div className={styles.chart} aria-hidden="true">
-        {hourly.map((r) => {
+        {hourly.map((r, i) => {
           const cat = categorize(r.aqi);
           const isClean = inWindow(r.time, clean);
           const isWorst = inWindow(r.time, worst);
@@ -52,8 +52,10 @@ export function BreathRibbon({ hourly }: Props) {
               className={styles.col}
               data-clean={isClean || undefined}
               data-worst={isWorst || undefined}
+              data-now={i === 0 || undefined}
               title={`${formatHour(r.time)}: AQI ${r.aqi}, ${cat.label}`}
             >
+              {i === 0 && <span className={styles.now}>Now</span>}
               <div
                 className={styles.bar}
                 style={{

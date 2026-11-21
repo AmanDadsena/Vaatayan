@@ -1,0 +1,119 @@
+.empty {
+  display: grid;
+  gap: var(--space-5);
+  padding: var(--space-4) 0;
+}
+
+.arc {
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  overflow: visible;
+}
+
+.arc text {
+  font-family: var(--font-body);
+  font-size: 13px;
+  fill: var(--slate);
+}
+
+.arc .strong {
+  font-weight: 700;
+  fill: var(--clear-deep);
+}
+
+.horizon {
+  stroke: var(--fog);
+  stroke-width: 2;
+}
+
+.path {
+  fill: none;
+  stroke-width: 3;
+  stroke-dasharray: 6 8;
+  stroke-linecap: round;
+  animation: march 18s linear infinite;
+}
+
+@keyframes march {
+  to {
+    stroke-dashoffset: -280;
+  }
+}
+
+.window {
+  fill: rgb(215 235 230 / 0.6);
+  stroke: var(--ink);
+  stroke-width: 2.5;
+}
+
+.sun {
+  fill: #e9b44c;
+}
+
+.hazySun {
+  fill: #d59a6a;
+  opacity: 0.55;
+}
+
+.copy {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.copy h2 {
+  font-size: var(--step-3);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.copy p {
+  color: var(--slate);
+}
+
+.features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.features li {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-s);
+  background: var(--paper);
+  border: 1px solid var(--fog);
+}
+
+.features strong {
+  display: block;
+}
+
+.text {
+  color: var(--slate);
+}
+
+.icon {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--clear-tint);
+  color: var(--clear-deep);
+}
+
+.icon svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

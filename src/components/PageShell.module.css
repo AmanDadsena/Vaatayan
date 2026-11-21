@@ -1,5 +1,21 @@
 .top {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   background: linear-gradient(180deg, #bcd9df 0%, var(--sky) 60%, var(--mist) 100%);
+}
+
+.arches {
+  position: absolute;
+  z-index: -1;
+  right: max(var(--space-5), calc((100vw - var(--page)) / 2));
+  bottom: -40px;
+  width: min(360px, 40vw);
+  height: auto;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.5;
+  opacity: 0.14;
 }
 
 .inner {
@@ -38,6 +54,10 @@
 }
 
 @media (max-width: 560px) {
+  .arches {
+    opacity: 0.08;
+    width: 70vw;
+  }
   .inner {
     padding: var(--space-4) var(--space-4) var(--space-6);
     gap: var(--space-6);

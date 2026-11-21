@@ -18,6 +18,13 @@ and shows exactly how much each choice keeps out of your lungs and out of your c
 | **Home air** (`/home-air`) | Purifier sizing from room dimensions (CADR and time-to-clean), a buying guide, an illustrated DIY box-fan filter, a room-by-room checklist that remembers progress, and myth versus fact. |
 | **Why winter smog** (`/why-smog`) | Drag the inversion "lid" and watch the same pollution crowd into a thinner layer. Particle sizes drawn to scale. Honest, contested source ranges, and who needs the most care. |
 
+## Design
+
+- **The mark** is a *jharokha*, the carved arched window of Indian architecture, with clear sky, a sun and two streams of air flowing in. It is the literal meaning of वातायन, and one shared source draws it everywhere: header, footer, favicon, touch icon and social card.
+- **The hero is a painting of the view from your window, made from live data.** Sky colour, the sun's glow, how far the skyline fades and how many particles drift are all computed from the current AQI (`src/lib/sky.ts`). Clean air gives a blue sky and a crisp sun. Smog gives the brown-grey sky and dim orange disc of a winter morning.
+- **The palette** is a misty grey-green with a clear-air teal, plus a muted earth-toned AQI scale where every step passes 3:1 contrast. The display face is Bricolage Grotesque, the body face Atkinson Hyperlegible, and the wordmark Tiro Devanagari Hindi.
+- **Motion is quiet and purposeful.** Haze drifts slowly and particles float. The wind in the logo moves on hover. Everything stops under `prefers-reduced-motion`.
+
 ## How GenAI is used, and kept honest
 
 ```
@@ -67,7 +74,7 @@ household ─────┼─▶ deterministic impact model ─▶ candidate a
 ## Testing
 
 ```bash
-npm test               # 140 tests: domain logic, GenAI module, API routes, components + axe
+npm test               # 151 tests: domain logic, GenAI module, API routes, components + axe
 npm run test:coverage
 npm run lint
 npm run typecheck

@@ -13,6 +13,7 @@ import {
 } from "@/lib/schemas";
 import { AirHero } from "./AirHero";
 import { AskCoach } from "./AskCoach";
+import { EmptyPlan } from "./EmptyPlan";
 import { HouseholdForm } from "./HouseholdForm";
 import { PlanView } from "./PlanView";
 import { SiteFooter } from "./SiteFooter";
@@ -162,17 +163,7 @@ export function VaatayanApp() {
             </>
           )}
 
-          {!planLoading && !plan && !planError && (
-            <div className={styles.empty}>
-              <h2>Your plan for today appears here</h2>
-              <p>Tell us a little about your household and you&apos;ll get:</p>
-              <ul>
-                <li>an hour-by-hour routine built around the cleanest air today</li>
-                <li>indoor fixes that make home the cleanest air you breathe</li>
-                <li>lower-emission swaps, each with how much smog it saves</li>
-              </ul>
-            </div>
-          )}
+          {!planLoading && !plan && !planError && <EmptyPlan />}
         </div>
       </main>
 

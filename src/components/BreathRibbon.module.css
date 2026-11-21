@@ -28,9 +28,9 @@
   display: grid;
   grid-template-columns: repeat(24, minmax(0, 1fr));
   align-items: end;
-  gap: 3px;
-  height: 148px;
-  padding-top: 18px;
+  gap: 2px;
+  height: 156px;
+  padding-top: 26px;
 }
 
 .col {
@@ -44,18 +44,37 @@
 }
 
 .bar {
-  width: 100%;
-  border-radius: 3px 3px 1px 1px;
+  width: 64%;
+  margin: 0 auto;
+  border-radius: 999px 999px 3px 3px;
   transform-origin: bottom;
   animation: rise 700ms var(--ease-out) both;
+}
+
+.now {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 0.7rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.col[data-now] .bar {
+  box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--ink);
 }
 
 /* Clean window: a clear-air bracket above the bars */
 .col[data-clean]::before {
   content: "";
   position: absolute;
-  inset: 0 -1.5px 22px;
-  background: var(--clear-tint);
+  inset: 0 -1px 22px;
+  background: linear-gradient(180deg, rgb(127 209 189 / 0.55), rgb(215 235 230 / 0.35));
   border-top: 3px solid var(--clear);
   z-index: -1;
 }
@@ -143,8 +162,11 @@
 
 @media (max-width: 560px) {
   .chart {
-    gap: 2px;
-    height: 120px;
+    gap: 1px;
+    height: 128px;
+  }
+  .bar {
+    width: 80%;
   }
   .tick {
     font-size: 0.68rem;
