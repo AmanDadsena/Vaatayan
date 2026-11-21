@@ -22,9 +22,9 @@
 }
 
 .range[data-tone="dark"] output {
-  color: #7fd1bd;
+  color: var(--mint);
 }
 
 .range[data-tone="dark"] input {
-  accent-color: #7fd1bd;
+  accent-color: var(--mint);
 }

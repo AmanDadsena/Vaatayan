@@ -3,6 +3,7 @@
  * browser bundle stays small. The server builds its strict Zod schemas from
  * these same constants (src/lib/schemas.ts); tests keep the two in agreement.
  */
+import { keysOf } from "./objects";
 import type { Household, Place } from "./schemas";
 
 export const COMMUTE_MODES = ["car", "two-wheeler", "auto", "bus", "metro", "walk-cycle", "home"] as const;
@@ -10,6 +11,13 @@ export const COOKING_FUELS = ["lpg", "electric", "biomass"] as const;
 export const HEATING_SOURCES = ["none", "electric", "gas", "wood-coal", "kerosene"] as const;
 export const EXERCISE_TIMES = ["none", "morning", "evening"] as const;
 export const CONDITIONS = ["asthma-copd", "heart", "pregnancy"] as const;
+
+/** localStorage keys. Versioned so a future format change can ignore old data. */
+export const STORAGE_KEYS = {
+  place: "vaatayan.place.v1",
+  household: "vaatayan.household.v1",
+  checklist: "vaatayan.checklist.v1",
+} as const;
 
 export const LIMITS = {
   people: { max: 12 },
@@ -59,13 +67,14 @@ const HOUSEHOLD_CHECKS: Record<keyof Household, (v: unknown) => boolean> = {
   notes: (v) => v === undefined || (typeof v === "string" && v.length <= LIMITS.notes.max),
 };
 
+function isStoredHousehold(v: unknown): v is Household {
+  return isRecord(v) && keysOf(HOUSEHOLD_CHECKS).every((key) => HOUSEHOLD_CHECKS[key](v[key]));
+}
+
 /** Returns the saved household if it is complete and in range, otherwise null. */
-export function readStoredHousehold(v: unknown): Household | null {
-  if (!isRecord(v)) return null;
-  const valid = (Object.keys(HOUSEHOLD_CHECKS) as (keyof Household)[]).every((key) => HOUSEHOLD_CHECKS[key](v[key]));
-  if (!valid) return null;
-  // Checked above; copy field by field so unknown keys are dropped.
-  const h = v as Household;
+export function readStoredHousehold(h: unknown): Household | null {
+  if (!isStoredHousehold(h)) return null;
+  // Copy field by field so unknown keys are dropped.
   return {
     adults: h.adults,
     children: h.children,

@@ -42,17 +42,17 @@
 }
 
 .window {
-  fill: rgb(215 235 230 / 0.6);
+  fill: rgb(var(--clear-tint-rgb) / 0.6);
   stroke: var(--ink);
   stroke-width: 2.5;
 }
 
 .sun {
-  fill: #e9b44c;
+  fill: var(--sun);
 }
 
 .hazySun {
-  fill: #d59a6a;
+  fill: var(--sun-hazy);
   opacity: 0.55;
 }
 

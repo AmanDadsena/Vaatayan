@@ -2,7 +2,7 @@
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  background: linear-gradient(180deg, #bcd9df 0%, var(--sky) 60%, var(--mist) 100%);
+  background: linear-gradient(180deg, var(--sky-high) 0%, var(--sky) 60%, var(--mist) 100%);
 }
 
 .arches {

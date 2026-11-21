@@ -23,7 +23,6 @@ export default function OpengraphImage() {
         gap: 56,
       }}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={logoDataUri(260)} width={260} height={260} alt="" style={{ borderRadius: 64 }} />
       <div style={{ display: "flex", flexDirection: "column", color: "#142b2a" }}>
         <div style={{ fontSize: 108, fontWeight: 800, letterSpacing: -4 }}>{BRAND.name}</div>

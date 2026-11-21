@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { askQuestion, FriendlyError, type AnswerSource } from "@/lib/client";
+import { isAbortError } from "@/lib/errors";
 import type { AirSnapshot, Household, Place } from "@/lib/schemas";
 import styles from "./AskCoach.module.css";
 
@@ -56,7 +57,7 @@ export function AskCoach({ place, air, household, planSummary }: Props) {
       );
       update({ source });
     } catch (error) {
-      if ((error as Error).name !== "AbortError") {
+      if (!isAbortError(error)) {
         update({
           answer: error instanceof FriendlyError ? error.message : "Something went wrong. Try asking again.",
           failed: true,

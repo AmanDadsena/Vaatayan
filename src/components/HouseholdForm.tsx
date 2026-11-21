@@ -1,12 +1,13 @@
 "use client";
 
 import { useId } from "react";
-import { CONDITIONS } from "@/lib/domain";
-import type { Condition, CookingFuel, HeatingSource, Household } from "@/lib/schemas";
+import { CONDITIONS, COOKING_FUELS, HEATING_SOURCES } from "@/lib/domain";
+import { keysOf, pickOption } from "@/lib/objects";
+import type { Condition, Household } from "@/lib/schemas";
 import { COMMUTE_LABELS, CONDITION_LABELS, COOKING_LABELS, EXERCISE_LABELS, HEATING_LABELS } from "@/lib/labels";
 import { ChoicePills } from "./ChoicePills";
 import { RangeField } from "./RangeField";
-import { useNumberInput } from "./useNumberInput";
+import { Stepper } from "./Stepper";
 import styles from "./HouseholdForm.module.css";
 
 interface Props {
@@ -15,52 +16,6 @@ interface Props {
   onSubmit: () => void;
   busy: boolean;
   disabled: boolean;
-}
-
-function Stepper({
-  label,
-  hint,
-  value,
-  min,
-  max,
-  onChange,
-}: {
-  label: string;
-  hint: string;
-  value: number;
-  min: number;
-  max: number;
-  onChange: (n: number) => void;
-}) {
-  const id = useId();
-  const input = useNumberInput(value, onChange, { min, max, integer: true });
-  return (
-    <div className={styles.stepper}>
-      <label htmlFor={id} className={styles.stepLabel}>
-        {label}
-        <span className={styles.hint}>{hint}</span>
-      </label>
-      <div className={styles.stepControls}>
-        <button
-          type="button"
-          aria-label={`Fewer ${label.toLowerCase()}`}
-          onClick={() => onChange(Math.max(min, value - 1))}
-          disabled={value <= min}
-        >
-          −
-        </button>
-        <input id={id} type="number" inputMode="numeric" min={min} max={max} {...input} />
-        <button
-          type="button"
-          aria-label={`More ${label.toLowerCase()}`}
-          onClick={() => onChange(Math.min(max, value + 1))}
-          disabled={value >= max}
-        >
-          +
-        </button>
-      </div>
-    </div>
-  );
 }
 
 export function HouseholdForm({ value, onChange, onSubmit, busy, disabled }: Props) {
@@ -162,8 +117,11 @@ export function HouseholdForm({ value, onChange, onSubmit, busy, disabled }: Pro
         <div className={styles.selects}>
           <label>
             Cooking fuel
-            <select value={value.cookingFuel} onChange={(e) => set("cookingFuel", e.target.value as CookingFuel)}>
-              {(Object.keys(COOKING_LABELS) as CookingFuel[]).map((k) => (
+            <select
+              value={value.cookingFuel}
+              onChange={(e) => set("cookingFuel", pickOption(COOKING_FUELS, e.target.value, value.cookingFuel))}
+            >
+              {keysOf(COOKING_LABELS).map((k) => (
                 <option key={k} value={k}>
                   {COOKING_LABELS[k]}
                 </option>
@@ -172,8 +130,11 @@ export function HouseholdForm({ value, onChange, onSubmit, busy, disabled }: Pro
           </label>
           <label>
             Winter heating
-            <select value={value.heating} onChange={(e) => set("heating", e.target.value as HeatingSource)}>
-              {(Object.keys(HEATING_LABELS) as HeatingSource[]).map((k) => (
+            <select
+              value={value.heating}
+              onChange={(e) => set("heating", pickOption(HEATING_SOURCES, e.target.value, value.heating))}
+            >
+              {keysOf(HEATING_LABELS).map((k) => (
                 <option key={k} value={k}>
                   {HEATING_LABELS[k]}
                 </option>

@@ -84,17 +84,17 @@
   align-content: start;
   gap: var(--space-1);
   padding-top: var(--space-3);
-  border-top: 2px solid rgb(249 251 250 / 0.25);
+  border-top: 2px solid rgb(var(--paper-rgb) / 0.25);
 }
 
 .ledgerGrid div[data-tone="lungs"] {
-  border-top-color: #7fd1bd;
+  border-top-color: var(--mint);
 }
 
 .ledgerGrid dt {
   font-size: var(--step--1);
   font-weight: 700;
-  color: #c6dcd8;
+  color: var(--on-dark-muted);
 }
 
 .ledgerGrid dd {
@@ -122,7 +122,7 @@
   font-size: clamp(3.2rem, 9vw, 4.6rem);
   line-height: 0.95;
   letter-spacing: -0.04em;
-  color: #7fd1bd;
+  color: var(--mint);
   font-variant-numeric: tabular-nums;
 }
 
@@ -141,22 +141,22 @@
 }
 
 .cigBody {
-  fill: #e9efe9;
+  fill: var(--paper-dim);
 }
 
 .cigTip {
-  fill: #d59a6a;
+  fill: var(--sun-hazy);
 }
 
 .cigStrike {
-  stroke: #7fd1bd;
+  stroke: var(--mint);
   stroke-width: 2;
   stroke-linecap: round;
 }
 
 .more {
   font-weight: 700;
-  color: #7fd1bd;
+  color: var(--mint);
   font-size: var(--step--1);
 }
 
@@ -171,7 +171,7 @@
 
 .small {
   font-size: var(--step--1);
-  color: #c6dcd8;
+  color: var(--on-dark-muted);
 }
 
 .care {
@@ -179,7 +179,7 @@
   gap: var(--space-2);
   padding: var(--space-4) var(--space-5);
   border-left: 6px solid var(--aqi-very-unhealthy);
-  background: #f3e9ee;
+  background: var(--care-tint);
   border-radius: 0 var(--radius-m) var(--radius-m) 0;
 }
 
@@ -237,7 +237,12 @@
 }
 
 .timeline li[data-clean] {
-  background: linear-gradient(90deg, transparent 0, rgb(127 209 189 / 0.28) var(--rail), rgb(215 235 230 / 0.15));
+  background: linear-gradient(
+    90deg,
+    transparent 0,
+    rgb(var(--mint-rgb) / 0.28) var(--rail),
+    rgb(var(--clear-tint-rgb) / 0.15)
+  );
 }
 
 .time {
@@ -259,13 +264,13 @@
   border-radius: 50%;
   background: var(--fog);
   border: 4px solid var(--mist);
-  box-shadow: 0 0 0 1px rgb(20 43 42 / 0.25);
+  box-shadow: 0 0 0 1px rgb(var(--ink-rgb) / 0.25);
 }
 
 li[data-clean] .node {
   box-shadow:
     0 0 0 3px var(--clear),
-    0 0 14px 2px rgb(127 209 189 / 0.7);
+    0 0 14px 2px rgb(var(--mint-rgb) / 0.7);
 }
 
 .stepBody {
@@ -298,13 +303,13 @@ li[data-clean] .node {
 }
 
 .stepAqi {
-  background: rgb(20 43 42 / 0.07);
+  background: rgb(var(--ink-rgb) / 0.07);
   color: var(--slate);
 }
 
 .cleanTag {
   background: var(--clear);
-  color: #fff;
+  color: var(--on-accent);
 }
 
 @media (max-width: 480px) {
@@ -405,8 +410,8 @@ li[data-clean] .node {
 
 .chips li[data-kind="co2"],
 .chips li[data-kind="smog"] {
-  background: #ece6d8;
-  color: #5c4a14;
+  background: var(--sand);
+  color: var(--earth-ink);
 }
 
 .basis summary,

@@ -21,9 +21,11 @@ vi.mock("next/image", () => ({
 
 if (isBrowser) {
   const { cleanup } = await import("@testing-library/react");
+  const { resetStoredStateMemory } = await import("@/components/useStoredState");
   afterEach(() => {
     cleanup();
     window.localStorage.clear();
+    resetStoredStateMemory();
   });
 
   // jsdom lacks these browser APIs used by the components.

@@ -17,7 +17,7 @@
 .mark {
   flex: none;
   border-radius: 12px;
-  box-shadow: 0 6px 16px -8px rgb(20 43 42 / 0.6);
+  box-shadow: 0 6px 16px -8px rgb(var(--ink-rgb) / 0.6);
 }
 
 /* A breath of wind through the window on hover */
@@ -70,7 +70,7 @@
 }
 
 .nav a:hover {
-  background: rgb(20 43 42 / 0.08);
+  background: rgb(var(--ink-rgb) / 0.08);
 }
 
 .nav a[aria-current="page"] {

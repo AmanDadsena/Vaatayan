@@ -326,13 +326,13 @@
   border-radius: 999px;
   font-size: var(--step--1);
   font-weight: 700;
-  background: #f6e4e0;
+  background: var(--alert-tint);
   color: var(--alert);
 }
 
 .verdict[data-verdict="nuance"] {
-  background: #f3ecd7;
-  color: #5c4a14;
+  background: var(--earth-tint);
+  color: var(--earth-ink);
 }
 
 .myths details p {

@@ -10,7 +10,6 @@ import type { CommuteMode, CookingFuel, HeatingSource } from "./schemas";
 export const GRID_CO2_PER_KWH = 0.71;
 
 export interface FuelProfile {
-  label: string;
   /** kg CO₂ a week (fossil only; burning wood or dung is counted as biogenic). */
   co2KgPerWeek: number;
   /** g PM2.5 a week released into the neighbourhood. */
@@ -25,7 +24,6 @@ export interface FuelProfile {
 /** Winter heating for one room, about 4 hours a day. */
 export const HEATING: Record<HeatingSource, FuelProfile> = {
   none: {
-    label: "No heating",
     co2KgPerWeek: 0,
     smogGPerWeek: 0,
     indoorSpike: 0,
@@ -33,7 +31,6 @@ export const HEATING: Record<HeatingSource, FuelProfile> = {
     note: "Layers and a warm cap do a lot.",
   },
   electric: {
-    label: "Electric heater",
     co2KgPerWeek: Math.round(1.5 * 4 * 7 * GRID_CO2_PER_KWH * 10) / 10,
     smogGPerWeek: 0,
     indoorSpike: 0,
@@ -41,7 +38,6 @@ export const HEATING: Record<HeatingSource, FuelProfile> = {
     note: "No smoke at home, but the grid still burns coal. Heat one closed room and insulate to cut this.",
   },
   gas: {
-    label: "Gas heater",
     co2KgPerWeek: Math.round(0.6 * 7 * 2.98 * 10) / 10,
     smogGPerWeek: 0.5,
     indoorSpike: 10,
@@ -49,7 +45,6 @@ export const HEATING: Record<HeatingSource, FuelProfile> = {
     note: "Low particulate, but releases NO₂ indoors. Keep a window cracked.",
   },
   "wood-coal": {
-    label: "Wood or coal",
     co2KgPerWeek: 0,
     smogGPerWeek: 210,
     indoorSpike: 60,
@@ -57,7 +52,6 @@ export const HEATING: Record<HeatingSource, FuelProfile> = {
     note: "The smokiest option by far, indoors and out.",
   },
   kerosene: {
-    label: "Kerosene",
     co2KgPerWeek: Math.round(0.5 * 7 * 2.5 * 10) / 10,
     smogGPerWeek: 7,
     indoorSpike: 60,
@@ -68,7 +62,6 @@ export const HEATING: Record<HeatingSource, FuelProfile> = {
 
 export const COOKING: Record<CookingFuel, FuelProfile> = {
   lpg: {
-    label: "LPG or piped gas",
     co2KgPerWeek: Math.round(0.4 * 7 * 2.98 * 10) / 10,
     smogGPerWeek: 0.2,
     indoorSpike: 60,
@@ -76,7 +69,6 @@ export const COOKING: Record<CookingFuel, FuelProfile> = {
     note: "Clean-burning; frying still makes a particle spike, so run the exhaust.",
   },
   electric: {
-    label: "Induction",
     co2KgPerWeek: Math.round(1.5 * 7 * GRID_CO2_PER_KWH * 10) / 10,
     smogGPerWeek: 0,
     indoorSpike: 30,
@@ -84,7 +76,6 @@ export const COOKING: Record<CookingFuel, FuelProfile> = {
     note: "No combustion at home; cooking fumes from food remain.",
   },
   biomass: {
-    label: "Wood, dung or coal",
     co2KgPerWeek: 0,
     smogGPerWeek: 112,
     indoorSpike: 400,

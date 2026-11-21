@@ -10,7 +10,7 @@
   width: 100%;
   max-width: 320px;
   height: auto;
-  filter: drop-shadow(0 24px 32px rgb(20 43 42 / 0.28));
+  filter: drop-shadow(0 24px 32px rgb(var(--ink-rgb) / 0.28));
 }
 
 .outer {

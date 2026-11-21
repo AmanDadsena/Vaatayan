@@ -1,5 +1,6 @@
 "use client";
 
+import { keysOf } from "@/lib/objects";
 import styles from "./ChoicePills.module.css";
 
 interface Props<T extends string> {
@@ -18,7 +19,7 @@ export function ChoicePills<T extends string>({ legend, name, options, value, on
     <fieldset className={styles.choice}>
       <legend>{legend}</legend>
       <div className={styles.pills}>
-        {(Object.keys(options) as T[])
+        {keysOf(options)
           .filter((key) => !exclude.includes(key))
           .map((key) => (
             <label key={key} className={styles.pill}>

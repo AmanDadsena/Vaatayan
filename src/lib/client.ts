@@ -1,3 +1,4 @@
+import { isAbortError } from "./errors";
 import type { Plan } from "./planner";
 import type { AirSnapshot, Household, Place } from "./schemas";
 
@@ -20,7 +21,7 @@ async function request<T>(input: string, init: RequestInit, fallback: string): P
   try {
     res = await fetch(input, init);
   } catch (error) {
-    if ((error as Error).name === "AbortError") throw error;
+    if (isAbortError(error)) throw error;
     throw new FriendlyError("You seem to be offline. Check your connection and try again.");
   }
   if (!res.ok) return readError(res, fallback);
@@ -65,7 +66,7 @@ export async function askQuestion(
       signal,
     });
   } catch (error) {
-    if ((error as Error).name === "AbortError") throw error;
+    if (isAbortError(error)) throw error;
     throw new FriendlyError("You seem to be offline. Check your connection and try again.");
   }
   if (!res.ok || !res.body) return readError(res, "Could not answer that right now.");
@@ -81,23 +82,4 @@ export async function askQuestion(
     onText(text);
   }
   return { text, source };
-}
-
-/* ---------- Local persistence (never leaves the device) ---------- */
-
-export function loadLocal<T>(key: string, validate: (v: unknown) => T | null): T | null {
-  try {
-    const raw = window.localStorage.getItem(key);
-    return raw ? validate(JSON.parse(raw)) : null;
-  } catch {
-    return null;
-  }
-}
-
-export function saveLocal(key: string, value: unknown) {
-  try {
-    window.localStorage.setItem(key, JSON.stringify(value));
-  } catch {
-    /* storage full or disabled: the app still works without it */
-  }
 }

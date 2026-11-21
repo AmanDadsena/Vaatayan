@@ -25,7 +25,7 @@ export function AirHero({ place, air, loading, error, onSelectPlace, onRetry }: 
   const shortName = place.name.split(",")[0] ?? place.name;
 
   return (
-    <section className={styles.hero} aria-labelledby="place-heading" style={{ "--haze": haze } as React.CSSProperties}>
+    <section className={styles.hero} aria-labelledby="place-heading" style={{ "--haze": haze }}>
       <div className={styles.sky} aria-hidden="true">
         <div className={styles.haze} />
       </div>

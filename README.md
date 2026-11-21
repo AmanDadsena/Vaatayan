@@ -90,7 +90,7 @@ Measured on a production build:
 ## Testing
 
 ```bash
-npm test               # 309 tests: domain logic, both AI providers, API routes, full page flows + axe
+npm test               # 320 tests: domain logic, both AI providers, API routes, full page flows + axe
 npm run test:coverage  # about 98% lines, 97% statements, 96% functions, 85% branches (enforced floors)
 npm run lint
 npm run typecheck
@@ -115,13 +115,16 @@ src/
   proxy.ts                per-request nonce Content-Security-Policy
   components/             UI components, each with a CSS module
     home-air/             purifier sizer, checklist, buying guide, DIY filter, myths
-    impact-lab/           before/after figures and the mode comparison table
+    impact-lab/           before/after figures, mode comparison, scale-up section
+    plan/                 impact ledger, day timeline, action cards
+    smog/                 inversion lab and particle-size scale
+    use*.ts               hooks: stored state, live air, plan requests, number input
   content/                page copy kept apart from components
   lib/
     exposure.ts           physical constants, emission factors, exposure helpers
     actions/              the action catalogue: routine, indoor, swaps
     impact.ts             assembles the catalogue, ranks candidates, totals impact
-    planner.ts            rule-based planner and model-output merge
+    plans/                plan types, the rules planner, and the AI-output merge
     ai.ts                 prompts, provider selection, streaming, result cache
     providers/            Anthropic and Gemini clients behind one interface
     airQuality.ts         Open-Meteo client with retry and last-good cache
@@ -133,7 +136,7 @@ tests/                    unit, API, security and component tests
 
 ### Quality gates
 
-`npm run check` runs everything CI runs on every push: Prettier, ESLint (complexity ≤ 15, files ≤ 300 lines, no
+`npm run check` runs everything CI runs on every push: Prettier, ESLint (complexity ≤ 15, files ≤ 200 lines, no
 non-null assertions in app code), strict TypeScript (`noUncheckedIndexedAccess`, `noUnusedLocals` and more),
 tests with coverage floors, and a production build.
 

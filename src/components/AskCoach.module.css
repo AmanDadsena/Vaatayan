@@ -122,7 +122,7 @@
   border: 0;
   border-radius: var(--radius-s);
   background: var(--clear);
-  color: #fff;
+  color: var(--on-accent);
   font-weight: 700;
   cursor: pointer;
 }

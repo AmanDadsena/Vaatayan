@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { FriendlyError, searchPlaces } from "@/lib/client";
+import { isAbortError } from "@/lib/errors";
 import type { Place } from "@/lib/schemas";
 import styles from "./PlaceSearch.module.css";
 
@@ -37,7 +38,7 @@ export function PlaceSearch({ onSelect }: Props) {
           places.length ? `${places.length} places found. Use the arrow keys to choose.` : "No places match that name.",
         );
       } catch (error) {
-        if ((error as Error).name === "AbortError") return;
+        if (isAbortError(error)) return;
         setResults([]);
         setStatus(error instanceof FriendlyError ? error.message : "Search failed. Try again.");
       }

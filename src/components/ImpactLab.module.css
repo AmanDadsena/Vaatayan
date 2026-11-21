@@ -79,7 +79,7 @@
 }
 
 .figures li[data-tone="worse"] {
-  background: #f6e4e0;
+  background: var(--alert-tint);
   color: var(--alert);
 }
 
@@ -235,7 +235,7 @@
 
 .multiply .sectionHead p,
 .multiply .footnote {
-  color: #c6dcd8;
+  color: var(--on-dark-muted);
 }
 
 .scaled {
@@ -249,13 +249,13 @@
   display: grid;
   gap: var(--space-1);
   padding-top: var(--space-3);
-  border-top: 2px solid rgb(249 251 250 / 0.25);
+  border-top: 2px solid rgb(var(--paper-rgb) / 0.25);
 }
 
 .scaled dt {
   font-weight: 700;
   font-size: var(--step--1);
-  color: #c6dcd8;
+  color: var(--on-dark-muted);
 }
 
 .scaled dd {

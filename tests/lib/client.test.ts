@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { askQuestion, FriendlyError, getAir, getPlan, loadLocal, saveLocal, searchPlaces } from "@/lib/client";
+import { askQuestion, FriendlyError, getAir, getPlan, searchPlaces } from "@/lib/client";
 import { siteUrl } from "@/lib/site";
 import { makeAir, makeHousehold, PLACE, must } from "../fixtures";
 
@@ -92,29 +92,6 @@ describe("askQuestion", () => {
     await expect(askQuestion(ask, () => {})).rejects.toThrow("offline");
     fetchMock.mockRejectedValueOnce(new DOMException("aborted", "AbortError"));
     await expect(askQuestion(ask, () => {})).rejects.toMatchObject({ name: "AbortError" });
-  });
-});
-
-describe("local storage helpers", () => {
-  it("round-trips valid data", () => {
-    saveLocal("k", { a: 1 });
-    expect(loadLocal("k", (v) => v as { a: number })).toEqual({ a: 1 });
-  });
-
-  it("returns null for missing, corrupt or rejected data", () => {
-    expect(loadLocal("missing", (v) => v)).toBeNull();
-    window.localStorage.setItem("bad", "{not json");
-    expect(loadLocal("bad", (v) => v)).toBeNull();
-    saveLocal("k2", { a: 1 });
-    expect(loadLocal("k2", () => null)).toBeNull();
-  });
-
-  it("keeps working when storage is unavailable", () => {
-    const setItem = vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
-      throw new DOMException("quota", "QuotaExceededError");
-    });
-    expect(() => saveLocal("k", 1)).not.toThrow();
-    setItem.mockRestore();
   });
 });
 

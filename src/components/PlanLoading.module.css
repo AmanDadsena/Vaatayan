@@ -19,7 +19,7 @@
 }
 
 .sun {
-  fill: #e9b44c;
+  fill: var(--sun);
   animation: glow 2.4s ease-in-out infinite;
 }
 
@@ -33,7 +33,7 @@
 }
 
 .windLate {
-  stroke: #7fd1bd;
+  stroke: var(--mint);
   animation-delay: -0.9s;
 }
 
@@ -113,7 +113,7 @@ li[data-state="done"] .dot {
 
 @keyframes pulse {
   50% {
-    box-shadow: 0 0 0 5px rgb(14 110 98 / 0.18);
+    box-shadow: 0 0 0 5px rgb(var(--clear-rgb) / 0.18);
   }
 }
 
@@ -127,7 +127,7 @@ li[data-state="done"] .dot {
   display: block;
   height: 14px;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--fog) 0%, #e8eeed 50%, var(--fog) 100%);
+  background: linear-gradient(90deg, var(--fog) 0%, var(--shimmer) 50%, var(--fog) 100%);
   background-size: 200% 100%;
   animation: shimmer 1.6s linear infinite;
 }

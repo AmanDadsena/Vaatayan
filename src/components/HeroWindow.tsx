@@ -67,7 +67,7 @@ export function HeroWindow({ aqi, place }: Props) {
           <rect className={styles.paint} width="300" height="420" fill={`url(#${id}-sky)`} />
           <circle className={styles.paint} cx="196" cy="150" r={22 * sky.glow} fill={`url(#${id}-glow)`} />
           <circle className={styles.paint} cx="196" cy="150" r="22" fill={sky.sun} />
-          <path d={SKYLINE} fill="#4d5f5c" opacity={sky.skyline} className={styles.paint} />
+          <path d={SKYLINE} fill="var(--skyline)" opacity={sky.skyline} className={styles.paint} />
           <rect
             className={`${styles.paint} ${styles.hazeBand}`}
             x="-60"
@@ -77,7 +77,7 @@ export function HeroWindow({ aqi, place }: Props) {
             fill={`url(#${id}-haze)`}
             opacity={0.35 + haze * 0.6}
           />
-          <g className={styles.particles} fill="#4a3f35">
+          <g className={styles.particles} fill="var(--soot)">
             {PARTICLES.slice(0, visible).map((p, i) => (
               <circle key={i} cx={p.x} cy={p.y} r={p.r} style={{ animationDelay: `${p.delay}s` }} />
             ))}

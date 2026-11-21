@@ -1,31 +1,25 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
-import { loadLocal, saveLocal } from "@/lib/client";
+import { useId } from "react";
 import { ROOMS } from "@/content/homeAir";
+import { STORAGE_KEYS } from "@/lib/domain";
+import { useStoredState } from "../useStoredState";
 import styles from "../HomeAir.module.css";
 
-const CHECK_KEY = "vaatayan.checklist.v1";
 const ALL_IDS = ROOMS.flatMap((r) => r.items.map((i) => i.id));
+const NONE_DONE: readonly string[] = [];
+
+/** Keeps only ids that still exist, so renamed or removed checklist items are dropped quietly. */
+function readChecklist(value: unknown): string[] | null {
+  return Array.isArray(value) ? value.filter((x): x is string => typeof x === "string" && ALL_IDS.includes(x)) : null;
+}
 
 export function RoomChecklist() {
   const id = useId();
-  const [done, setDone] = useState<string[]>([]);
-
-  useEffect(() => {
-    const saved = loadLocal(CHECK_KEY, (v) =>
-      Array.isArray(v) ? v.filter((x): x is string => typeof x === "string" && ALL_IDS.includes(x)) : null,
-    );
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time hydration from localStorage
-    if (saved) setDone(saved);
-  }, []);
+  const [done, setDone] = useStoredState<readonly string[]>(STORAGE_KEYS.checklist, readChecklist, NONE_DONE);
 
   const toggle = (itemId: string) =>
-    setDone((prev) => {
-      const next = prev.includes(itemId) ? prev.filter((x) => x !== itemId) : [...prev, itemId];
-      saveLocal(CHECK_KEY, next);
-      return next;
-    });
+    setDone((prev) => (prev.includes(itemId) ? prev.filter((x) => x !== itemId) : [...prev, itemId]));
 
   const pct = Math.round((done.length / ALL_IDS.length) * 100);
 

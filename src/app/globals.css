@@ -12,6 +12,42 @@
   --smog: #b9afa3;
   --alert: #9b2f22;
 
+  /* Accents and surfaces used across components */
+  --mint: #7fd1bd;
+  --mint-light: #a3e2d3;
+  --on-dark-muted: #c6dcd8;
+  --earth-ink: #5c4a14;
+  --earth-tint: #f3ecd7;
+  --sand: #ece6d8;
+  --alert-tint: #f6e4e0;
+  --care-tint: #f3e9ee;
+  --sun: #e9b44c;
+  --sun-hazy: #d59a6a;
+  --sky-high: #bcd9df;
+  --sky-low: #e4eeee;
+  --shimmer: #e8eeed;
+  --paper-dim: #e9efe9;
+  --soot: #4a3f35;
+  --skyline: #5f7774;
+  --smog-stone: #9c8f7f;
+  --warm-air: #f1d9bf;
+  --hair: #e6dccd;
+  --lid-ink: #6b4720;
+  --lid: #c07a3a;
+  --on-accent: #ffffff;
+
+  /* Channels for translucent shades: rgb(var(--ink-rgb) / 0.35) */
+  --ink-rgb: 20 43 42;
+  --mint-rgb: 127 209 189;
+  --clear-rgb: 14 110 98;
+  --alert-rgb: 155 47 34;
+  --clear-tint-rgb: 215 235 230;
+  --paper-rgb: 249 251 250;
+  --on-dark-muted-rgb: 198 220 216;
+  --smog-deep-rgb: 176 160 140;
+  --smog-rgb: 185 175 163;
+  --smog-light-rgb: 196 187 175;
+
   /* AQI scale: muted, every step ≥ 3:1 against --mist */
   --aqi-good: #3f8a71;
   --aqi-moderate: #9a7e15;

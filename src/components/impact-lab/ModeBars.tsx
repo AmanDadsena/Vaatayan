@@ -1,4 +1,5 @@
 import { MODES } from "@/lib/impact";
+import { keysOf } from "@/lib/objects";
 import { COMMUTE_LABELS } from "@/lib/labels";
 import { formatNumber } from "@/lib/format";
 import { commuteDose, commuteWeekly } from "@/lib/simulator";
@@ -6,7 +7,7 @@ import type { CommuteMode } from "@/lib/schemas";
 import styles from "../ImpactLab.module.css";
 
 /** Every way to travel, excluding working from home. */
-const TRAVEL_MODES = (Object.keys(MODES) as CommuteMode[]).filter((m) => m !== "home");
+const TRAVEL_MODES = keysOf(MODES).filter((m) => m !== "home");
 
 /** Accessible bar chart: a real table whose cells carry proportional bars. */
 export function ModeBars({
@@ -52,15 +53,11 @@ export function ModeBars({
                 {r.mode === to && <span className={styles.tag}>switch</span>}
               </th>
               <td>
-                <span className={styles.bar} style={{ "--w": r.co2 / maxCo2 } as React.CSSProperties} data-kind="co2" />
+                <span className={styles.bar} style={{ "--w": r.co2 / maxCo2 }} data-kind="co2" />
                 <span className={styles.barValue}>{formatNumber(r.co2, 1)} kg</span>
               </td>
               <td>
-                <span
-                  className={styles.bar}
-                  style={{ "--w": r.dose / maxDose } as React.CSSProperties}
-                  data-kind="dose"
-                />
+                <span className={styles.bar} style={{ "--w": r.dose / maxDose }} data-kind="dose" />
                 <span className={styles.barValue}>{formatNumber(r.dose)} µg</span>
               </td>
             </tr>
