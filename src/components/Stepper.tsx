@@ -1,7 +1,7 @@
 "use client";
 
 import { useId } from "react";
-import { useNumberInput } from "./useNumberInput";
+import { useNumberInput } from "@/hooks/useNumberInput";
 import styles from "./HouseholdForm.module.css";
 
 /** A whole-number field with − and + buttons, clamped to a range. */

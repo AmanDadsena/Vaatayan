@@ -4,9 +4,9 @@ import { useMemo, useState } from "react";
 import type { HourlyReading } from "@/lib/breathWindow";
 import { cigarettesAvoided, METHOD_NOTES, totalImpact } from "@/lib/impact";
 import type { Plan } from "@/lib/planner";
-import { ActionGroups } from "./plan/ActionGroups";
-import { DayTimeline } from "./plan/DayTimeline";
-import { ImpactLedger } from "./plan/ImpactLedger";
+import { ActionGroups } from "./plan-view/ActionGroups";
+import { DayTimeline } from "./plan-view/DayTimeline";
+import { ImpactLedger } from "./plan-view/ImpactLedger";
 import styles from "./PlanView.module.css";
 
 interface Props {

@@ -1,5 +1,6 @@
 import type { BreathWindow } from "./breathWindow";
 import type { AirSnapshot, CommuteMode, Household } from "./schemas";
+import { TRIPS_PER_COMMUTE_DAY } from "./assumptions";
 
 /**
  * The exposure model: physical constants, emission factors and the helpers
@@ -23,8 +24,7 @@ export const DIY_FILTER_REDUCTION = 0.4;
 export const N95_REDUCTION = 0.8;
 export const HOURS_AT_HOME = 14;
 export const WORKDAYS_PER_WEEK = 5;
-/** kg CO₂ per litre of petrol burned. */
-export const CO2_PER_LITRE_PETROL = 2.31;
+export { CO2_PER_LITRE_PETROL } from "./assumptions";
 
 interface ModeProfile {
   label: string;
@@ -130,7 +130,7 @@ export function pmAtHour(air: AirSnapshot, hour: number): number {
 
 export function commuteHoursPerDay(h: Household, mode: CommuteMode = h.commuteMode): number {
   if (mode === "home" || h.commuteKm === 0) return 0;
-  return (2 * h.commuteKm) / MODES[mode].speedKmh;
+  return (TRIPS_PER_COMMUTE_DAY * h.commuteKm) / MODES[mode].speedKmh;
 }
 
 export function commuteDose(h: Household, pm: number, mode: CommuteMode = h.commuteMode): number {

@@ -12,6 +12,7 @@ import {
   commutes,
   type ActionDefinition,
 } from "../exposure";
+import { EVENING_EXERCISE_HOUR, EVENING_PLAY_HOUR, MORNING_EXERCISE_HOUR, PEAK_HOURS_KEPT_OUT } from "../assumptions";
 
 /** Daily-routine actions: when and how to be outside. */
 export const ROUTINE_ACTIONS: readonly ActionDefinition[] = [
@@ -27,7 +28,7 @@ export const ROUTINE_ACTIONS: readonly ActionDefinition[] = [
     ],
     applies: (ctx) => ctx.household.exercise !== "none",
     impact: (ctx) => {
-      const usualHour = ctx.household.exercise === "morning" ? 7 : 18;
+      const usualHour = ctx.household.exercise === "morning" ? MORNING_EXERCISE_HOUR : EVENING_EXERCISE_HOUR;
       const usualPm = pmAtHour(ctx.air, usualHour);
       const alternative = Math.min(ctx.clean?.averagePm25 ?? usualPm, indoorPm(ctx));
       return {
@@ -71,7 +72,7 @@ export const ROUTINE_ACTIONS: readonly ActionDefinition[] = [
     ],
     applies: (ctx) => ctx.household.children > 0,
     impact: (ctx) => {
-      const eveningPm = pmAtHour(ctx.air, 17);
+      const eveningPm = pmAtHour(ctx.air, EVENING_PLAY_HOUR);
       const alternative = Math.min(ctx.clean?.averagePm25 ?? eveningPm, indoorPm(ctx));
       return {
         lungsUgPerDay: round(VENTILATION.play * (eveningPm - alternative) * ctx.household.children),
@@ -95,10 +96,10 @@ export const ROUTINE_ACTIONS: readonly ActionDefinition[] = [
     impact: (ctx) => {
       const gap = (ctx.worst?.averagePm25 ?? 0) - (ctx.clean?.averagePm25 ?? 0);
       return {
-        lungsUgPerDay: round(gap * INDOOR_RATIO * VENTILATION.rest * 2 * people(ctx.household)),
+        lungsUgPerDay: round(gap * INDOOR_RATIO * VENTILATION.rest * PEAK_HOURS_KEPT_OUT * people(ctx.household)),
         co2KgPerWeek: 0,
         smogGPerWeek: 0,
-        basis: `Avoids about 2 hours of peak air drifting indoors for ${people(ctx.household)} people.`,
+        basis: `Avoids about ${PEAK_HOURS_KEPT_OUT} hours of peak air drifting indoors for ${people(ctx.household)} people.`,
       };
     },
   },

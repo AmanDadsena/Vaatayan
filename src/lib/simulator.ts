@@ -1,88 +1,15 @@
 import { MODES, VENTILATION } from "./impact";
-import type { CommuteMode, CookingFuel, HeatingSource } from "./schemas";
+import { TRIPS_PER_COMMUTE_DAY } from "./assumptions";
+import type { FuelProfile } from "./fuels";
+import type { CommuteMode } from "./schemas";
 
 /**
  * "What if" calculations for the Impact Lab. Every function is pure so the
  * numbers on screen are reproducible and covered by tests.
  */
 
-/** India's grid emission factor, kg CO₂ per kWh (CEA baseline, rounded). */
-export const GRID_CO2_PER_KWH = 0.71;
-
-export interface FuelProfile {
-  /** kg CO₂ a week (fossil only; burning wood or dung is counted as biogenic). */
-  co2KgPerWeek: number;
-  /** g PM2.5 a week released into the neighbourhood. */
-  smogGPerWeek: number;
-  /** Extra indoor PM2.5 while in use, µg/m³. */
-  indoorSpike: number;
-  /** Hours a day in use. */
-  hoursPerDay: number;
-  note: string;
-}
-
-/** Winter heating for one room, about 4 hours a day. */
-export const HEATING: Record<HeatingSource, FuelProfile> = {
-  none: {
-    co2KgPerWeek: 0,
-    smogGPerWeek: 0,
-    indoorSpike: 0,
-    hoursPerDay: 0,
-    note: "Layers and a warm cap do a lot.",
-  },
-  electric: {
-    co2KgPerWeek: Math.round(1.5 * 4 * 7 * GRID_CO2_PER_KWH * 10) / 10,
-    smogGPerWeek: 0,
-    indoorSpike: 0,
-    hoursPerDay: 4,
-    note: "No smoke at home, but the grid still burns coal. Heat one closed room and insulate to cut this.",
-  },
-  gas: {
-    co2KgPerWeek: Math.round(0.6 * 7 * 2.98 * 10) / 10,
-    smogGPerWeek: 0.5,
-    indoorSpike: 10,
-    hoursPerDay: 4,
-    note: "Low particulate, but releases NO₂ indoors. Keep a window cracked.",
-  },
-  "wood-coal": {
-    co2KgPerWeek: 0,
-    smogGPerWeek: 210,
-    indoorSpike: 60,
-    hoursPerDay: 4,
-    note: "The smokiest option by far, indoors and out.",
-  },
-  kerosene: {
-    co2KgPerWeek: Math.round(0.5 * 7 * 2.5 * 10) / 10,
-    smogGPerWeek: 7,
-    indoorSpike: 60,
-    hoursPerDay: 4,
-    note: "Unvented kerosene heaters fill rooms with fine particles and fumes.",
-  },
-};
-
-export const COOKING: Record<CookingFuel, FuelProfile> = {
-  lpg: {
-    co2KgPerWeek: Math.round(0.4 * 7 * 2.98 * 10) / 10,
-    smogGPerWeek: 0.2,
-    indoorSpike: 60,
-    hoursPerDay: 1,
-    note: "Clean-burning; frying still makes a particle spike, so run the exhaust.",
-  },
-  electric: {
-    co2KgPerWeek: Math.round(1.5 * 7 * GRID_CO2_PER_KWH * 10) / 10,
-    smogGPerWeek: 0,
-    indoorSpike: 30,
-    hoursPerDay: 1,
-    note: "No combustion at home; cooking fumes from food remain.",
-  },
-  biomass: {
-    co2KgPerWeek: 0,
-    smogGPerWeek: 112,
-    indoorSpike: 400,
-    hoursPerDay: 3,
-    note: "Kitchens often reach hundreds of µg/m³; the cook and small children breathe most of it.",
-  },
-};
+export { COOKING, HEATING, type FuelProfile } from "./fuels";
+export { GRID_CO2_PER_KWH } from "./assumptions";
 
 export interface Delta {
   /** Positive numbers mean the change is better (less breathed, less emitted). */
@@ -97,11 +24,11 @@ const r1 = (n: number) => Math.round(n * 10) / 10;
 export function commuteDose(mode: CommuteMode, km: number, pm25: number): number {
   if (mode === "home" || km <= 0) return 0;
   const m = MODES[mode];
-  return ((2 * km) / m.speedKmh) * m.ventilation * pm25 * m.exposureFactor;
+  return ((TRIPS_PER_COMMUTE_DAY * km) / m.speedKmh) * m.ventilation * pm25 * m.exposureFactor;
 }
 
 export function commuteWeekly(mode: CommuteMode, km: number, days: number) {
-  const weeklyKm = mode === "home" ? 0 : 2 * km * days;
+  const weeklyKm = mode === "home" ? 0 : TRIPS_PER_COMMUTE_DAY * km * days;
   return {
     co2KgPerWeek: weeklyKm * MODES[mode].co2PerKm,
     smogGPerWeek: weeklyKm * MODES[mode].pmPerKm,

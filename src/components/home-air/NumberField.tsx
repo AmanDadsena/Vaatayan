@@ -1,7 +1,7 @@
 "use client";
 
 import { useId } from "react";
-import { useNumberInput } from "../useNumberInput";
+import { useNumberInput } from "@/hooks/useNumberInput";
 import styles from "../HomeAir.module.css";
 
 export function NumberField({

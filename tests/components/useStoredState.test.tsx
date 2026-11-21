@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { resetStoredStateMemory, useStoredState } from "@/components/useStoredState";
+import { resetStoredStateMemory, useStoredState } from "@/hooks/useStoredState";
 
 const readNumber = (v: unknown) => (typeof v === "number" && v >= 0 ? v : null);
 

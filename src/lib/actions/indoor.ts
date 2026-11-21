@@ -10,9 +10,14 @@ import {
   indoorPm,
   type ActionDefinition,
 } from "../exposure";
-
-/** Typical daily cooking time with the stove on, in hours. */
-const COOKING_HOURS = 1;
+import {
+  COOKING_HOURS,
+  COOKING_SPIKE_UG_M3,
+  INCENSE_HOURS,
+  INCENSE_SPIKE_UG_M3,
+  RESUSPENDED_DUST_SHARE,
+  SLEEP_HOURS,
+} from "../assumptions";
 
 /** Indoor-air actions: making home the cleanest air you breathe. */
 export const INDOOR_ACTIONS: readonly ActionDefinition[] = [
@@ -30,10 +35,10 @@ export const INDOOR_ACTIONS: readonly ActionDefinition[] = [
     impact: (ctx) => {
       const before = ctx.air.pm25 * INDOOR_RATIO;
       return {
-        lungsUgPerDay: round(8 * VENTILATION.rest * before * HEPA_REDUCTION * people(ctx.household)),
+        lungsUgPerDay: round(SLEEP_HOURS * VENTILATION.rest * before * HEPA_REDUCTION * people(ctx.household)),
         co2KgPerWeek: 0,
         smogGPerWeek: 0,
-        basis: `8 hours of sleep for ${people(ctx.household)} people with indoor PM2.5 cut by about ${HEPA_REDUCTION * 100}%.`,
+        basis: `${SLEEP_HOURS} hours of sleep for ${people(ctx.household)} people with indoor PM2.5 cut by about ${HEPA_REDUCTION * 100}%.`,
       };
     },
   },
@@ -51,10 +56,10 @@ export const INDOOR_ACTIONS: readonly ActionDefinition[] = [
     impact: (ctx) => {
       const before = ctx.air.pm25 * INDOOR_RATIO;
       return {
-        lungsUgPerDay: round(8 * VENTILATION.rest * before * DIY_FILTER_REDUCTION * people(ctx.household)),
+        lungsUgPerDay: round(SLEEP_HOURS * VENTILATION.rest * before * DIY_FILTER_REDUCTION * people(ctx.household)),
         co2KgPerWeek: 0,
         smogGPerWeek: 0,
-        basis: `8 hours of sleep for ${people(ctx.household)} people with indoor PM2.5 cut by about ${DIY_FILTER_REDUCTION * 100}%.`,
+        basis: `${SLEEP_HOURS} hours of sleep for ${people(ctx.household)} people with indoor PM2.5 cut by about ${DIY_FILTER_REDUCTION * 100}%.`,
       };
     },
   },
@@ -91,10 +96,10 @@ export const INDOOR_ACTIONS: readonly ActionDefinition[] = [
     applies: () => true,
     impact: (ctx) => ({
       // One burning session lifts a room by roughly 100 µg/m³ for about 2 hours.
-      lungsUgPerDay: round(2 * VENTILATION.rest * 100 * people(ctx.household)),
+      lungsUgPerDay: round(INCENSE_HOURS * VENTILATION.rest * INCENSE_SPIKE_UG_M3 * people(ctx.household)),
       co2KgPerWeek: 0,
       smogGPerWeek: 0,
-      basis: "One coil or incense session adds about 100 µg/m³ to a room for 2 hours.",
+      basis: `One coil or incense session adds about ${INCENSE_SPIKE_UG_M3} µg/m³ to a room for ${INCENSE_HOURS} hours.`,
     }),
   },
   {
@@ -109,7 +114,9 @@ export const INDOOR_ACTIONS: readonly ActionDefinition[] = [
     ],
     applies: () => true,
     impact: (ctx) => ({
-      lungsUgPerDay: round(HOURS_AT_HOME * VENTILATION.rest * indoorPm(ctx) * 0.05 * people(ctx.household)),
+      lungsUgPerDay: round(
+        HOURS_AT_HOME * VENTILATION.rest * indoorPm(ctx) * RESUSPENDED_DUST_SHARE * people(ctx.household),
+      ),
       co2KgPerWeek: 0,
       smogGPerWeek: 0,
       basis: "Avoids roughly 5% of indoor PM2.5 from resuspended dust.",
@@ -127,7 +134,9 @@ export const INDOOR_ACTIONS: readonly ActionDefinition[] = [
     ],
     applies: (ctx) => ctx.household.cookingFuel !== "biomass",
     impact: (ctx) => ({
-      lungsUgPerDay: round(COOKING_HOURS * VENTILATION.light * 60 * Math.max(1, ctx.household.adults - 1)),
+      lungsUgPerDay: round(
+        COOKING_HOURS * VENTILATION.light * COOKING_SPIKE_UG_M3 * Math.max(1, ctx.household.adults - 1),
+      ),
       co2KgPerWeek: 0,
       smogGPerWeek: 0,
       basis: "Cuts a typical 60 µg/m³ cooking spike for 1 hour for whoever is in the kitchen.",

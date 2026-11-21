@@ -12,7 +12,7 @@ import { ModeBars } from "./impact-lab/ModeBars";
 import { ScaleUpSection } from "./impact-lab/ScaleUpSection";
 import { Photo } from "./Photo";
 import { RangeField } from "./RangeField";
-import { useStoredState } from "./useStoredState";
+import { useStoredState } from "@/hooks/useStoredState";
 import styles from "./ImpactLab.module.css";
 const PM_PRESETS = [
   { label: "Clean day", value: 15 },

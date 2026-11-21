@@ -11,9 +11,9 @@ import { HouseholdForm } from "./HouseholdForm";
 import { PlanLoading } from "./PlanLoading";
 import { PlanView } from "./PlanView";
 import { SiteFooter } from "./SiteFooter";
-import { useLiveAir } from "./useLiveAir";
-import { usePlanRequest } from "./usePlanRequest";
-import { useStoredState } from "./useStoredState";
+import { useLiveAir } from "@/hooks/useLiveAir";
+import { usePlanRequest } from "@/hooks/usePlanRequest";
+import { useStoredState } from "@/hooks/useStoredState";
 import styles from "./VaatayanApp.module.css";
 
 export const DEFAULT_PLACE: Place = { name: "New Delhi, Delhi, India", latitude: 28.61, longitude: 77.21 };

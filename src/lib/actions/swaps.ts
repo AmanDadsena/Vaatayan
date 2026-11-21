@@ -11,6 +11,15 @@ import {
   commutes,
   type ActionDefinition,
 } from "../exposure";
+import {
+  CARPOOL_SHARE_SAVED,
+  IDLE_MINUTES_PER_DAY,
+  IDLE_PM_G_PER_HOUR,
+  OPEN_BURNING_KG_PER_WEEK,
+  PM_G_PER_KG_OPEN_BURNING,
+  TRIPS_PER_COMMUTE_DAY,
+} from "../assumptions";
+import { burnsIndoors, COOKING, HEATING } from "../fuels";
 
 /** Lower-emission swaps: choices that leave less smog for everyone. */
 export const SWAP_ACTIONS: readonly ActionDefinition[] = [
@@ -30,7 +39,7 @@ export const SWAP_ACTIONS: readonly ActionDefinition[] = [
       const h = ctx.household;
       const from = MODES[h.commuteMode];
       const to = MODES.metro;
-      const weeklyKm = 2 * h.commuteKm * WORKDAYS_PER_WEEK;
+      const weeklyKm = TRIPS_PER_COMMUTE_DAY * h.commuteKm * WORKDAYS_PER_WEEK;
       return {
         lungsUgPerDay: round(commuteDose(h, ctx.air.pm25) - commuteDose(h, ctx.air.pm25, "metro")),
         co2KgPerWeek: round(weeklyKm * (from.co2PerKm - to.co2PerKm), 1),
@@ -52,11 +61,11 @@ export const SWAP_ACTIONS: readonly ActionDefinition[] = [
     ],
     applies: (ctx) => commutes(ctx.household) && ctx.household.commuteMode === "car",
     impact: (ctx) => {
-      const weeklyKm = 2 * ctx.household.commuteKm * WORKDAYS_PER_WEEK;
+      const weeklyKm = TRIPS_PER_COMMUTE_DAY * ctx.household.commuteKm * WORKDAYS_PER_WEEK;
       return {
         lungsUgPerDay: 0,
-        co2KgPerWeek: round(weeklyKm * MODES.car.co2PerKm * (2 / 3), 1),
-        smogGPerWeek: round(weeklyKm * MODES.car.pmPerKm * (2 / 3), 1),
+        co2KgPerWeek: round(weeklyKm * MODES.car.co2PerKm * CARPOOL_SHARE_SAVED, 1),
+        smogGPerWeek: round(weeklyKm * MODES.car.pmPerKm * CARPOOL_SHARE_SAVED, 1),
         basis: `Your ${weeklyKm} km a week split three ways.`,
       };
     },
@@ -76,7 +85,7 @@ export const SWAP_ACTIONS: readonly ActionDefinition[] = [
     impact: (ctx) => {
       const h = ctx.household;
       const m = MODES[h.commuteMode];
-      const dailyKm = 2 * h.commuteKm;
+      const dailyKm = TRIPS_PER_COMMUTE_DAY * h.commuteKm;
       return {
         lungsUgPerDay: round(commuteDose(h, ctx.air.pm25) / WORKDAYS_PER_WEEK),
         co2KgPerWeek: round(dailyKm * m.co2PerKm, 1),
@@ -98,11 +107,11 @@ export const SWAP_ACTIONS: readonly ActionDefinition[] = [
     applies: (ctx) => commutes(ctx.household) && ctx.household.commuteMode in IDLE_LITRES_PER_HOUR,
     impact: (ctx) => {
       const litresPerHour = IDLE_LITRES_PER_HOUR[ctx.household.commuteMode] ?? 0;
-      const idleHoursPerWeek = (10 / 60) * WORKDAYS_PER_WEEK;
+      const idleHoursPerWeek = (IDLE_MINUTES_PER_DAY / 60) * WORKDAYS_PER_WEEK;
       return {
         lungsUgPerDay: 0,
         co2KgPerWeek: round(litresPerHour * idleHoursPerWeek * CO2_PER_LITRE_PETROL, 1),
-        smogGPerWeek: round(idleHoursPerWeek * 2, 1),
+        smogGPerWeek: round(idleHoursPerWeek * IDLE_PM_G_PER_HOUR, 1),
         basis: "About 10 minutes of idling a day avoided.",
       };
     },
@@ -117,13 +126,17 @@ export const SWAP_ACTIONS: readonly ActionDefinition[] = [
       "Layer up: thermal innerwear and a warm cap hold heat well.",
       "If you must burn, use a chimney-vented stove, never an open brazier.",
     ],
-    applies: (ctx) => ctx.household.heating === "wood-coal" || ctx.household.heating === "kerosene",
-    impact: (ctx) => ({
-      lungsUgPerDay: round(4 * VENTILATION.rest * 60 * people(ctx.household)),
-      co2KgPerWeek: ctx.household.heating === "kerosene" ? round(0.5 * 7 * 2.5, 1) : 0,
-      smogGPerWeek: ctx.household.heating === "wood-coal" ? round(3 * 7 * 10) : round(0.5 * 7 * 2),
-      basis: "Removes a 60 µg/m³ indoor spike for 4 hours of heating, and the smoke vented outside.",
-    }),
+    applies: (ctx) => burnsIndoors(ctx.household.heating),
+    impact: (ctx) => {
+      // Everything this heater costs disappears when it is replaced.
+      const heater = HEATING[ctx.household.heating];
+      return {
+        lungsUgPerDay: round(heater.hoursPerDay * VENTILATION.rest * heater.indoorSpike * people(ctx.household)),
+        co2KgPerWeek: heater.co2KgPerWeek,
+        smogGPerWeek: heater.smogGPerWeek,
+        basis: `Removes a ${heater.indoorSpike} µg/m³ indoor spike for ${heater.hoursPerDay} hours of heating, and the smoke vented outside.`,
+      };
+    },
   },
   {
     id: "clean-cooking",
@@ -137,9 +150,9 @@ export const SWAP_ACTIONS: readonly ActionDefinition[] = [
     ],
     applies: (ctx) => ctx.household.cookingFuel === "biomass",
     impact: () => ({
-      lungsUgPerDay: round(3 * VENTILATION.light * 400),
+      lungsUgPerDay: round(COOKING.biomass.hoursPerDay * VENTILATION.light * COOKING.biomass.indoorSpike),
       co2KgPerWeek: 0,
-      smogGPerWeek: round(2 * 7 * 8),
+      smogGPerWeek: COOKING.biomass.smogGPerWeek,
       basis: "3 hours a day out of a 400 µg/m³ kitchen; about 2 kg of solid fuel a day not burned.",
     }),
   },
@@ -157,8 +170,8 @@ export const SWAP_ACTIONS: readonly ActionDefinition[] = [
     impact: () => ({
       lungsUgPerDay: 0,
       co2KgPerWeek: 0,
-      smogGPerWeek: round(1 * 8),
-      basis: "About 1 kg of waste a week not burned in the open.",
+      smogGPerWeek: round(OPEN_BURNING_KG_PER_WEEK * PM_G_PER_KG_OPEN_BURNING),
+      basis: `About ${OPEN_BURNING_KG_PER_WEEK} kg of waste a week not burned in the open.`,
     }),
   },
 ];

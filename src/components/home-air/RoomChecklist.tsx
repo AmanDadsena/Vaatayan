@@ -3,7 +3,7 @@
 import { useId } from "react";
 import { ROOMS } from "@/content/homeAir";
 import { STORAGE_KEYS } from "@/lib/domain";
-import { useStoredState } from "../useStoredState";
+import { useStoredState } from "@/hooks/useStoredState";
 import styles from "../HomeAir.module.css";
 
 const ALL_IDS = ROOMS.flatMap((r) => r.items.map((i) => i.id));

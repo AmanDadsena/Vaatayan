@@ -21,7 +21,7 @@ vi.mock("next/image", () => ({
 
 if (isBrowser) {
   const { cleanup } = await import("@testing-library/react");
-  const { resetStoredStateMemory } = await import("@/components/useStoredState");
+  const { resetStoredStateMemory } = await import("@/hooks/useStoredState");
   afterEach(() => {
     cleanup();
     window.localStorage.clear();
