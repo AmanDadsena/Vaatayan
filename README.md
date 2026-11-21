@@ -90,7 +90,7 @@ Measured on a production build:
 ## Testing
 
 ```bash
-npm test               # 306 tests: domain logic, both AI providers, API routes, full page flows + axe
+npm test               # 309 tests: domain logic, both AI providers, API routes, full page flows + axe
 npm run test:coverage  # about 98% lines, 97% statements, 96% functions, 85% branches (enforced floors)
 npm run lint
 npm run typecheck
@@ -111,20 +111,31 @@ Requires Node.js 20.9 or later.
 
 ```
 src/
-  app/                 pages and API routes (air, places, plan, ask)
-  components/          UI components, each with a CSS module
+  app/                    pages and API routes (air, places, plan, ask), icons, social card
+  proxy.ts                per-request nonce Content-Security-Policy
+  components/             UI components, each with a CSS module
+    home-air/             purifier sizer, checklist, buying guide, DIY filter, myths
+    impact-lab/           before/after figures and the mode comparison table
+  content/                page copy kept apart from components
   lib/
-    aqi.ts             AQI categories and EPA PM2.5 → AQI conversion
-    breathWindow.ts    cleanest and worst window search
-    impact.ts          action catalogue and deterministic impact model
-    planner.ts         rule-based planner and model-output merge
-    simulator.ts       Impact Lab and purifier maths
-    ai.ts              prompts, provider selection and streaming
-    providers/         Anthropic and Gemini clients behind one interface
-    airQuality.ts      Open-Meteo client with retry and last-good cache
-    schemas.ts         Zod schemas for every input and output
-tests/                 unit, API and component tests
+    exposure.ts           physical constants, emission factors, exposure helpers
+    actions/              the action catalogue: routine, indoor, swaps
+    impact.ts             assembles the catalogue, ranks candidates, totals impact
+    planner.ts            rule-based planner and model-output merge
+    ai.ts                 prompts, provider selection, streaming, result cache
+    providers/            Anthropic and Gemini clients behind one interface
+    airQuality.ts         Open-Meteo client with retry and last-good cache
+    schemas.ts            Zod schemas (server only)
+    domain.ts             shared constants and light validators (browser safe)
+    aqi.ts, sky.ts, breathWindow.ts, simulator.ts, quickAnswers.ts, csp.ts, ...
+tests/                    unit, API, security and component tests
 ```
+
+### Quality gates
+
+`npm run check` runs everything CI runs on every push: Prettier, ESLint (complexity ≤ 15, files ≤ 300 lines, no
+non-null assertions in app code), strict TypeScript (`noUncheckedIndexedAccess`, `noUnusedLocals` and more),
+tests with coverage floors, and a production build.
 
 ## Data, method and credits
 

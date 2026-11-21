@@ -106,10 +106,11 @@ export function toSnapshot(raw: unknown): AirSnapshot {
 
   const readings = [];
   for (let i = startIndex; i < hourly.time.length && readings.length < 24; i++) {
+    const time = hourly.time[i];
     const pm25 = hourly.pm2_5[i];
-    if (pm25 === null) continue;
+    if (time === undefined || pm25 === null || pm25 === undefined) continue;
     // Hourly AQI comes from that hour's PM2.5, not the 24 h rolling us_aqi field.
-    readings.push({ time: hourly.time[i].slice(0, 16), aqi: aqiFromPm25(pm25), pm25: Math.round(pm25 * 10) / 10 });
+    readings.push({ time: time.slice(0, 16), aqi: aqiFromPm25(pm25), pm25: Math.round(pm25 * 10) / 10 });
   }
 
   return airSnapshotSchema.parse({

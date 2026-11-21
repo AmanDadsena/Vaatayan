@@ -17,8 +17,17 @@ interface SkyStop {
   skyline: number;
 }
 
-const STOPS: SkyStop[] = [
-  { aqi: 0, top: [94, 162, 214], horizon: [196, 226, 238], sun: [255, 236, 170], glow: 1.6, skyline: 0.85 },
+const FIRST_STOP: SkyStop = {
+  aqi: 0,
+  top: [94, 162, 214],
+  horizon: [196, 226, 238],
+  sun: [255, 236, 170],
+  glow: 1.6,
+  skyline: 0.85,
+};
+
+const STOPS: readonly SkyStop[] = [
+  FIRST_STOP,
   { aqi: 100, top: [132, 172, 196], horizon: [212, 222, 214], sun: [252, 222, 140], glow: 2, skyline: 0.65 },
   { aqi: 200, top: [150, 154, 158], horizon: [204, 190, 168], sun: [240, 170, 92], glow: 2.6, skyline: 0.42 },
   { aqi: 300, top: [132, 124, 118], horizon: [190, 164, 132], sun: [226, 136, 70], glow: 3.1, skyline: 0.26 },
@@ -39,9 +48,13 @@ const mix = (a: Rgb, b: Rgb, t: number): Rgb => [lerp(a[0], b[0], t), lerp(a[1],
 
 export function skyFor(aqi: number): SkyPalette {
   const value = Number.isFinite(aqi) ? Math.min(500, Math.max(0, aqi)) : 0;
-  const upper = STOPS.findIndex((s) => s.aqi >= value);
-  const hi = STOPS[Math.max(upper, 0)];
-  const lo = STOPS[Math.max(upper - 1, 0)];
+  // The first stop at or above the value, and the one before it (the first stop for value 0).
+  const upper = Math.max(
+    STOPS.findIndex((s) => s.aqi >= value),
+    0,
+  );
+  const hi = STOPS[upper] ?? FIRST_STOP;
+  const lo = STOPS[upper - 1] ?? hi;
   const t = hi.aqi === lo.aqi ? 0 : (value - lo.aqi) / (hi.aqi - lo.aqi);
   return {
     top: toHex(mix(lo.top, hi.top, t)),

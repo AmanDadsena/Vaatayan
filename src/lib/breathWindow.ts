@@ -52,14 +52,16 @@ function findWindow(
   let best: BreathWindow | null = null;
   for (let i = 0; i + hours <= readings.length; i++) {
     const slice = readings.slice(i, i + hours);
-    const startHour = hourOf(slice[0].time);
+    const first = slice[0];
+    if (!first) continue;
+    const startHour = hourOf(first.time);
     const endHour = startHour + hours;
     const contiguous = slice.every((r, j) => j === 0 || hourOf(r.time) === (startHour + j) % 24);
     if (!contiguous || startHour < wakeHour || endHour > sleepHour) continue;
 
     const candidate: BreathWindow = {
-      start: slice[0].time,
-      end: addHours(slice[0].time, hours),
+      start: first.time,
+      end: addHours(first.time, hours),
       averageAqi: Math.round(average(slice.map((r) => r.aqi))),
       averagePm25: Math.round(average(slice.map((r) => r.pm25)) * 10) / 10,
     };

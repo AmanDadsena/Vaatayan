@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { categorize } from "@/lib/aqi";
+import { formatNumber } from "@/lib/format";
 import { clockInWindow, formatHour, readingAtClock, type HourlyReading } from "@/lib/breathWindow";
 import { cigarettesAvoided, METHOD_NOTES, totalImpact, type ActionKind } from "@/lib/impact";
 import type { Plan, PlanItem } from "@/lib/planner";
@@ -42,8 +43,7 @@ const KIND_HEADINGS: Record<ActionKind, { title: string; lede: string }> = {
   swap: { title: "Lower-emission swaps", lede: "Choices that leave less smog for everyone." },
 };
 
-const fmt = (n: number, digits = 0) =>
-  n.toLocaleString("en-IN", { maximumFractionDigits: digits, minimumFractionDigits: 0 });
+const fmt = formatNumber;
 
 function ImpactChips({ item }: { item: PlanItem }) {
   const { lungsUgPerDay, co2KgPerWeek, smogGPerWeek } = item.impact;

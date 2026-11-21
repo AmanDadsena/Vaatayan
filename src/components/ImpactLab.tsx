@@ -1,27 +1,19 @@
 "use client";
 
 import { useEffect, useId, useMemo, useState } from "react";
-import { cigarettesAvoided, MODES } from "@/lib/impact";
+import { formatNumber } from "@/lib/format";
 import { COMMUTE_LABELS } from "@/lib/labels";
 import { loadLocal } from "@/lib/client";
 import { readStoredHousehold } from "@/lib/domain";
 import type { CommuteMode, CookingFuel, HeatingSource } from "@/lib/schemas";
-import {
-  addDeltas,
-  commuteDose,
-  commuteWeekly,
-  compareCommute,
-  compareFuel,
-  COOKING,
-  HEATING,
-  scaleUp,
-  type Delta,
-} from "@/lib/simulator";
+import { addDeltas, compareCommute, compareFuel, COOKING, HEATING, scaleUp } from "@/lib/simulator";
 import { PHOTOS } from "@/lib/photos";
 import { ChoicePills } from "./ChoicePills";
+import { DeltaFigures } from "./impact-lab/DeltaFigures";
+import { ModeBars } from "./impact-lab/ModeBars";
 import { Photo } from "./Photo";
+import { RangeField } from "./RangeField";
 import styles from "./ImpactLab.module.css";
-
 const PM_PRESETS = [
   { label: "Clean day", value: 15 },
   { label: "Typical winter", value: 90 },
@@ -38,116 +30,6 @@ const COOKING_LABELS = Object.fromEntries(Object.entries(COOKING).map(([k, v]) =
   CookingFuel,
   string
 >;
-
-const TRAVEL_MODES = (Object.keys(MODES) as CommuteMode[]).filter((m) => m !== "home");
-const fmt = (n: number, digits = 0) => n.toLocaleString("en-IN", { maximumFractionDigits: digits });
-
-/** Three before/after figures. Positive = better; negative values are shown as costs. */
-function DeltaFigures({ delta, label }: { delta: Delta; label: string }) {
-  const items = [
-    {
-      key: "lungs",
-      value: delta.lungsUgPerDay,
-      better: `${fmt(delta.lungsUgPerDay)} µg less PM2.5 breathed a day`,
-      worse: `${fmt(-delta.lungsUgPerDay)} µg more PM2.5 breathed a day`,
-      extra:
-        delta.lungsUgPerDay > 0 ? `≈ ${fmt(cigarettesAvoided(delta.lungsUgPerDay), 1)} cigarettes' worth` : undefined,
-    },
-    {
-      key: "co2",
-      value: delta.co2KgPerWeek,
-      better: `${fmt(delta.co2KgPerWeek, 1)} kg less CO₂ a week`,
-      worse: `${fmt(-delta.co2KgPerWeek, 1)} kg more CO₂ a week`,
-    },
-    {
-      key: "smog",
-      value: delta.smogGPerWeek,
-      better: `${fmt(delta.smogGPerWeek, 1)} g less smog a week`,
-      worse: `${fmt(-delta.smogGPerWeek, 1)} g more smog a week`,
-    },
-  ];
-  return (
-    <ul className={styles.figures} aria-label={label} aria-live="polite">
-      {items.map((i) => {
-        const tone = i.value > 0 ? "better" : i.value < 0 ? "worse" : "same";
-        return (
-          <li key={i.key} data-tone={tone}>
-            <span className={styles.figureIcon} aria-hidden="true">
-              {tone === "better" ? "↓" : tone === "worse" ? "↑" : "="}
-            </span>
-            <span>
-              {tone === "same" ? "No change" : tone === "better" ? i.better : i.worse}
-              {i.extra && <small>{i.extra}</small>}
-            </span>
-          </li>
-        );
-      })}
-    </ul>
-  );
-}
-
-/** Accessible bar chart: a real table whose cells carry proportional bars. */
-function ModeBars({
-  km,
-  days,
-  pm25,
-  from,
-  to,
-}: {
-  km: number;
-  days: number;
-  pm25: number;
-  from: CommuteMode;
-  to: CommuteMode;
-}) {
-  const rows = TRAVEL_MODES.map((mode) => ({
-    mode,
-    co2: commuteWeekly(mode, km, days).co2KgPerWeek,
-    dose: commuteDose(mode, km, pm25),
-  }));
-  const maxCo2 = Math.max(...rows.map((r) => r.co2), 1);
-  const maxDose = Math.max(...rows.map((r) => r.dose), 1);
-
-  return (
-    <div className={styles.barsWrap}>
-      <table className={styles.bars}>
-        <caption>
-          Every way to make your {km} km trip, {days} days a week
-        </caption>
-        <thead>
-          <tr>
-            <th scope="col">Mode</th>
-            <th scope="col">CO₂ a week</th>
-            <th scope="col">PM2.5 you breathe a day</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((r) => (
-            <tr key={r.mode} data-role={r.mode === from ? "from" : r.mode === to ? "to" : undefined}>
-              <th scope="row">
-                {COMMUTE_LABELS[r.mode]}
-                {r.mode === from && <span className={styles.tag}>now</span>}
-                {r.mode === to && <span className={styles.tag}>switch</span>}
-              </th>
-              <td>
-                <span className={styles.bar} style={{ "--w": r.co2 / maxCo2 } as React.CSSProperties} data-kind="co2" />
-                <span className={styles.barValue}>{fmt(r.co2, 1)} kg</span>
-              </td>
-              <td>
-                <span
-                  className={styles.bar}
-                  style={{ "--w": r.dose / maxDose } as React.CSSProperties}
-                  data-kind="dose"
-                />
-                <span className={styles.barValue}>{fmt(r.dose)} µg</span>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
 
 export function ImpactLab() {
   const id = useId();
@@ -191,7 +73,7 @@ export function ImpactLab() {
     [heatFrom, heatTo, cookFrom, cookTo, people],
   );
   const total = addDeltas(commute, fuel);
-  const households = HOUSEHOLD_STEPS[stepIndex];
+  const households = HOUSEHOLD_STEPS[stepIndex] ?? 1;
   const scaled = scaleUp(total, households);
 
   return (
@@ -218,32 +100,8 @@ export function ImpactLab() {
               value={to}
               onChange={setTo}
             />
-            <div className={styles.range}>
-              <label htmlFor={`${id}-km`}>
-                Distance each way <output htmlFor={`${id}-km`}>{km} km</output>
-              </label>
-              <input
-                id={`${id}-km`}
-                type="range"
-                min={1}
-                max={60}
-                value={km}
-                onChange={(e) => setKm(Number(e.target.value))}
-              />
-            </div>
-            <div className={styles.range}>
-              <label htmlFor={`${id}-days`}>
-                Days a week <output htmlFor={`${id}-days`}>{days}</output>
-              </label>
-              <input
-                id={`${id}-days`}
-                type="range"
-                min={1}
-                max={7}
-                value={days}
-                onChange={(e) => setDays(Number(e.target.value))}
-              />
-            </div>
+            <RangeField label="Distance each way" display={`${km} km`} min={1} max={60} value={km} onChange={setKm} />
+            <RangeField label="Days a week" display={String(days)} min={1} max={7} value={days} onChange={setDays} />
             <fieldset className={styles.presets}>
               <legend>Outdoor PM2.5 to compare on</legend>
               <div>
@@ -340,38 +198,33 @@ export function ImpactLab() {
           <h2 id={`${id}-scale`}>Now multiply it</h2>
           <p>Smog is shared. Here is what your changes add up to when neighbours make them too.</p>
         </div>
-        <div className={styles.range}>
-          <label htmlFor={`${id}-hh`}>
-            Households making the same changes <output htmlFor={`${id}-hh`}>{fmt(households)}</output>
-          </label>
-          <input
-            id={`${id}-hh`}
-            type="range"
-            min={0}
-            max={HOUSEHOLD_STEPS.length - 1}
-            step={1}
-            value={stepIndex}
-            aria-valuetext={`${fmt(households)} households`}
-            onChange={(e) => setStepIndex(Number(e.target.value))}
-          />
-        </div>
+        <RangeField
+          label="Households making the same changes"
+          display={formatNumber(households)}
+          min={0}
+          max={HOUSEHOLD_STEPS.length - 1}
+          value={stepIndex}
+          valueText={`${formatNumber(households)} households`}
+          onChange={setStepIndex}
+          tone="dark"
+        />
         <dl className={styles.scaled} aria-live="polite">
           <div>
             <dt>CO₂ a year</dt>
             <dd>
-              {fmt(scaled.co2TonnesPerYear, 1)} <span>tonnes</span>
+              {formatNumber(scaled.co2TonnesPerYear, 1)} <span>tonnes</span>
             </dd>
           </div>
           <div>
             <dt>Like taking off the road</dt>
             <dd>
-              {fmt(Math.max(0, scaled.carsEquivalent))} <span>cars</span>
+              {formatNumber(Math.max(0, scaled.carsEquivalent))} <span>cars</span>
             </dd>
           </div>
           <div>
             <dt>Smog not made</dt>
             <dd>
-              {fmt(scaled.smogKgPerYear, 1)} <span>kg PM2.5 a year</span>
+              {formatNumber(scaled.smogKgPerYear, 1)} <span>kg PM2.5 a year</span>
             </dd>
           </div>
         </dl>

@@ -153,28 +153,6 @@
   box-shadow: var(--focus);
 }
 
-.range {
-  display: grid;
-  gap: var(--space-2);
-}
-
-.range label {
-  display: flex;
-  justify-content: space-between;
-  font-weight: 700;
-}
-
-.range output {
-  font-variant-numeric: tabular-nums;
-  color: var(--clear-deep);
-}
-
-.range input {
-  width: 100%;
-  accent-color: var(--clear);
-  min-height: 32px;
-}
-
 .switch {
   display: flex;
   align-items: center;

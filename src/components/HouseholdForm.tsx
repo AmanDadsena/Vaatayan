@@ -5,6 +5,7 @@ import { CONDITIONS } from "@/lib/domain";
 import type { Condition, CookingFuel, HeatingSource, Household } from "@/lib/schemas";
 import { COMMUTE_LABELS, CONDITION_LABELS, COOKING_LABELS, EXERCISE_LABELS, HEATING_LABELS } from "@/lib/labels";
 import { ChoicePills } from "./ChoicePills";
+import { RangeField } from "./RangeField";
 import { useNumberInput } from "./useNumberInput";
 import styles from "./HouseholdForm.module.css";
 
@@ -137,20 +138,14 @@ export function HouseholdForm({ value, onChange, onSubmit, busy, disabled }: Pro
       />
 
       {value.commuteMode !== "home" && (
-        <div className={styles.range}>
-          <label htmlFor={`${id}-km`}>
-            One-way distance <output htmlFor={`${id}-km`}>{value.commuteKm} km</output>
-          </label>
-          <input
-            id={`${id}-km`}
-            type="range"
-            min={1}
-            max={60}
-            step={1}
-            value={Math.max(1, value.commuteKm)}
-            onChange={(e) => set("commuteKm", Number(e.target.value))}
-          />
-        </div>
+        <RangeField
+          label="One-way distance"
+          display={`${value.commuteKm} km`}
+          min={1}
+          max={60}
+          value={Math.max(1, value.commuteKm)}
+          onChange={(km) => set("commuteKm", km)}
+        />
       )}
 
       <fieldset className={styles.group}>

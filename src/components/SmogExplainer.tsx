@@ -6,7 +6,9 @@ import { categorize, aqiFromPm25 } from "@/lib/aqi";
 import { concentrationForMixingHeight } from "@/lib/simulator";
 import { BRAND } from "@/lib/brand";
 import { PHOTOS } from "@/lib/photos";
+import { formatNumber } from "@/lib/format";
 import { Photo } from "./Photo";
+import { RangeField } from "./RangeField";
 import styles from "./SmogExplainer.module.css";
 
 const W = 640;
@@ -63,21 +65,16 @@ function InversionLab() {
             </button>
           ))}
         </div>
-        <div className={styles.range}>
-          <label htmlFor={`${id}-h`}>
-            Height of the mixing layer <output htmlFor={`${id}-h`}>{height.toLocaleString("en-IN")} m</output>
-          </label>
-          <input
-            id={`${id}-h`}
-            type="range"
-            min={100}
-            max={MAX_H}
-            step={50}
-            value={height}
-            aria-valuetext={`${height} metres, PM2.5 about ${pm} micrograms per cubic metre`}
-            onChange={(e) => setHeight(Number(e.target.value))}
-          />
-        </div>
+        <RangeField
+          label="Height of the mixing layer"
+          display={`${formatNumber(height)} m`}
+          min={100}
+          max={MAX_H}
+          step={50}
+          value={height}
+          valueText={`${height} metres, PM2.5 about ${pm} micrograms per cubic metre`}
+          onChange={setHeight}
+        />
         <p className={styles.readout} aria-live="polite">
           Same emissions, PM2.5 near the ground: <strong>{pm} µg/m³</strong>
           <span data-level={category.level}>{category.label}</span>

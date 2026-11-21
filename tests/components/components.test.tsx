@@ -10,7 +10,7 @@ import { PlanView } from "@/components/PlanView";
 import { buildContext } from "@/lib/impact";
 import { buildRulePlan } from "@/lib/planner";
 import type { Household } from "@/lib/schemas";
-import { makeAir, makeHousehold, PLACE } from "../fixtures";
+import { makeAir, makeHousehold, PLACE, must } from "../fixtures";
 
 describe("BreathRibbon", () => {
   it("announces the clean window in text and offers an hour-by-hour table", async () => {
@@ -46,7 +46,7 @@ describe("PlanView", () => {
     const ledger = screen.getByRole("region", { name: /if you do the/i });
     expect(ledger).toHaveTextContent(`If you do the ${plan.items.length} things`);
 
-    await user.click(screen.getAllByRole("checkbox", { name: /I'll do this/ })[0]);
+    await user.click(must(screen.getAllByRole("checkbox", { name: /I'll do this/ })[0], "first action checkbox"));
     expect(ledger).toHaveTextContent(`If you do the ${plan.items.length - 1} things`);
   });
 
@@ -126,7 +126,9 @@ describe("PlaceSearch", () => {
     expect(await axe(container)).toHaveNoViolations();
 
     await user.keyboard("{ArrowDown}{ArrowDown}");
-    expect(input.getAttribute("aria-activedescendant")).toBe(screen.getAllByRole("option")[1].id);
+    expect(input.getAttribute("aria-activedescendant")).toBe(
+      must(screen.getAllByRole("option")[1], "second option").id,
+    );
     await user.keyboard("{Enter}");
     expect(onSelect).toHaveBeenCalledWith(expect.objectContaining({ name: "Delhi, New York, United States" }));
   });

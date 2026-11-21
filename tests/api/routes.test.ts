@@ -1,6 +1,8 @@
 // @vitest-environment node
 import { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type * as AiModule from "@/lib/ai";
+import type * as AirQualityModule from "@/lib/airQuality";
 
 const mocks = vi.hoisted(() => ({
   isAiConfigured: vi.fn(),
@@ -11,14 +13,14 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("@/lib/ai", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/lib/ai")>()),
+  ...(await importOriginal<typeof AiModule>()),
   isAiConfigured: mocks.isAiConfigured,
   generateModelPlan: mocks.generateModelPlan,
   streamAnswer: mocks.streamAnswer,
 }));
 
 vi.mock("@/lib/airQuality", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/lib/airQuality")>()),
+  ...(await importOriginal<typeof AirQualityModule>()),
   fetchAir: mocks.fetchAir,
   searchPlaces: mocks.searchPlaces,
 }));

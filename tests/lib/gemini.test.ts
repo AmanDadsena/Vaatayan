@@ -39,7 +39,7 @@ import {
   clearAiCaches,
 } from "@/lib/ai";
 import { buildContext } from "@/lib/impact";
-import { makeAir, makeHousehold, PLACE } from "../fixtures";
+import { makeAir, makeHousehold, PLACE, must } from "../fixtures";
 
 const ctx = buildContext(makeHousehold(), makeAir());
 const validPlan = {
@@ -106,7 +106,7 @@ describe("Gemini plans", () => {
     });
     await expect(generateModelPlan(PLACE, ctx)).resolves.toEqual(validPlan);
 
-    const [params] = genai.generateContent.mock.calls[0];
+    const [params] = must(genai.generateContent.mock.calls[0], "generate call");
     expect(params.model).toBe("gemini-2.5-flash");
     expect(params.config.responseMimeType).toBe("application/json");
     expect(params.config.responseJsonSchema).toMatchObject({
@@ -126,7 +126,7 @@ describe("Gemini plans", () => {
     });
     const sick = buildContext(makeHousehold({ conditions: ["asthma-copd"], cookingFuel: "lpg" }), makeAir());
     await generateModelPlan(PLACE, sick);
-    const [params] = genai.generateContent.mock.calls[0];
+    const [params] = must(genai.generateContent.mock.calls[0], "generate call");
     expect(params.contents).toContain("Asthma or COPD");
     expect(params.contents).not.toContain("asthma-copd");
     expect(params.contents).toContain("lpg or piped gas");
@@ -177,7 +177,9 @@ describe("Gemini follow-ups", () => {
       chunks([{ text: "Walk " }, { text: "at noon.", finishReason: "STOP" }]),
     );
     await expect(new Response(streamAnswer(request, ctx)).text()).resolves.toBe("Walk at noon.");
-    expect(genai.generateContentStream.mock.calls[0][0].config.thinkingConfig).toEqual({ thinkingBudget: 0 });
+    expect(must(genai.generateContentStream.mock.calls[0], "stream call")[0].config.thinkingConfig).toEqual({
+      thinkingBudget: 0,
+    });
   });
 
   it("explains a blocked answer", async () => {

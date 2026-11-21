@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { toSnapshot } from "@/lib/airQuality";
 import { clientKey, createRateLimiter } from "@/lib/rateLimit";
 import { askRequestSchema, householdSchema, planRequestSchema } from "@/lib/schemas";
-import { makeAir, makeHousehold, PLACE } from "../fixtures";
+import { makeAir, makeHousehold, PLACE, must } from "../fixtures";
 
 describe("householdSchema", () => {
   it("accepts the defaults", () => {
@@ -67,7 +67,7 @@ describe("toSnapshot", () => {
     expect(snap.aqi).toBe(211);
     expect(snap.pm25).toBe(70.5);
     expect(snap.hourly.map((h) => h.time)).toEqual(["2026-11-21T15:00", "2026-11-21T17:00"]);
-    expect(snap.hourly[1].aqi).toBeGreaterThan(snap.hourly[0].aqi);
+    expect(must(snap.hourly[1], "second hour").aqi).toBeGreaterThan(must(snap.hourly[0], "first hour").aqi);
   });
 
   it("rejects malformed upstream data", () => {

@@ -98,28 +98,6 @@
   font-size: 0.9rem;
 }
 
-.range {
-  display: grid;
-  gap: var(--space-2);
-}
-
-.range label {
-  display: flex;
-  justify-content: space-between;
-  font-weight: 700;
-}
-
-.range output {
-  font-variant-numeric: tabular-nums;
-  color: var(--clear-deep);
-}
-
-.range input {
-  width: 100%;
-  accent-color: var(--clear);
-  min-height: 32px;
-}
-
 .presets {
   border: 0;
   margin: 0;
@@ -258,14 +236,6 @@
 .multiply .sectionHead p,
 .multiply .footnote {
   color: #c6dcd8;
-}
-
-.multiply .range output {
-  color: #7fd1bd;
-}
-
-.multiply .range input {
-  accent-color: #7fd1bd;
 }
 
 .scaled {

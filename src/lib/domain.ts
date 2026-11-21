@@ -41,37 +41,43 @@ const numIn = (v: unknown, min: number, max: number) =>
   typeof v === "number" && Number.isFinite(v) && v >= min && v <= max;
 const oneOf = <T extends string>(options: readonly T[], v: unknown): v is T => options.includes(v as T);
 
+/**
+ * One check per household field. Typed as a Record over every key, so adding a
+ * field to Household without a check here is a compile error.
+ */
+const HOUSEHOLD_CHECKS: Record<keyof Household, (v: unknown) => boolean> = {
+  adults: (v) => intIn(v, 1, LIMITS.people.max),
+  children: (v) => intIn(v, 0, LIMITS.people.max),
+  elders: (v) => intIn(v, 0, LIMITS.people.max),
+  conditions: (v) => Array.isArray(v) && v.length <= CONDITIONS.length && v.every((c) => oneOf(CONDITIONS, c)),
+  commuteMode: (v) => oneOf(COMMUTE_MODES, v),
+  commuteKm: (v) => numIn(v, LIMITS.commuteKm.min, LIMITS.commuteKm.max),
+  hasPurifier: (v) => typeof v === "boolean",
+  cookingFuel: (v) => oneOf(COOKING_FUELS, v),
+  heating: (v) => oneOf(HEATING_SOURCES, v),
+  exercise: (v) => oneOf(EXERCISE_TIMES, v),
+  notes: (v) => v === undefined || (typeof v === "string" && v.length <= LIMITS.notes.max),
+};
+
 /** Returns the saved household if it is complete and in range, otherwise null. */
 export function readStoredHousehold(v: unknown): Household | null {
   if (!isRecord(v)) return null;
-  const { people, commuteKm, notes } = LIMITS;
-  const valid =
-    intIn(v.adults, 1, people.max) &&
-    intIn(v.children, 0, people.max) &&
-    intIn(v.elders, 0, people.max) &&
-    Array.isArray(v.conditions) &&
-    v.conditions.length <= CONDITIONS.length &&
-    v.conditions.every((c) => oneOf(CONDITIONS, c)) &&
-    oneOf(COMMUTE_MODES, v.commuteMode) &&
-    numIn(v.commuteKm, commuteKm.min, commuteKm.max) &&
-    typeof v.hasPurifier === "boolean" &&
-    oneOf(COOKING_FUELS, v.cookingFuel) &&
-    oneOf(HEATING_SOURCES, v.heating) &&
-    oneOf(EXERCISE_TIMES, v.exercise) &&
-    (v.notes === undefined || (typeof v.notes === "string" && v.notes.length <= notes.max));
+  const valid = (Object.keys(HOUSEHOLD_CHECKS) as (keyof Household)[]).every((key) => HOUSEHOLD_CHECKS[key](v[key]));
   if (!valid) return null;
+  // Checked above; copy field by field so unknown keys are dropped.
+  const h = v as Household;
   return {
-    adults: v.adults as number,
-    children: v.children as number,
-    elders: v.elders as number,
-    conditions: [...(v.conditions as Household["conditions"])],
-    commuteMode: v.commuteMode as Household["commuteMode"],
-    commuteKm: v.commuteKm as number,
-    hasPurifier: v.hasPurifier as boolean,
-    cookingFuel: v.cookingFuel as Household["cookingFuel"],
-    heating: v.heating as Household["heating"],
-    exercise: v.exercise as Household["exercise"],
-    notes: (v.notes as string | undefined) ?? "",
+    adults: h.adults,
+    children: h.children,
+    elders: h.elders,
+    conditions: [...h.conditions],
+    commuteMode: h.commuteMode,
+    commuteKm: h.commuteKm,
+    hasPurifier: h.hasPurifier,
+    cookingFuel: h.cookingFuel,
+    heating: h.heating,
+    exercise: h.exercise,
+    notes: h.notes ?? "",
   };
 }
 

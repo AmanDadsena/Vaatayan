@@ -1,6 +1,12 @@
 import type { AirSnapshot, Household, Place } from "@/lib/schemas";
 import { DEFAULT_HOUSEHOLD } from "@/lib/schemas";
 
+/** Returns the value, or fails the test with a clear message if it is missing. */
+export function must<T>(value: T | null | undefined, what = "value"): T {
+  if (value === null || value === undefined) throw new Error(`Expected ${what} to be present`);
+  return value;
+}
+
 export const PLACE: Place = { name: "New Delhi, Delhi, India", latitude: 28.61, longitude: 77.21 };
 
 /** A realistic Delhi winter day: dirty night and morning, cleaner early afternoon. */

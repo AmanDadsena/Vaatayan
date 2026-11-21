@@ -7,7 +7,7 @@ import { API_CSP, buildCsp, createNonce } from "@/lib/csp";
 import { guardJsonPost } from "@/lib/http";
 import nextConfig from "../../next.config";
 import { config as proxyConfig, proxy } from "@/proxy";
-import { makeAir, makeHousehold, PLACE } from "../fixtures";
+import { makeAir, makeHousehold, PLACE, must } from "../fixtures";
 
 const directive = (csp: string, name: string) =>
   csp
@@ -95,7 +95,7 @@ describe("proxy", () => {
   });
 
   it("skips API routes, static files and prefetches", () => {
-    const [rule] = proxyConfig.matcher;
+    const rule = must(proxyConfig.matcher[0], "proxy matcher");
     const pattern = new RegExp(`^${rule.source}$`);
     for (const path of ["/", "/impact", "/home-air", "/why-smog"]) expect(pattern.test(path)).toBe(true);
     for (const path of ["/api/plan", "/_next/static/chunks/a.js", "/_next/image", "/images/metro.jpg", "/icon.svg"]) {

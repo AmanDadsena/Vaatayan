@@ -6,7 +6,7 @@ import { PlanView } from "@/components/PlanView";
 import { clockInWindow, readingAtClock } from "@/lib/breathWindow";
 import { buildContext } from "@/lib/impact";
 import { buildRulePlan } from "@/lib/planner";
-import { makeAir, makeHousehold } from "../fixtures";
+import { makeAir, makeHousehold, must } from "../fixtures";
 
 const air = makeAir();
 
@@ -102,6 +102,6 @@ describe("PlanView timeline and ledger", () => {
     expect(ledger).toHaveTextContent(/cigarettes' worth of PM2\.5/);
     const glyphs = container.querySelectorAll("svg[class*=cig]");
     expect(glyphs.length).toBe(Math.min(20, Math.ceil(plan.cigarettesAvoidedPerDay)));
-    expect(glyphs[0].closest("[aria-hidden=true]")).not.toBeNull();
+    expect(must(glyphs[0], "first glyph").closest("[aria-hidden=true]")).not.toBeNull();
   });
 });

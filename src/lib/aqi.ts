@@ -13,6 +13,13 @@ export interface AqiCategory {
   advice: string;
 }
 
+const HAZARDOUS: AqiCategory = {
+  level: "hazardous",
+  label: "Hazardous",
+  max: Number.POSITIVE_INFINITY,
+  advice: "Stay indoors with filtered air. Only go out if you must, and wear an N95.",
+};
+
 export const AQI_CATEGORIES: readonly AqiCategory[] = [
   { level: "good", label: "Good", max: 50, advice: "Air is clean. A good day to air out your home." },
   {
@@ -39,18 +46,14 @@ export const AQI_CATEGORIES: readonly AqiCategory[] = [
     max: 300,
     advice: "Move exercise indoors, wear a well-fitted N95 outside and run filtration at home.",
   },
-  {
-    level: "hazardous",
-    label: "Hazardous",
-    max: Number.POSITIVE_INFINITY,
-    advice: "Stay indoors with filtered air. Only go out if you must, and wear an N95.",
-  },
+  HAZARDOUS,
 ] as const;
 
 /** Returns the category for a US AQI value. Negative or non-finite input is treated as 0. */
 export function categorize(aqi: number): AqiCategory {
   const value = Number.isFinite(aqi) && aqi > 0 ? aqi : 0;
-  return AQI_CATEGORIES.find((c) => value <= c.max) ?? AQI_CATEGORIES[AQI_CATEGORIES.length - 1];
+  // The last category's upper bound is Infinity, so a match always exists; the fallback keeps the type honest.
+  return AQI_CATEGORIES.find((c) => value <= c.max) ?? HAZARDOUS;
 }
 
 /** US EPA PM2.5 breakpoints (2024 revision): [concLow, concHigh, aqiLow, aqiHigh]. */

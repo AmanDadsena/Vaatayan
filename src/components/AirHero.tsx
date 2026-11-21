@@ -22,7 +22,7 @@ interface Props {
 export function AirHero({ place, air, loading, error, onSelectPlace, onRetry }: Props) {
   const category = air ? categorize(air.aqi) : null;
   const haze = air ? hazeDensity(air.aqi) : 0;
-  const shortName = place.name.split(",")[0];
+  const shortName = place.name.split(",")[0] ?? place.name;
 
   return (
     <section className={styles.hero} aria-labelledby="place-heading" style={{ "--haze": haze } as React.CSSProperties}>

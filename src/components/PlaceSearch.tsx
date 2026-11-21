@@ -65,9 +65,11 @@ export function PlaceSearch({ onSelect }: Props) {
       event.preventDefault();
       setOpen(true);
       setActive((i) => (i <= 0 ? results.length - 1 : i - 1));
-    } else if (event.key === "Enter" && open && active >= 0) {
+    } else if (event.key === "Enter" && open) {
+      const highlighted = results[active];
+      if (!highlighted) return;
       event.preventDefault();
-      choose(results[active]);
+      choose(highlighted);
     } else if (event.key === "Escape") {
       setOpen(false);
       setActive(-1);

@@ -5,14 +5,30 @@ import nextTs from "eslint-config-next/typescript";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
-  // Override default ignores of eslint-config-next.
-  globalIgnores([
-    // Default ignores of eslint-config-next:
-    ".next/**",
-    "out/**",
-    "build/**",
-    "next-env.d.ts",
-  ]),
+  {
+    rules: {
+      eqeqeq: ["error", "always"],
+      "no-console": ["error", { allow: ["warn", "error"] }],
+      "no-var": "error",
+      "prefer-const": "error",
+      "object-shorthand": "error",
+      "no-implicit-coercion": "error",
+      "@typescript-eslint/consistent-type-imports": ["error", { fixStyle: "inline-type-imports" }],
+      "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
+    },
+  },
+  {
+    // Application code: keep files and functions small, and never assert away null checks.
+    files: ["src/**/*.{ts,tsx}"],
+    rules: {
+      "@typescript-eslint/no-non-null-assertion": "error",
+      complexity: ["error", 15],
+      "max-lines": ["error", { max: 300, skipBlankLines: true, skipComments: true }],
+      "max-depth": ["error", 4],
+    },
+  },
+  globalIgnores([".next/**", "out/**", "build/**", "coverage/**", "next-env.d.ts"]),
 ]);
 
 export default eslintConfig;

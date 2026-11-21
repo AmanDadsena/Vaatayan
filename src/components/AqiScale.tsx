@@ -2,7 +2,8 @@ import { AQI_CATEGORIES, categorize } from "@/lib/aqi";
 import styles from "./AqiScale.module.css";
 
 const SCALE_MAX = 500;
-const BOUNDS = [0, 50, 100, 150, 200, 300, 500];
+/** Width of each band on the 0–500 scale, in the same order as AQI_CATEGORIES. */
+const BAND_WIDTHS = [50, 50, 50, 50, 100, 200] as const;
 
 /** Where a value sits on the 0–500 scale, as a percentage. */
 export function scalePosition(aqi: number): number {
@@ -21,7 +22,7 @@ export function AqiScale({ aqi }: { aqi: number }) {
             key={c.level}
             className={styles.band}
             data-current={c.level === category.level || undefined}
-            style={{ flexGrow: BOUNDS[i + 1] - BOUNDS[i], background: `var(--aqi-${c.level})` }}
+            style={{ flexGrow: BAND_WIDTHS[i] ?? 0, background: `var(--aqi-${c.level})` }}
           />
         ))}
         <span className={styles.marker} style={{ left: `${position}%` }} />

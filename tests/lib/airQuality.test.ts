@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { fetchAir, roundCoord, searchPlaces, UpstreamError } from "@/lib/airQuality";
+import { must } from "../fixtures";
 
 /** A minimal, valid Open-Meteo air-quality payload. */
 const airPayload = (pm = 70.5) => ({
@@ -42,7 +43,7 @@ describe("fetchAir", () => {
     fetchMock.mockResolvedValue(json(airPayload()));
     const snap = await fetchAir(28.61394, 77.20901);
     expect(snap.aqi).toBe(211);
-    const url = new URL(fetchMock.mock.calls[0][0]);
+    const url = new URL(must(fetchMock.mock.calls[0], "fetch call")[0]);
     expect(url.searchParams.get("latitude")).toBe("28.61");
     expect(url.searchParams.get("longitude")).toBe("77.21");
     expect(url.searchParams.get("current")).toContain("pm2_5");
@@ -107,7 +108,7 @@ describe("searchPlaces", () => {
     await expect(searchPlaces("Delhi")).resolves.toEqual([
       { name: "Delhi, Delhi, India", latitude: 28.65, longitude: 77.23 },
     ]);
-    expect(new URL(fetchMock.mock.calls[0][0]).searchParams.get("name")).toBe("Delhi");
+    expect(new URL(must(fetchMock.mock.calls[0], "fetch call")[0]).searchParams.get("name")).toBe("Delhi");
   });
 
   it("returns an empty list when nothing matches", async () => {
