@@ -47,14 +47,7 @@ function Stepper({
         >
           −
         </button>
-        <input
-          id={id}
-          type="number"
-          inputMode="numeric"
-          min={min}
-          max={max}
-          {...input}
-        />
+        <input id={id} type="number" inputMode="numeric" min={min} max={max} {...input} />
         <button
           type="button"
           aria-label={`More ${label.toLowerCase()}`}
@@ -73,7 +66,10 @@ export function HouseholdForm({ value, onChange, onSubmit, busy, disabled }: Pro
   const set = <K extends keyof Household>(key: K, v: Household[K]) => onChange({ ...value, [key]: v });
 
   const toggleCondition = (c: Condition) =>
-    set("conditions", value.conditions.includes(c) ? value.conditions.filter((x) => x !== c) : [...value.conditions, c]);
+    set(
+      "conditions",
+      value.conditions.includes(c) ? value.conditions.filter((x) => x !== c) : [...value.conditions, c],
+    );
 
   return (
     <form
@@ -92,9 +88,30 @@ export function HouseholdForm({ value, onChange, onSubmit, busy, disabled }: Pro
       <fieldset className={styles.group}>
         <legend>Who lives with you</legend>
         <div className={styles.steppers}>
-          <Stepper label="Adults" hint="18 to 64" value={value.adults} min={1} max={12} onChange={(n) => set("adults", n)} />
-          <Stepper label="Children" hint="under 18" value={value.children} min={0} max={12} onChange={(n) => set("children", n)} />
-          <Stepper label="Elders" hint="65 and over" value={value.elders} min={0} max={12} onChange={(n) => set("elders", n)} />
+          <Stepper
+            label="Adults"
+            hint="18 to 64"
+            value={value.adults}
+            min={1}
+            max={12}
+            onChange={(n) => set("adults", n)}
+          />
+          <Stepper
+            label="Children"
+            hint="under 18"
+            value={value.children}
+            min={0}
+            max={12}
+            onChange={(n) => set("children", n)}
+          />
+          <Stepper
+            label="Elders"
+            hint="65 and over"
+            value={value.elders}
+            min={0}
+            max={12}
+            onChange={(n) => set("elders", n)}
+          />
         </div>
       </fieldset>
 
@@ -196,7 +213,12 @@ export function HouseholdForm({ value, onChange, onSubmit, busy, disabled }: Pro
         </span>
       </div>
 
-      <button type="submit" className={styles.submit} disabled={disabled || busy} aria-describedby={`${id}-submit-hint`}>
+      <button
+        type="submit"
+        className={styles.submit}
+        disabled={disabled || busy}
+        aria-describedby={`${id}-submit-hint`}
+      >
         {busy ? "Writing your plan…" : "Make today's plan"}
       </button>
       <p id={`${id}-submit-hint`} className={styles.hint}>

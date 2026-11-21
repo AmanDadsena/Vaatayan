@@ -1,15 +1,10 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { axe } from "vitest-axe";
 import { HomeAir } from "@/components/HomeAir";
 import { ImpactLab } from "@/components/ImpactLab";
 import { SmogExplainer } from "@/components/SmogExplainer";
-
-vi.mock("next/image", () => ({
-  // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
-  default: (props: React.ImgHTMLAttributes<HTMLImageElement>) => <img {...props} />,
-}));
 
 describe("ImpactLab", () => {
   it("is accessible and updates the comparison live", async () => {
@@ -58,7 +53,10 @@ describe("ImpactLab", () => {
 
   it("credits the photograph", () => {
     render(<ImpactLab />);
-    expect(screen.getByRole("link", { name: /CC BY-SA 4.0/ })).toHaveAttribute("rel", expect.stringContaining("noopener"));
+    expect(screen.getByRole("link", { name: /CC BY-SA 4.0/ })).toHaveAttribute(
+      "rel",
+      expect.stringContaining("noopener"),
+    );
   });
 });
 

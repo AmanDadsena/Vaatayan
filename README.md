@@ -2,7 +2,7 @@
 
 **Find your window of clean air.**
 
-*Vaatayan* (वातायन) is Hindi for a window: literally, *the path by which the wind comes in*.
+_Vaatayan_ (वातायन) is Hindi for a window: literally, _the path by which the wind comes in_.
 Every winter, smog settles over North Indian cities and families are told to "stay indoors" without being told when, where or how.
 Vaatayan finds the cleanest hours of your day, turns them into a routine for your household, makes your home's air cleaner,
 and shows exactly how much each choice keeps out of your lungs and out of your city's air.
@@ -11,16 +11,16 @@ and shows exactly how much each choice keeps out of your lungs and out of your c
 
 ## What it does
 
-| Page | What you get |
-| --- | --- |
-| **Today** (`/`) | Live air quality for any city, with the sky literally hazed to match. A 24-hour *breath ribbon* that brackets your cleanest and worst two hours. A GenAI plan for your household: an hour-by-hour routine, indoor fixes and lower-emission swaps, plus follow-up questions answered with your live data. |
-| **Impact lab** (`/impact`) | "What if?" for your commute, heating and cooking. See the change in what your family breathes, CO₂, and the smog you add, then multiply it across 1 to 100,000 households. Trade-offs are shown honestly (an electric heater removes indoor smoke but adds grid CO₂). |
-| **Home air** (`/home-air`) | Purifier sizing from room dimensions (CADR and time-to-clean), a buying guide, an illustrated DIY box-fan filter, a room-by-room checklist that remembers progress, and myth versus fact. |
-| **Why winter smog** (`/why-smog`) | Drag the inversion "lid" and watch the same pollution crowd into a thinner layer. Particle sizes drawn to scale. Honest, contested source ranges, and who needs the most care. |
+| Page                              | What you get                                                                                                                                                                                                                                                                                             |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Today** (`/`)                   | Live air quality for any city, with the sky literally hazed to match. A 24-hour _breath ribbon_ that brackets your cleanest and worst two hours. A GenAI plan for your household: an hour-by-hour routine, indoor fixes and lower-emission swaps, plus follow-up questions answered with your live data. |
+| **Impact lab** (`/impact`)        | "What if?" for your commute, heating and cooking. See the change in what your family breathes, CO₂, and the smog you add, then multiply it across 1 to 100,000 households. Trade-offs are shown honestly (an electric heater removes indoor smoke but adds grid CO₂).                                    |
+| **Home air** (`/home-air`)        | Purifier sizing from room dimensions (CADR and time-to-clean), a buying guide, an illustrated DIY box-fan filter, a room-by-room checklist that remembers progress, and myth versus fact.                                                                                                                |
+| **Why winter smog** (`/why-smog`) | Drag the inversion "lid" and watch the same pollution crowd into a thinner layer. Particle sizes drawn to scale. Honest, contested source ranges, and who needs the most care.                                                                                                                           |
 
 ## Design
 
-- **The mark** is a *jharokha*, the carved arched window of Indian architecture, with clear sky, a sun and two streams of air flowing in. It is the literal meaning of वातायन, and one shared source draws it everywhere: header, footer, favicon, touch icon and social card.
+- **The mark** is a _jharokha_, the carved arched window of Indian architecture, with clear sky, a sun and two streams of air flowing in. It is the literal meaning of वातायन, and one shared source draws it everywhere: header, footer, favicon, touch icon and social card.
 - **The hero is a painting of the view from your window, made from live data.** Sky colour, the sun's glow, how far the skyline fades and how many particles drift are all computed from the current AQI (`src/lib/sky.ts`). Clean air gives a blue sky and a crisp sun. Smog gives the brown-grey sky and dim orange disc of a winter morning.
 - **The palette** is a misty grey-green with a clear-air teal, plus a muted earth-toned AQI scale where every step passes 3:1 contrast. The display face is Bricolage Grotesque, the body face Atkinson Hyperlegible, and the wordmark Tiro Devanagari Hindi.
 - **Motion is quiet and purposeful.** Haze drifts slowly and particles float. The wind in the logo moves on hover. Everything stops under `prefers-reduced-motion`.
@@ -39,7 +39,7 @@ household ─────┼─▶ deterministic impact model ─▶ candidate a
 ```
 
 - **Two providers, one contract.** Plans and answers come from Anthropic (`ANTHROPIC_API_KEY`) or Google Gemini (`GOOGLE_API_KEY`, default `gemini-2.5-flash`), chosen by which key is on the server. Both sit behind the same interface (`src/lib/providers/`), so prompts, validation and numbers are identical.
-- **The model chooses and explains; it never invents numbers.** Every figure on screen (µg of PM2.5 not inhaled, kg CO₂, g of smog) comes from a tested, deterministic model in `src/lib/impact.ts`. The model receives the candidate actions and writes the personal *why*, the steps and the routine.
+- **The model chooses and explains; it never invents numbers.** Every figure on screen (µg of PM2.5 not inhaled, kg CO₂, g of smog) comes from a tested, deterministic model in `src/lib/impact.ts`. The model receives the candidate actions and writes the personal _why_, the steps and the routine.
 - **Structured output.** Plans are requested with a JSON schema built from the Zod schema, then validated again with Zod on the server before use. Action ids the model invents, or that don't apply, are dropped. Text is length-clipped and malformed times are discarded.
 - **Grounded in live data.** Each prompt carries the current AQI, pollutants, the 24-hour forecast and the computed clean and worst windows.
 - **Always works, with or without a key.** With no key, after a refusal or during an outage, a rule-based planner produces the same kind of plan with the same numbers, and follow-up questions are answered by a built-in engine (`src/lib/quickAnswers.ts`) grounded in the live reading. The UI labels every plan and answer with where it came from.
@@ -51,7 +51,7 @@ household ─────┼─▶ deterministic impact model ─▶ candidate a
 
 - Semantic landmarks, a skip link, one `h1` per page, and labelled form controls throughout.
 - The place search follows the WAI-ARIA 1.2 combobox pattern (arrow keys, Enter, Escape, live result counts).
-- Charts have text alternatives: the breath ribbon has a spoken summary and an hour-by-hour table, and the Impact Lab bar chart *is* a data table.
+- Charts have text alternatives: the breath ribbon has a spoken summary and an hour-by-hour table, and the Impact Lab bar chart _is_ a data table.
 - Colour is never the only signal. Every AQI colour step is at least 3:1 against the background, and text is at least 4.5:1 (body text 13:1).
 - Body type is **Atkinson Hyperlegible**, designed by the Braille Institute for low-vision readers.
 - Visible focus rings, 44 px touch targets, `prefers-reduced-motion` respected, and fully responsive down to 320 px.
@@ -75,10 +75,11 @@ household ─────┼─▶ deterministic impact model ─▶ candidate a
 ## Testing
 
 ```bash
-npm test               # 201 tests: domain logic, GenAI module, API routes, components + axe
-npm run test:coverage
+npm test               # 246 tests: domain logic, both AI providers, API routes, full page flows + axe
+npm run test:coverage  # about 98% lines, 97% statements, 96% functions, 85% branches (enforced floors)
 npm run lint
 npm run typecheck
+npm run format:check
 ```
 
 ## Run it

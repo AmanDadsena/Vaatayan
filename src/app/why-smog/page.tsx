@@ -19,7 +19,7 @@ export default function WhySmogPage() {
       <Photo
         photo={PHOTOS.smogSkyline}
         variant="banner"
-        priority
+        preload
         sizes="(max-width: 1180px) 100vw, 1180px"
         caption="Central Delhi under a winter haze."
       />

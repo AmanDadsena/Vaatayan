@@ -99,7 +99,11 @@ describe("POST /api/plan", () => {
     const fixed = { "x-forwarded-for": "203.0.113.9" };
     const statuses = [];
     for (let i = 0; i < 9; i++) {
-      const req = new Request("http://localhost/api/plan", { method: "POST", headers: fixed, body: JSON.stringify(validBody()) });
+      const req = new Request("http://localhost/api/plan", {
+        method: "POST",
+        headers: fixed,
+        body: JSON.stringify(validBody()),
+      });
       statuses.push((await planPOST(req)).status);
     }
     expect(statuses.slice(0, 8).every((s) => s === 200)).toBe(true);
@@ -163,7 +167,8 @@ describe("GET /api/air", () => {
 });
 
 describe("GET /api/places", () => {
-  const placesRequest = (q: string) => new NextRequest(`http://localhost/api/places?q=${encodeURIComponent(q)}`, { headers: headers() });
+  const placesRequest = (q: string) =>
+    new NextRequest(`http://localhost/api/places?q=${encodeURIComponent(q)}`, { headers: headers() });
 
   it("returns matching places", async () => {
     mocks.searchPlaces.mockResolvedValue([PLACE]);
@@ -179,5 +184,46 @@ describe("GET /api/places", () => {
   it.each(["a", "<script>", "x".repeat(81), "Delhi; DROP TABLE"])("rejects %s", async (q) => {
     expect((await placesGET(placesRequest(q))).status).toBe(400);
     expect(mocks.searchPlaces).not.toHaveBeenCalled();
+  });
+});
+
+describe("rate limits and failures on the other routes", () => {
+  const fixed = { "x-forwarded-for": "198.51.100.7" };
+
+  it("limits rapid place searches and says when to retry", async () => {
+    mocks.searchPlaces.mockResolvedValue([]);
+    let last: Response | undefined;
+    for (let i = 0; i < 91; i++) {
+      last = await placesGET(new NextRequest("http://localhost/api/places?q=Delhi", { headers: fixed }));
+    }
+    expect(last!.status).toBe(429);
+    expect(Number(last!.headers.get("retry-after"))).toBeGreaterThan(0);
+  });
+
+  it("returns 502 when place search fails upstream", async () => {
+    mocks.searchPlaces.mockRejectedValue(new UpstreamError("The place search sent data we could not read."));
+    const res = await placesGET(new NextRequest("http://localhost/api/places?q=Delhi", { headers: headers() }));
+    expect(res.status).toBe(502);
+    expect((await res.json()).error).toMatch(/could not read/);
+  });
+
+  it("limits rapid follow-up questions", async () => {
+    mocks.isAiConfigured.mockReturnValue(false);
+    const ask = () =>
+      new Request("http://localhost/api/ask", {
+        method: "POST",
+        headers: { "x-forwarded-for": "198.51.100.8" },
+        body: JSON.stringify({ ...validBody(), question: "Can we walk?" }),
+      });
+    const statuses: number[] = [];
+    for (let i = 0; i < 13; i++) statuses.push((await askPOST(ask())).status);
+    expect(statuses.at(-1)).toBe(429);
+  });
+
+  it("rejects oversized or broken follow-up bodies", async () => {
+    const send = (body: string) =>
+      askPOST(new Request("http://localhost/api/ask", { method: "POST", headers: headers(), body }));
+    expect((await send("x".repeat(40_000))).status).toBe(413);
+    expect((await send("{oops")).status).toBe(400);
   });
 });

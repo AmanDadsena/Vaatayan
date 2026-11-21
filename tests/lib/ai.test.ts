@@ -84,7 +84,13 @@ describe("prompts", () => {
 
   it("wraps follow-up questions in their own tag", () => {
     const prompt = buildAskPrompt(
-      { place: PLACE, air: makeAir(), household: makeHousehold(), question: "Can we go to the park?", planSummary: "Walk at 3 pm" },
+      {
+        place: PLACE,
+        air: makeAir(),
+        household: makeHousehold(),
+        question: "Can we go to the park?",
+        planSummary: "Walk at 3 pm",
+      },
       ctx,
     );
     expect(prompt).toContain("<question>Can we go to the park?</question>");
@@ -124,7 +130,13 @@ describe("generateModelPlan", () => {
 });
 
 describe("streamAnswer", () => {
-  const request = { place: PLACE, air: makeAir(), household: makeHousehold(), question: "Is it safe to run?", planSummary: "" };
+  const request = {
+    place: PLACE,
+    air: makeAir(),
+    household: makeHousehold(),
+    question: "Is it safe to run?",
+    planSummary: "",
+  };
 
   async function readAll(stream: ReadableStream<Uint8Array>) {
     return new Response(stream).text();

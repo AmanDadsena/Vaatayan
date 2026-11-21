@@ -12,11 +12,6 @@ import { buildRulePlan } from "@/lib/planner";
 import type { Household } from "@/lib/schemas";
 import { makeAir, makeHousehold, PLACE } from "../fixtures";
 
-vi.mock("next/image", () => ({
-  // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
-  default: (props: React.ImgHTMLAttributes<HTMLImageElement>) => <img {...props} />,
-}));
-
 describe("BreathRibbon", () => {
   it("announces the clean window in text and offers an hour-by-hour table", async () => {
     const { container } = render(<BreathRibbon hourly={makeAir().hourly} />);
@@ -113,7 +108,11 @@ describe("HouseholdForm", () => {
 describe("PlaceSearch", () => {
   it("follows the combobox pattern: type, arrow, enter", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response(JSON.stringify({ places: [PLACE, { name: "Delhi, New York, United States", latitude: 42.3, longitude: -74.9 }] })),
+      new Response(
+        JSON.stringify({
+          places: [PLACE, { name: "Delhi, New York, United States", latitude: 42.3, longitude: -74.9 }],
+        }),
+      ),
     );
     const onSelect = vi.fn();
     const user = userEvent.setup();
@@ -133,7 +132,9 @@ describe("PlaceSearch", () => {
   });
 
   it("shows a friendly message when search fails", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify({ error: "Place search is unavailable." }), { status: 502 }));
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ error: "Place search is unavailable." }), { status: 502 }),
+    );
     const user = userEvent.setup();
     render(<PlaceSearch onSelect={vi.fn()} />);
     await user.type(screen.getByRole("combobox"), "Pune");

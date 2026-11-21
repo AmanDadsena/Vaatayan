@@ -11,8 +11,12 @@ const GEO_REVALIDATE_SECONDS = 86_400;
 const TIMEOUT_MS = 8000;
 
 export class UpstreamError extends Error {
-  constructor(message: string) {
+  /** HTTP status from the upstream service, when there was a response. */
+  readonly status?: number;
+
+  constructor(message: string, status?: number) {
     super(message);
+    this.status = status;
     this.name = "UpstreamError";
   }
 }
@@ -61,16 +65,20 @@ async function getJsonOnce(url: URL, revalidate: number): Promise<unknown> {
   } catch {
     throw new UpstreamError("The air quality service did not respond in time.");
   }
-  if (!res.ok) throw new UpstreamError(`The air quality service returned ${res.status}.`);
+  if (!res.ok) throw new UpstreamError(`The air quality service returned ${res.status}.`, res.status);
   return res.json();
 }
+
+/** A 4xx means the request itself is wrong; retrying cannot help. */
+const isClientError = (error: unknown) =>
+  error instanceof UpstreamError && error.status !== undefined && error.status >= 400 && error.status < 500;
 
 /** One retry for transient timeouts and 5xx responses. */
 async function getJson(url: URL, revalidate: number): Promise<unknown> {
   try {
     return await getJsonOnce(url, revalidate);
   } catch (error) {
-    if (error instanceof UpstreamError && /4dd/.test(error.message)) throw error;
+    if (isClientError(error)) throw error;
     return getJsonOnce(url, revalidate);
   }
 }

@@ -66,10 +66,7 @@ function ImpactChips({ item }: { item: PlanItem }) {
 export function PlanView({ plan, notice, hourly = [] }: Props) {
   const [committed, setCommitted] = useState<Set<string>>(() => new Set(plan.items.map((i) => i.id)));
 
-  const totals = useMemo(
-    () => totalImpact(plan.items.filter((i) => committed.has(i.id))),
-    [plan.items, committed],
-  );
+  const totals = useMemo(() => totalImpact(plan.items.filter((i) => committed.has(i.id))), [plan.items, committed]);
   const cigarettes = cigarettesAvoided(totals.lungsUgPerDay);
 
   const toggle = (id: string) =>
@@ -144,7 +141,8 @@ export function PlanView({ plan, notice, hourly = [] }: Props) {
           <h3 id="routine-title">Today, hour by hour</h3>
           {plan.cleanWindow && (
             <p className={styles.lede}>
-              Built around your cleanest window, {formatHour(plan.cleanWindow.start)}–{formatHour(plan.cleanWindow.end)}.
+              Built around your cleanest window, {formatHour(plan.cleanWindow.start)}–{formatHour(plan.cleanWindow.end)}
+              .
             </p>
           )}
         </div>

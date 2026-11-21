@@ -158,9 +158,7 @@ export function VaatayanApp() {
                 notice={plan.notice}
                 hourly={air?.hourly}
               />
-              {air && (
-                <AskCoach place={place} air={air} household={household} planSummary={summarizePlan(plan.plan)} />
-              )}
+              {air && <AskCoach place={place} air={air} household={household} planSummary={summarizePlan(plan.plan)} />}
             </>
           )}
 

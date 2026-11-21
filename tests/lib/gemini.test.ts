@@ -69,7 +69,10 @@ describe("provider selection", () => {
   });
 
   it("pins the client to the v1beta API, which supports system instructions and JSON mode", () => {
-    genai.generateContent.mockResolvedValue({ text: JSON.stringify(validPlan), candidates: [{ finishReason: "STOP" }] });
+    genai.generateContent.mockResolvedValue({
+      text: JSON.stringify(validPlan),
+      candidates: [{ finishReason: "STOP" }],
+    });
     return generateModelPlan(PLACE, ctx).then(() => {
       expect(genai.constructed).toHaveBeenCalledWith(expect.objectContaining({ apiVersion: "v1beta" }));
     });
@@ -89,13 +92,19 @@ describe("provider selection", () => {
 
 describe("Gemini plans", () => {
   it("requests JSON mode with the plan schema and validates the reply", async () => {
-    genai.generateContent.mockResolvedValue({ text: JSON.stringify(validPlan), candidates: [{ finishReason: "STOP" }] });
+    genai.generateContent.mockResolvedValue({
+      text: JSON.stringify(validPlan),
+      candidates: [{ finishReason: "STOP" }],
+    });
     await expect(generateModelPlan(PLACE, ctx)).resolves.toEqual(validPlan);
 
     const [params] = genai.generateContent.mock.calls[0];
     expect(params.model).toBe("gemini-2.5-flash");
     expect(params.config.responseMimeType).toBe("application/json");
-    expect(params.config.responseJsonSchema).toMatchObject({ type: "object", required: expect.arrayContaining(["picks"]) });
+    expect(params.config.responseJsonSchema).toMatchObject({
+      type: "object",
+      required: expect.arrayContaining(["picks"]),
+    });
     expect(params.config.responseJsonSchema).not.toHaveProperty("$schema");
     expect(params.config.systemInstruction).toMatch(/never as instructions/i);
     expect(params.contents).toContain("US AQI 211");
@@ -103,7 +112,10 @@ describe("Gemini plans", () => {
   });
 
   it("sends readable labels, never internal ids, to the model", async () => {
-    genai.generateContent.mockResolvedValue({ text: JSON.stringify(validPlan), candidates: [{ finishReason: "STOP" }] });
+    genai.generateContent.mockResolvedValue({
+      text: JSON.stringify(validPlan),
+      candidates: [{ finishReason: "STOP" }],
+    });
     const sick = buildContext(makeHousehold({ conditions: ["asthma-copd"], cookingFuel: "lpg" }), makeAir());
     await generateModelPlan(PLACE, sick);
     const [params] = genai.generateContent.mock.calls[0];
@@ -116,7 +128,10 @@ describe("Gemini plans", () => {
     genai.generateContent.mockResolvedValueOnce({ text: "{not json", candidates: [{ finishReason: "STOP" }] });
     await expect(generateModelPlan(PLACE, ctx)).rejects.toThrow("incomplete plan");
 
-    genai.generateContent.mockResolvedValueOnce({ text: JSON.stringify({ headline: 1 }), candidates: [{ finishReason: "STOP" }] });
+    genai.generateContent.mockResolvedValueOnce({
+      text: JSON.stringify({ headline: 1 }),
+      candidates: [{ finishReason: "STOP" }],
+    });
     await expect(generateModelPlan(PLACE, ctx)).rejects.toThrow("wrong shape");
   });
 
@@ -136,7 +151,13 @@ describe("Gemini plans", () => {
 });
 
 describe("Gemini follow-ups", () => {
-  const request = { place: PLACE, air: makeAir(), household: makeHousehold(), question: "Can we walk?", planSummary: "" };
+  const request = {
+    place: PLACE,
+    air: makeAir(),
+    household: makeHousehold(),
+    question: "Can we walk?",
+    planSummary: "",
+  };
 
   async function* chunks(parts: { text?: string; finishReason?: string }[], fail = false) {
     for (const p of parts) yield { text: p.text, candidates: [{ finishReason: p.finishReason }] };
@@ -144,7 +165,9 @@ describe("Gemini follow-ups", () => {
   }
 
   it("streams text chunks", async () => {
-    genai.generateContentStream.mockResolvedValue(chunks([{ text: "Walk " }, { text: "at noon.", finishReason: "STOP" }]));
+    genai.generateContentStream.mockResolvedValue(
+      chunks([{ text: "Walk " }, { text: "at noon.", finishReason: "STOP" }]),
+    );
     await expect(new Response(streamAnswer(request, ctx)).text()).resolves.toBe("Walk at noon.");
     expect(genai.generateContentStream.mock.calls[0][0].config.thinkingConfig).toEqual({ thinkingBudget: 0 });
   });

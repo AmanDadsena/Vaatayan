@@ -35,7 +35,10 @@ const RULES: Rule[] = [
   { topic: "purifier", pattern: /\b(purifier|cadr|hepa|filter|cfm)\b/ },
   { topic: "mask", pattern: /\b(mask|n95|ffp2|kn95|respirator)\b/ },
   { topic: "children", pattern: /\b(kid|kids|child|children|son|daughter|baby|school|play|playground|park)\b/ },
-  { topic: "exercise", pattern: /\b(walk|walking|run|running|jog|jogging|exercise|workout|gym|yoga|cycle|cycling|cricket|sport)\b/ },
+  {
+    topic: "exercise",
+    pattern: /\b(walk|walking|run|running|jog|jogging|exercise|workout|gym|yoga|cycle|cycling|cricket|sport)\b/,
+  },
   { topic: "ventilation", pattern: /\b(window|windows|ventilat\w*|air out|open the|fresh air)\b/ },
   { topic: "cooking", pattern: /\b(cook|cooking|kitchen|stove|chulha|tadka|fry|frying|chimney)\b/ },
   { topic: "heating", pattern: /\b(heater|heaters|heating|angithi|bonfire|fireplace|keep warm)\b/ },

@@ -27,12 +27,20 @@ describe("householdSchema", () => {
 
 describe("request schemas", () => {
   it("accepts a well-formed plan request", () => {
-    expect(planRequestSchema.safeParse({ place: PLACE, air: makeAir(), household: makeHousehold() }).success).toBe(true);
+    expect(planRequestSchema.safeParse({ place: PLACE, air: makeAir(), household: makeHousehold() }).success).toBe(
+      true,
+    );
   });
 
   it("rejects out-of-range coordinates and malformed times", () => {
-    expect(planRequestSchema.safeParse({ place: { ...PLACE, latitude: 120 }, air: makeAir(), household: makeHousehold() }).success).toBe(false);
-    expect(planRequestSchema.safeParse({ place: PLACE, air: makeAir({ time: "yesterday" }), household: makeHousehold() }).success).toBe(false);
+    expect(
+      planRequestSchema.safeParse({ place: { ...PLACE, latitude: 120 }, air: makeAir(), household: makeHousehold() })
+        .success,
+    ).toBe(false);
+    expect(
+      planRequestSchema.safeParse({ place: PLACE, air: makeAir({ time: "yesterday" }), household: makeHousehold() })
+        .success,
+    ).toBe(false);
   });
 
   it("requires a real question", () => {

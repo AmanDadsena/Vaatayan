@@ -263,7 +263,9 @@
 }
 
 li[data-clean] .node {
-  box-shadow: 0 0 0 3px var(--clear), 0 0 14px 2px rgb(127 209 189 / 0.7);
+  box-shadow:
+    0 0 0 3px var(--clear),
+    0 0 14px 2px rgb(127 209 189 / 0.7);
 }
 
 .stepBody {
@@ -330,7 +332,9 @@ li[data-clean] .node {
   border: 1px solid var(--fog);
   border-left: 4px solid var(--clear);
   border-radius: var(--radius-s);
-  transition: opacity 200ms, border-color 200ms;
+  transition:
+    opacity 200ms,
+    border-color 200ms;
 }
 
 .item[data-off] {
@@ -428,4 +432,3 @@ li[data-clean] .node {
   display: grid;
   gap: var(--space-1);
 }
-

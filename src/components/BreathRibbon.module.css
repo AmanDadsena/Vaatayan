@@ -66,7 +66,9 @@
 }
 
 .col[data-now] .bar {
-  box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--ink);
+  box-shadow:
+    0 0 0 2px var(--paper),
+    0 0 0 4px var(--ink);
 }
 
 /* Clean window: a clear-air bracket above the bars */

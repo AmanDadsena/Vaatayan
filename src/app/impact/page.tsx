@@ -5,7 +5,8 @@ import { BRAND } from "@/lib/brand";
 
 export const metadata: Metadata = {
   title: `Impact lab · ${BRAND.name}`,
-  description: "See what switching your commute, heating or cooking does for your lungs, the climate and your city's smog.",
+  description:
+    "See what switching your commute, heating or cooking does for your lungs, the climate and your city's smog.",
 };
 
 export default function ImpactPage() {

@@ -96,7 +96,9 @@
   height: 14px;
   border-radius: 50%;
   border: 2px solid var(--fog);
-  transition: background-color 300ms, border-color 300ms;
+  transition:
+    background-color 300ms,
+    border-color 300ms;
 }
 
 li[data-state="active"] .dot {

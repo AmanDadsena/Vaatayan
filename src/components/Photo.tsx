@@ -7,12 +7,19 @@ interface Props {
   caption?: string;
   /** Responsive sizes hint for the image optimiser. */
   sizes?: string;
-  priority?: boolean;
+  /** Preload in <head>: only for the single above-the-fold hero image (Next.js 16 replaces `priority`). */
+  preload?: boolean;
   variant?: "banner" | "inline";
 }
 
 /** A captioned, optimised photograph with its licence credit. */
-export function Photo({ photo, caption, sizes = "(max-width: 900px) 100vw, 50vw", priority = false, variant = "inline" }: Props) {
+export function Photo({
+  photo,
+  caption,
+  sizes = "(max-width: 900px) 100vw, 50vw",
+  preload = false,
+  variant = "inline",
+}: Props) {
   return (
     <figure className={styles.figure} data-variant={variant}>
       <div className={styles.frame}>
@@ -22,7 +29,7 @@ export function Photo({ photo, caption, sizes = "(max-width: 900px) 100vw, 50vw"
           width={photo.width}
           height={photo.height}
           sizes={sizes}
-          priority={priority}
+          preload={preload}
           className={styles.img}
         />
       </div>

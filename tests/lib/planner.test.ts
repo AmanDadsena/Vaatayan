@@ -15,9 +15,21 @@ const modelPlan = (overrides: Partial<ModelPlan> = {}): ModelPlan => ({
     { time: "15:00", title: "Walk now", detail: "Cleanest hours.", actionId: "exercise-clean-window" },
   ],
   picks: [
-    { actionId: "diy-filter-fan", why: "Cheapest big win for your bedroom.", steps: ["Buy filters", "Tape a cube", "Fan on top"] },
-    { actionId: "switch-to-transit", why: "Your 12 km drive is your biggest emission.", steps: ["Try the metro twice", "Time it"] },
-    { actionId: "exercise-clean-window", why: "Your morning walk hits the worst air.", steps: ["Walk at 3 pm", "Or do yoga"] },
+    {
+      actionId: "diy-filter-fan",
+      why: "Cheapest big win for your bedroom.",
+      steps: ["Buy filters", "Tape a cube", "Fan on top"],
+    },
+    {
+      actionId: "switch-to-transit",
+      why: "Your 12 km drive is your biggest emission.",
+      steps: ["Try the metro twice", "Time it"],
+    },
+    {
+      actionId: "exercise-clean-window",
+      why: "Your morning walk hits the worst air.",
+      steps: ["Walk at 3 pm", "Or do yoga"],
+    },
     { actionId: "seal-gaps", why: "Leaky windows let smog in.", steps: ["Foam strips", "Door snake"] },
   ],
   careNote: "Keep your father's walks indoors this week.",
@@ -119,7 +131,10 @@ describe("mergeModelPlan", () => {
   });
 
   it("falls back to the rules routine when the model's is too short", () => {
-    const plan = mergeModelPlan(ctx, modelPlan({ routine: [{ time: "07:00", title: "Only one", detail: "", actionId: "" }] }));
+    const plan = mergeModelPlan(
+      ctx,
+      modelPlan({ routine: [{ time: "07:00", title: "Only one", detail: "", actionId: "" }] }),
+    );
     expect(plan.routine.length).toBeGreaterThanOrEqual(4);
   });
 

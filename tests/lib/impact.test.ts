@@ -113,7 +113,11 @@ describe("totalImpact", () => {
   });
 
   it("counts only the strongest alternative within a group", () => {
-    const total = totalImpact([{ impact: imp(18), group: "commute" }, { impact: imp(13.6), group: "commute" }, { impact: imp(1) }]);
+    const total = totalImpact([
+      { impact: imp(18), group: "commute" },
+      { impact: imp(13.6), group: "commute" },
+      { impact: imp(1) },
+    ]);
     expect(total.co2KgPerWeek).toBe(19);
   });
 

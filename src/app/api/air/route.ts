@@ -8,11 +8,7 @@ const limiter = createRateLimiter({ limit: 60, windowMs: 60_000 });
 
 /** A required numeric query value. A bare z.coerce.number() would turn a missing param (null) into 0. */
 const coordinate = (min: number, max: number) =>
-  z
-    .string({ error: "is required" })
-    .trim()
-    .min(1, "is required")
-    .pipe(z.coerce.number<string>().min(min).max(max));
+  z.string({ error: "is required" }).trim().min(1, "is required").pipe(z.coerce.number<string>().min(min).max(max));
 
 const querySchema = z.object({
   lat: coordinate(-90, 90),
@@ -21,7 +17,8 @@ const querySchema = z.object({
 
 export async function GET(request: NextRequest) {
   const rate = limiter.check(clientKey(request.headers));
-  if (!rate.ok) return jsonError(429, "Too many requests. Try again shortly.", { "Retry-After": String(rate.retryAfterSeconds) });
+  if (!rate.ok)
+    return jsonError(429, "Too many requests. Try again shortly.", { "Retry-After": String(rate.retryAfterSeconds) });
 
   const parsed = querySchema.safeParse({
     lat: request.nextUrl.searchParams.get("lat") ?? undefined,

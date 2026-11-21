@@ -33,7 +33,11 @@
 
 /* Colours ease from one sky to the next when the place changes */
 .paint {
-  transition: fill 1.4s var(--ease-out), opacity 1.4s var(--ease-out), y 1.4s var(--ease-out), height 1.4s var(--ease-out),
+  transition:
+    fill 1.4s var(--ease-out),
+    opacity 1.4s var(--ease-out),
+    y 1.4s var(--ease-out),
+    height 1.4s var(--ease-out),
     r 1.4s var(--ease-out);
 }
 

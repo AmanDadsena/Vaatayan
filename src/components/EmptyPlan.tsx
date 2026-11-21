@@ -51,11 +51,15 @@ export function EmptyPlan() {
         <circle cx="260" cy="48" r="14" className={styles.sun} />
         <circle cx="88" cy="94" r="8" className={styles.hazySun} />
         <circle cx="432" cy="94" r="8" className={styles.hazySun} />
-        <text x="88" y="162" textAnchor="middle">Hazy morning</text>
+        <text x="88" y="162" textAnchor="middle">
+          Hazy morning
+        </text>
         <text x="260" y="162" textAnchor="middle" className={styles.strong}>
           Your clean window
         </text>
-        <text x="432" y="162" textAnchor="middle">Smoggy evening</text>
+        <text x="432" y="162" textAnchor="middle">
+          Smoggy evening
+        </text>
       </svg>
 
       <div className={styles.copy}>

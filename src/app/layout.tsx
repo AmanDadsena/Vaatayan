@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Atkinson_Hyperlegible, Bricolage_Grotesque, Tiro_Devanagari_Hindi } from "next/font/google";
 import { BRAND } from "@/lib/brand";
+import { siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const display = Bricolage_Grotesque({
@@ -28,6 +29,7 @@ const devanagari = Tiro_Devanagari_Hindi({
 });
 
 export const metadata: Metadata = {
+  metadataBase: siteUrl(),
   title: `${BRAND.name}: ${BRAND.tagline}`,
   description: BRAND.description,
   applicationName: BRAND.name,

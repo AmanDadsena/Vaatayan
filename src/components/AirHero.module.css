@@ -135,11 +135,21 @@
   border-left: 6px solid var(--aqi-good);
 }
 
-.statMain[data-level="moderate"] { border-color: var(--aqi-moderate); }
-.statMain[data-level="sensitive"] { border-color: var(--aqi-sensitive); }
-.statMain[data-level="unhealthy"] { border-color: var(--aqi-unhealthy); }
-.statMain[data-level="very-unhealthy"] { border-color: var(--aqi-very-unhealthy); }
-.statMain[data-level="hazardous"] { border-color: var(--aqi-hazardous); }
+.statMain[data-level="moderate"] {
+  border-color: var(--aqi-moderate);
+}
+.statMain[data-level="sensitive"] {
+  border-color: var(--aqi-sensitive);
+}
+.statMain[data-level="unhealthy"] {
+  border-color: var(--aqi-unhealthy);
+}
+.statMain[data-level="very-unhealthy"] {
+  border-color: var(--aqi-very-unhealthy);
+}
+.statMain[data-level="hazardous"] {
+  border-color: var(--aqi-hazardous);
+}
 
 .error {
   display: flex;

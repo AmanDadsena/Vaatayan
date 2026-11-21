@@ -109,9 +109,7 @@ export type AskRequest = z.infer<typeof askRequestSchema>;
 
 export const modelPlanSchema = z.object({
   headline: z.string().describe("One sentence, max 140 characters, naming the single most important move today."),
-  summary: z
-    .string()
-    .describe("Two or three sentences explaining today's air for this household in plain language."),
+  summary: z.string().describe("Two or three sentences explaining today's air for this household in plain language."),
   routine: z
     .array(
       z.object({
@@ -131,9 +129,7 @@ export const modelPlanSchema = z.object({
       }),
     )
     .describe("4 to 8 actions chosen from the candidates, most impactful first."),
-  careNote: z
-    .string()
-    .describe("Guidance for children, elders or listed conditions; empty string if none apply."),
+  careNote: z.string().describe("Guidance for children, elders or listed conditions; empty string if none apply."),
 });
 
 export type ModelPlan = z.infer<typeof modelPlanSchema>;

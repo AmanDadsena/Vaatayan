@@ -84,7 +84,9 @@ export function AskCoach({ place, air, household, planSummary }: Props) {
               </p>
               {turn.source && !turn.failed && (
                 <p className={styles.source}>
-                  {turn.source === "ai" ? "Answered by AI from your live data" : "Quick answer from built-in guidance and your live data"}
+                  {turn.source === "ai"
+                    ? "Answered by AI from your live data"
+                    : "Quick answer from built-in guidance and your live data"}
                 </p>
               )}
             </li>

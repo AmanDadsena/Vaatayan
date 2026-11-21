@@ -52,7 +52,10 @@ const hhmm = (time: string) => time.slice(11, 16);
 
 function toItem(candidate: Candidate, why?: string, steps?: string[]): PlanItem {
   const def = getAction(candidate.id);
-  const cleanSteps = (steps ?? []).map((s) => clip(s, 160)).filter(Boolean).slice(0, 3);
+  const cleanSteps = (steps ?? [])
+    .map((s) => clip(s, 160))
+    .filter(Boolean)
+    .slice(0, 3);
   return {
     id: candidate.id,
     kind: candidate.kind,
@@ -103,11 +106,14 @@ function careNoteFor(ctx: ImpactContext): string {
   if (h.conditions.includes("asthma-copd"))
     notes.push("Keep reliever inhalers within reach and follow your asthma action plan if symptoms rise.");
   if (h.conditions.includes("heart"))
-    notes.push("Heart conditions make fine particles riskier; avoid exertion outdoors and watch for chest pain or breathlessness.");
+    notes.push(
+      "Heart conditions make fine particles riskier; avoid exertion outdoors and watch for chest pain or breathlessness.",
+    );
   if (h.conditions.includes("pregnancy"))
     notes.push("During pregnancy, keep outdoor time short on high-AQI days and sleep in the filtered room.");
   if (h.children > 0 && air.aqi > 100) notes.push("Children should play indoors or only inside the clean-air window.");
-  if (h.elders > 0 && air.aqi > 100) notes.push("Older family members should take walks indoors or in the clean window.");
+  if (h.elders > 0 && air.aqi > 100)
+    notes.push("Older family members should take walks indoors or in the clean window.");
   return notes.join(" ");
 }
 

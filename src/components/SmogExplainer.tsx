@@ -48,12 +48,13 @@ function InversionLab() {
       <div className={styles.labText}>
         <h2 id={`${id}-t`}>The lid on the city</h2>
         <p>
-          On a normal day, air warmed by the ground rises and carries pollution kilometres up. On cold, still winter nights the ground
-          cools fast and a layer of warmer air settles on top like a lid. This is a temperature inversion.
+          On a normal day, air warmed by the ground rises and carries pollution kilometres up. On cold, still winter
+          nights the ground cools fast and a layer of warmer air settles on top like a lid. This is a temperature
+          inversion.
         </p>
         <p>
-          The city makes roughly the same smoke and exhaust every day. What changes is how much air it gets mixed into. Drag the lid down
-          and watch the same particles crowd together.
+          The city makes roughly the same smoke and exhaust every day. What changes is how much air it gets mixed into.
+          Drag the lid down and watch the same particles crowd together.
         </p>
         <div className={styles.presets} role="group" aria-label="Example conditions">
           {PRESETS.map((p) => (
@@ -136,7 +137,8 @@ function InversionLab() {
           <rect y={GROUND} width={W} height="30" fill="#4a605e" />
         </svg>
         <figcaption className={styles.caption}>
-          Illustration: the mixing layer can shrink from over a kilometre on summer afternoons to a few hundred metres on winter nights.
+          Illustration: the mixing layer can shrink from over a kilometre on summer afternoons to a few hundred metres
+          on winter nights.
         </figcaption>
       </figure>
     </section>
@@ -154,13 +156,16 @@ function SizeScale() {
       <div>
         <h2 id={`${id}-t`}>Smaller than you can imagine</h2>
         <p>
-          PM2.5 means particles 2.5 micrometres across or smaller, about thirty times thinner than a human hair. They slip past the nose and
-          throat, reach deep into the lungs, and the finest pass into the blood.
+          PM2.5 means particles 2.5 micrometres across or smaller, about thirty times thinner than a human hair. They
+          slip past the nose and throat, reach deep into the lungs, and the finest pass into the blood.
         </p>
       </div>
       <figure className={styles.sizeFigure}>
         <svg viewBox="0 0 420 220" role="img" aria-labelledby={`${id}-svg`}>
-          <title id={`${id}-svg`}>Drawn to scale: a human hair 70 micrometres wide, a PM10 particle 10 micrometres, and a PM2.5 particle 2.5 micrometres.</title>
+          <title id={`${id}-svg`}>
+            Drawn to scale: a human hair 70 micrometres wide, a PM10 particle 10 micrometres, and a PM2.5 particle 2.5
+            micrometres.
+          </title>
           <circle cx="110" cy="110" r={hair / 2} fill="#e6dccd" stroke="#9c8f7f" strokeWidth="2" />
           <text x="110" y="114" textAnchor="middle" className={styles.sizeLabel}>
             Human hair, 70 µm
@@ -231,12 +236,13 @@ export function SmogExplainer() {
         <div>
           <h2 id={`${id}-am`}>Why mornings are the worst</h2>
           <p>
-            Overnight the ground cools, the lid sinks lower, and a whole night of exhaust and fire smoke stays trapped near the street.
-            The morning rush adds to it just as the air is at its stillest.
+            Overnight the ground cools, the lid sinks lower, and a whole night of exhaust and fire smoke stays trapped
+            near the street. The morning rush adds to it just as the air is at its stillest.
           </p>
           <p>
-            By early afternoon the sun warms the ground, the air begins to mix upward, and the smog thins. Then it settles back in after sunset.
-            That daily rhythm is why {BRAND.name} looks for your clean-air window instead of telling you to stay in all day.
+            By early afternoon the sun warms the ground, the air begins to mix upward, and the smog thins. Then it
+            settles back in after sunset. That daily rhythm is why {BRAND.name} looks for your clean-air window instead
+            of telling you to stay in all day.
           </p>
           <Link href="/" className={styles.inlineLink}>
             See today&apos;s window for your city
@@ -250,7 +256,8 @@ export function SmogExplainer() {
         <div className={styles.sourcesHead}>
           <h2 id={`${id}-src`}>Where winter smog comes from</h2>
           <p>
-            Source studies disagree, and the mix changes from day to day, so these are honest ranges rather than one neat pie chart.
+            Source studies disagree, and the mix changes from day to day, so these are honest ranges rather than one
+            neat pie chart.
           </p>
         </div>
         <ul>

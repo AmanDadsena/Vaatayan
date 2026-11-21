@@ -87,11 +87,21 @@
   background: var(--aqi-good);
 }
 
-.readout span[data-level="moderate"] { background: var(--aqi-moderate); }
-.readout span[data-level="sensitive"] { background: var(--aqi-sensitive); }
-.readout span[data-level="unhealthy"] { background: var(--aqi-unhealthy); }
-.readout span[data-level="very-unhealthy"] { background: var(--aqi-very-unhealthy); }
-.readout span[data-level="hazardous"] { background: var(--aqi-hazardous); }
+.readout span[data-level="moderate"] {
+  background: var(--aqi-moderate);
+}
+.readout span[data-level="sensitive"] {
+  background: var(--aqi-sensitive);
+}
+.readout span[data-level="unhealthy"] {
+  background: var(--aqi-unhealthy);
+}
+.readout span[data-level="very-unhealthy"] {
+  background: var(--aqi-very-unhealthy);
+}
+.readout span[data-level="hazardous"] {
+  background: var(--aqi-hazardous);
+}
 
 .scene {
   margin: 0;

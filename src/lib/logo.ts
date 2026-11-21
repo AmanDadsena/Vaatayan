@@ -4,11 +4,16 @@
  */
 export const LOGO = {
   viewBox: "0 0 64 64",
-  colors: { badge: "#142b2a", frame: "#9fc4c6", opening: "#e6f2f1", sun: "#e9b44c", windLight: "#7fd1bd", windDeep: "#2fa38f" },
-  frame:
-    "M17 54V31c0-7 4.5-11.5 10-15.5 3-2.2 4.4-4.6 5-8.5.6 3.9 2 6.3 5 8.5 5.5 4 10 8.5 10 15.5v23z",
-  opening:
-    "M21.5 54V32c0-5.2 3.4-8.8 7.6-11.9 1.3-1 2.3-2 2.9-3.2.6 1.2 1.6 2.2 2.9 3.2 4.2 3.1 7.6 6.7 7.6 11.9v22z",
+  colors: {
+    badge: "#142b2a",
+    frame: "#9fc4c6",
+    opening: "#e6f2f1",
+    sun: "#e9b44c",
+    windLight: "#7fd1bd",
+    windDeep: "#2fa38f",
+  },
+  frame: "M17 54V31c0-7 4.5-11.5 10-15.5 3-2.2 4.4-4.6 5-8.5.6 3.9 2 6.3 5 8.5 5.5 4 10 8.5 10 15.5v23z",
+  opening: "M21.5 54V32c0-5.2 3.4-8.8 7.6-11.9 1.3-1 2.3-2 2.9-3.2.6 1.2 1.6 2.2 2.9 3.2 4.2 3.1 7.6 6.7 7.6 11.9v22z",
   windUpper: "M5 37h24c4.4 0 6.6-4.8 3.2-7.5",
   windLower: "M10 45.5h29.5c4.4 0 6.6 4.8 3.2 7.5",
 } as const;
@@ -27,4 +32,5 @@ export function logoSvg(size: number): string {
 </svg>`;
 }
 
-export const logoDataUri = (size: number) => `data:image/svg+xml;base64,${Buffer.from(logoSvg(size)).toString("base64")}`;
+export const logoDataUri = (size: number) =>
+  `data:image/svg+xml;base64,${Buffer.from(logoSvg(size)).toString("base64")}`;

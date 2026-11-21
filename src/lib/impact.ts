@@ -42,11 +42,25 @@ interface ModeProfile {
 
 export const MODES: Record<CommuteMode, ModeProfile> = {
   car: { label: "car", co2PerKm: 0.17, pmPerKm: 0.025, speedKmh: 25, exposureFactor: 0.8, ventilation: 0.5 },
-  "two-wheeler": { label: "two-wheeler", co2PerKm: 0.045, pmPerKm: 0.015, speedKmh: 28, exposureFactor: 1.3, ventilation: 0.9 },
+  "two-wheeler": {
+    label: "two-wheeler",
+    co2PerKm: 0.045,
+    pmPerKm: 0.015,
+    speedKmh: 28,
+    exposureFactor: 1.3,
+    ventilation: 0.9,
+  },
   auto: { label: "auto-rickshaw", co2PerKm: 0.07, pmPerKm: 0.02, speedKmh: 20, exposureFactor: 1.3, ventilation: 0.7 },
   bus: { label: "bus", co2PerKm: 0.04, pmPerKm: 0.005, speedKmh: 18, exposureFactor: 1.1, ventilation: 0.7 },
   metro: { label: "metro", co2PerKm: 0.02, pmPerKm: 0.001, speedKmh: 32, exposureFactor: 0.6, ventilation: 0.6 },
-  "walk-cycle": { label: "walking or cycling", co2PerKm: 0, pmPerKm: 0, speedKmh: 10, exposureFactor: 1.2, ventilation: 1.5 },
+  "walk-cycle": {
+    label: "walking or cycling",
+    co2PerKm: 0,
+    pmPerKm: 0,
+    speedKmh: 10,
+    exposureFactor: 1.2,
+    ventilation: 1.5,
+  },
   home: { label: "working from home", co2PerKm: 0, pmPerKm: 0, speedKmh: 1, exposureFactor: 0, ventilation: 0 },
 };
 

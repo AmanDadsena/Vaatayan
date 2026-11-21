@@ -86,7 +86,19 @@ function DeltaFigures({ delta, label }: { delta: Delta; label: string }) {
 }
 
 /** Accessible bar chart: a real table whose cells carry proportional bars. */
-function ModeBars({ km, days, pm25, from, to }: { km: number; days: number; pm25: number; from: CommuteMode; to: CommuteMode }) {
+function ModeBars({
+  km,
+  days,
+  pm25,
+  from,
+  to,
+}: {
+  km: number;
+  days: number;
+  pm25: number;
+  from: CommuteMode;
+  to: CommuteMode;
+}) {
   const rows = TRAVEL_MODES.map((mode) => ({
     mode,
     co2: commuteWeekly(mode, km, days).co2KgPerWeek,
@@ -121,7 +133,11 @@ function ModeBars({ km, days, pm25, from, to }: { km: number; days: number; pm25
                 <span className={styles.barValue}>{fmt(r.co2, 1)} kg</span>
               </td>
               <td>
-                <span className={styles.bar} style={{ "--w": r.dose / maxDose } as React.CSSProperties} data-kind="dose" />
+                <span
+                  className={styles.bar}
+                  style={{ "--w": r.dose / maxDose } as React.CSSProperties}
+                  data-kind="dose"
+                />
                 <span className={styles.barValue}>{fmt(r.dose)} µg</span>
               </td>
             </tr>
@@ -166,7 +182,11 @@ export function ImpactLab() {
 
   const commute = useMemo(() => compareCommute(from, to, km, days, pm25), [from, to, km, days, pm25]);
   const fuel = useMemo(
-    () => addDeltas(compareFuel(HEATING[heatFrom], HEATING[heatTo], people), compareFuel(COOKING[cookFrom], COOKING[cookTo], people)),
+    () =>
+      addDeltas(
+        compareFuel(HEATING[heatFrom], HEATING[heatTo], people),
+        compareFuel(COOKING[cookFrom], COOKING[cookTo], people),
+      ),
     [heatFrom, heatTo, cookFrom, cookTo, people],
   );
   const total = addDeltas(commute, fuel);
@@ -182,19 +202,46 @@ export function ImpactLab() {
         </div>
         <div className={styles.split}>
           <div className={styles.controls}>
-            <ChoicePills legend="Today you travel by" name={`${id}-from`} options={COMMUTE_LABELS} value={from} onChange={setFrom} exclude={["home"]} />
-            <ChoicePills legend="What if you switched to" name={`${id}-to`} options={COMMUTE_LABELS} value={to} onChange={setTo} />
+            <ChoicePills
+              legend="Today you travel by"
+              name={`${id}-from`}
+              options={COMMUTE_LABELS}
+              value={from}
+              onChange={setFrom}
+              exclude={["home"]}
+            />
+            <ChoicePills
+              legend="What if you switched to"
+              name={`${id}-to`}
+              options={COMMUTE_LABELS}
+              value={to}
+              onChange={setTo}
+            />
             <div className={styles.range}>
               <label htmlFor={`${id}-km`}>
                 Distance each way <output htmlFor={`${id}-km`}>{km} km</output>
               </label>
-              <input id={`${id}-km`} type="range" min={1} max={60} value={km} onChange={(e) => setKm(Number(e.target.value))} />
+              <input
+                id={`${id}-km`}
+                type="range"
+                min={1}
+                max={60}
+                value={km}
+                onChange={(e) => setKm(Number(e.target.value))}
+              />
             </div>
             <div className={styles.range}>
               <label htmlFor={`${id}-days`}>
                 Days a week <output htmlFor={`${id}-days`}>{days}</output>
               </label>
-              <input id={`${id}-days`} type="range" min={1} max={7} value={days} onChange={(e) => setDays(Number(e.target.value))} />
+              <input
+                id={`${id}-days`}
+                type="range"
+                min={1}
+                max={7}
+                value={days}
+                onChange={(e) => setDays(Number(e.target.value))}
+              />
             </div>
             <fieldset className={styles.presets}>
               <legend>Outdoor PM2.5 to compare on</legend>
@@ -223,12 +270,13 @@ export function ImpactLab() {
         <div>
           <h2 id={`${id}-transit`}>Why shared transit wins twice</h2>
           <p>
-            Per passenger-kilometre, a metro trip emits roughly a tenth of the CO₂ of driving alone, and almost none of the tailpipe and brake
-            dust that hangs at street level.
+            Per passenger-kilometre, a metro trip emits roughly a tenth of the CO₂ of driving alone, and almost none of
+            the tailpipe and brake dust that hangs at street level.
           </p>
           <p>
-            It protects you too: closed, filtered carriages typically expose riders to less PM2.5 than open two-wheelers, autos or walking
-            beside traffic. Pair the last stretch with an N95 and you cut both sides of the problem.
+            It protects you too: closed, filtered carriages typically expose riders to less PM2.5 than open
+            two-wheelers, autos or walking beside traffic. Pair the last stretch with an N95 and you cut both sides of
+            the problem.
           </p>
         </div>
       </section>
@@ -240,10 +288,34 @@ export function ImpactLab() {
         </div>
         <div className={styles.split}>
           <div className={styles.controls}>
-            <ChoicePills legend="You heat with" name={`${id}-hf`} options={HEATING_LABELS} value={heatFrom} onChange={setHeatFrom} />
-            <ChoicePills legend="What if you used" name={`${id}-ht`} options={HEATING_LABELS} value={heatTo} onChange={setHeatTo} />
-            <ChoicePills legend="You cook with" name={`${id}-cf`} options={COOKING_LABELS} value={cookFrom} onChange={setCookFrom} />
-            <ChoicePills legend="What if you used" name={`${id}-ct`} options={COOKING_LABELS} value={cookTo} onChange={setCookTo} />
+            <ChoicePills
+              legend="You heat with"
+              name={`${id}-hf`}
+              options={HEATING_LABELS}
+              value={heatFrom}
+              onChange={setHeatFrom}
+            />
+            <ChoicePills
+              legend="What if you used"
+              name={`${id}-ht`}
+              options={HEATING_LABELS}
+              value={heatTo}
+              onChange={setHeatTo}
+            />
+            <ChoicePills
+              legend="You cook with"
+              name={`${id}-cf`}
+              options={COOKING_LABELS}
+              value={cookFrom}
+              onChange={setCookFrom}
+            />
+            <ChoicePills
+              legend="What if you used"
+              name={`${id}-ct`}
+              options={COOKING_LABELS}
+              value={cookTo}
+              onChange={setCookTo}
+            />
           </div>
           <div className={styles.result}>
             <p className={styles.resultLead}>For a home of {people}:</p>
@@ -303,7 +375,8 @@ export function ImpactLab() {
           </div>
         </dl>
         <p className={styles.footnote}>
-          Estimates using typical Indian emission factors and a grid factor of 0.71 kg CO₂ per kWh. A car here means about 10,000 km a year in a petrol hatchback.
+          Estimates using typical Indian emission factors and a grid factor of 0.71 kg CO₂ per kWh. A car here means
+          about 10,000 km a year in a petrol hatchback.
         </p>
       </section>
     </>

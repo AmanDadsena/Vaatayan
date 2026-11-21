@@ -8,10 +8,8 @@ interface Props {
   place: string;
 }
 
-const OPENING =
-  "M40 400V172C40 112 84 78 119 54c18-12 27-24 31-44 4 20 13 32 31 44 35 24 79 58 79 118v228z";
-const OUTER =
-  "M26 404V170C26 104 74 66 112 41c20-13 31-26 38-41 7 15 18 28 38 41 38 25 86 63 86 129v234z";
+const OPENING = "M40 400V172C40 112 84 78 119 54c18-12 27-24 31-44 4 20 13 32 31 44 35 24 79 58 79 118v228z";
+const OUTER = "M26 404V170C26 104 74 66 112 41c20-13 31-26 38-41 7 15 18 28 38 41 38 25 86 63 86 129v234z";
 const SKYLINE =
   "M40 400v-58h14v-16h10v-12h6v12h10v26h18v-34h8l6-10 6 10h8v46h16v-22h22v-18h6v-10h4v10h6v40h14v-30h12v-16h18v46h10v-26h16v-12h4v12h10v34h14v-20h20v-14h8v34h10v60z";
 
@@ -34,7 +32,11 @@ export function HeroWindow({ aqi, place }: Props) {
     aqi === null
       ? "A window onto the sky, waiting for live air data."
       : `Illustration of the sky over ${place} at US AQI ${aqi}, ${categorize(aqi).label.toLowerCase()}: ${
-          aqi > 150 ? "a hazy, brownish sky with a dim orange sun" : aqi > 50 ? "a pale, slightly hazy sky" : "a clear blue sky with a bright sun"
+          aqi > 150
+            ? "a hazy, brownish sky with a dim orange sun"
+            : aqi > 50
+              ? "a pale, slightly hazy sky"
+              : "a clear blue sky with a bright sun"
         }.`;
 
   return (

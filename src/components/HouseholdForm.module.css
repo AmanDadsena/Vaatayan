@@ -124,7 +124,9 @@
   border: 1px solid var(--slate);
   border-radius: 999px;
   background: var(--paper);
-  transition: background-color 160ms, color 160ms;
+  transition:
+    background-color 160ms,
+    color 160ms;
 }
 
 .pill input:hover + span {

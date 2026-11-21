@@ -89,7 +89,19 @@ describe("quickAnswer", () => {
   });
 
   it("never returns an empty answer", () => {
-    for (const q of ["kids", "walk", "purifier", "mask", "window", "plant", "wet towel", "cook", "heater", "chest pain", "?"]) {
+    for (const q of [
+      "kids",
+      "walk",
+      "purifier",
+      "mask",
+      "window",
+      "plant",
+      "wet towel",
+      "cook",
+      "heater",
+      "chest pain",
+      "?",
+    ]) {
       expect(quickAnswer(q, ctxFor()).text.length).toBeGreaterThan(60);
     }
   });

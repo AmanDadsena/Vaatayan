@@ -37,66 +37,66 @@ export function AirHero({ place, air, loading, error, onSelectPlace, onRetry }: 
         </p>
 
         <div className={styles.stage}>
-        <div className={styles.left}>
-        <PlaceSearch onSelect={onSelectPlace} />
+          <div className={styles.left}>
+            <PlaceSearch onSelect={onSelectPlace} />
 
-        <div className={styles.reading} aria-live="polite" aria-busy={loading}>
-          <h1 id="place-heading" className={styles.place}>
-            {shortName}
-          </h1>
+            <div className={styles.reading} aria-live="polite" aria-busy={loading}>
+              <h1 id="place-heading" className={styles.place}>
+                {shortName}
+              </h1>
 
-          {error && (
-            <div className={styles.error} role="alert">
-              <p>{error}</p>
-              <button type="button" onClick={onRetry} className={styles.retry}>
-                Try again
-              </button>
+              {error && (
+                <div className={styles.error} role="alert">
+                  <p>{error}</p>
+                  <button type="button" onClick={onRetry} className={styles.retry}>
+                    Try again
+                  </button>
+                </div>
+              )}
+
+              {!error && !air && <p className={styles.loading}>Reading the air…</p>}
+
+              {air && category && (
+                <>
+                  <p className={styles.verdict}>
+                    Air is <strong>{category.label.toLowerCase()}</strong> right now. {category.advice}
+                  </p>
+                  <dl className={styles.stats}>
+                    <div className={styles.statMain} data-level={category.level}>
+                      <dt>US AQI</dt>
+                      <dd>{air.aqi}</dd>
+                    </div>
+                    <div>
+                      <dt>PM2.5</dt>
+                      <dd>
+                        {air.pm25}
+                        <span className={styles.unit}> µg/m³</span>
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>Like smoking</dt>
+                      <dd>
+                        {cigarettesPerDay(air.pm25)}
+                        <span className={styles.unit}> cigarettes a day</span>
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>PM10</dt>
+                      <dd>
+                        {air.pm10}
+                        <span className={styles.unit}> µg/m³</span>
+                      </dd>
+                    </div>
+                  </dl>
+                  <AqiScale aqi={air.aqi} />
+                  <p className={styles.updated}>
+                    Updated {formatHour(air.time)} local time. Forecast from the CAMS atmosphere model.
+                  </p>
+                </>
+              )}
             </div>
-          )}
-
-          {!error && !air && <p className={styles.loading}>Reading the air…</p>}
-
-          {air && category && (
-            <>
-              <p className={styles.verdict}>
-                Air is <strong>{category.label.toLowerCase()}</strong> right now. {category.advice}
-              </p>
-              <dl className={styles.stats}>
-                <div className={styles.statMain} data-level={category.level}>
-                  <dt>US AQI</dt>
-                  <dd>{air.aqi}</dd>
-                </div>
-                <div>
-                  <dt>PM2.5</dt>
-                  <dd>
-                    {air.pm25}
-                    <span className={styles.unit}> µg/m³</span>
-                  </dd>
-                </div>
-                <div>
-                  <dt>Like smoking</dt>
-                  <dd>
-                    {cigarettesPerDay(air.pm25)}
-                    <span className={styles.unit}> cigarettes a day</span>
-                  </dd>
-                </div>
-                <div>
-                  <dt>PM10</dt>
-                  <dd>
-                    {air.pm10}
-                    <span className={styles.unit}> µg/m³</span>
-                  </dd>
-                </div>
-              </dl>
-              <AqiScale aqi={air.aqi} />
-              <p className={styles.updated}>
-                Updated {formatHour(air.time)} local time. Forecast from the CAMS atmosphere model.
-              </p>
-            </>
-          )}
-        </div>
-        </div>
-        <HeroWindow aqi={air?.aqi ?? null} place={shortName} />
+          </div>
+          <HeroWindow aqi={air?.aqi ?? null} place={shortName} />
         </div>
 
         {air && (

@@ -16,10 +16,17 @@ export default defineConfig({
     setupFiles: ["./tests/setup.ts"],
     include: ["tests/**/*.test.{ts,tsx}"],
     restoreMocks: true,
+    // Threads start far faster than forked processes on Windows, especially when
+    // antivirus scans node_modules; generous timeouts absorb coverage overhead.
+    pool: "threads",
+    testTimeout: 20_000,
+    hookTimeout: 20_000,
     coverage: {
       provider: "v8",
       include: ["src/lib/**", "src/app/api/**", "src/components/**"],
       reporter: ["text-summary", "text"],
+      // Fail the run if coverage drops below these floors.
+      thresholds: { lines: 95, statements: 95, functions: 94, branches: 83 },
     },
   },
 });

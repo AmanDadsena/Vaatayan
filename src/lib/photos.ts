@@ -50,6 +50,7 @@ export const PHOTOS = {
     credit: "Home Air Quality Guides",
     license: "CC BY-SA 2.0",
     licenseUrl: "https://creativecommons.org/licenses/by-sa/2.0/",
-    sourceUrl: "https://commons.wikimedia.org/wiki/File:Rectangular_air_purifier_HEPA_filter_%26_activated_carbon_filter.jpg",
+    sourceUrl:
+      "https://commons.wikimedia.org/wiki/File:Rectangular_air_purifier_HEPA_filter_%26_activated_carbon_filter.jpg",
   },
 } satisfies Record<string, PhotoInfo>;

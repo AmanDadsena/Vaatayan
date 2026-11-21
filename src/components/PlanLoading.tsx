@@ -23,7 +23,10 @@ export function PlanLoading() {
   return (
     <div className={styles.loading} role="status" aria-live="polite">
       <svg className={styles.art} viewBox="0 0 120 140" aria-hidden="true">
-        <path className={styles.frame} d="M24 132V62c0-22 15-34 28-43 5-3.5 7-7.5 8-13 1 5.5 3 9.5 8 13 13 9 28 21 28 43v70z" />
+        <path
+          className={styles.frame}
+          d="M24 132V62c0-22 15-34 28-43 5-3.5 7-7.5 8-13 1 5.5 3 9.5 8 13 13 9 28 21 28 43v70z"
+        />
         <path className={styles.wind} d="M4 80h60c10 0 14-11 6-16" />
         <path className={`${styles.wind} ${styles.windLate}`} d="M14 100h70c10 0 14 11 6 16" />
         <circle className={styles.sun} cx="74" cy="52" r="7" />

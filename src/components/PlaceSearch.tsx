@@ -33,7 +33,9 @@ export function PlaceSearch({ onSelect }: Props) {
         setResults(places);
         setActive(-1);
         setOpen(true);
-        setStatus(places.length ? `${places.length} places found. Use the arrow keys to choose.` : "No places match that name.");
+        setStatus(
+          places.length ? `${places.length} places found. Use the arrow keys to choose.` : "No places match that name.",
+        );
       } catch (error) {
         if ((error as Error).name === "AbortError") return;
         setResults([]);

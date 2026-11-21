@@ -17,7 +17,8 @@ const querySchema = z.object({
 
 export async function GET(request: NextRequest) {
   const rate = limiter.check(clientKey(request.headers));
-  if (!rate.ok) return jsonError(429, "Too many searches. Try again shortly.", { "Retry-After": String(rate.retryAfterSeconds) });
+  if (!rate.ok)
+    return jsonError(429, "Too many searches. Try again shortly.", { "Retry-After": String(rate.retryAfterSeconds) });
 
   const parsed = querySchema.safeParse({ q: request.nextUrl.searchParams.get("q") ?? "" });
   if (!parsed.success) return jsonError(400, validationMessage(parsed.error));

@@ -2,13 +2,7 @@
  * US EPA Air Quality Index categories (2024 revision of the PM2.5 breakpoints
  * does not change the category boundaries on the 0–500 index itself).
  */
-export type AqiLevel =
-  | "good"
-  | "moderate"
-  | "sensitive"
-  | "unhealthy"
-  | "very-unhealthy"
-  | "hazardous";
+export type AqiLevel = "good" | "moderate" | "sensitive" | "unhealthy" | "very-unhealthy" | "hazardous";
 
 export interface AqiCategory {
   level: AqiLevel;

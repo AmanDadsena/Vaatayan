@@ -63,7 +63,9 @@ export function BreathRibbon({ hourly }: Props) {
                   background: `var(--aqi-${cat.level})`,
                 }}
               />
-              <span className={styles.tick}>{Number.parseInt(r.time.slice(11, 13), 10) % 3 === 0 ? formatHour(r.time) : ""}</span>
+              <span className={styles.tick}>
+                {Number.parseInt(r.time.slice(11, 13), 10) % 3 === 0 ? formatHour(r.time) : ""}
+              </span>
             </div>
           );
         })}

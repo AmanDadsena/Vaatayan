@@ -33,15 +33,7 @@ function NumberField({
     <div className={styles.numberField}>
       <label htmlFor={id}>{label}</label>
       <div>
-        <input
-          id={id}
-          type="number"
-          inputMode="decimal"
-          min={min}
-          max={max}
-          step={step}
-          {...input}
-        />
+        <input id={id} type="number" inputMode="decimal" min={min} max={max} step={step} {...input} />
         <span aria-hidden="true">{unit}</span>
       </div>
     </div>
@@ -62,7 +54,8 @@ function PurifierSizer() {
     <section className={styles.card} aria-labelledby={`${id}-t`}>
       <h2 id={`${id}-t`}>What size purifier does a room need?</h2>
       <p className={styles.lede}>
-        Aim for about five complete air changes an hour. Check the purifier&apos;s CADR (clean air delivery rate) on the box.
+        Aim for about five complete air changes an hour. Check the purifier&apos;s CADR (clean air delivery rate) on the
+        box.
       </p>
       <div className={styles.fields}>
         <NumberField label="Length" value={length} onChange={setLength} min={1} max={20} unit="m" />
@@ -79,7 +72,15 @@ function PurifierSizer() {
         <p className={styles.small}>That&apos;s about {need.cadrCfm} CFM, the unit many boxes use.</p>
       </div>
       <div className={styles.check}>
-        <NumberField label="Your purifier's CADR" value={owned} onChange={setOwned} min={0} max={2000} step={10} unit="m³/h" />
+        <NumberField
+          label="Your purifier's CADR"
+          value={owned}
+          onChange={setOwned}
+          min={0}
+          max={2000}
+          step={10}
+          unit="m³/h"
+        />
         <p aria-live="polite" data-ok={enough || undefined}>
           {minutes === null
             ? "Enter a CADR above zero."
@@ -104,7 +105,8 @@ function DiyFilter() {
         <figure className={styles.diyFigure}>
           <svg viewBox="0 0 260 240" role="img" aria-labelledby={`${id}-svg`}>
             <title id={`${id}-svg`}>
-              A cube of four filters with a box fan on top. Air is pulled in through the filter walls and blown out of the top.
+              A cube of four filters with a box fan on top. Air is pulled in through the filter walls and blown out of
+              the top.
             </title>
             {/* inflow arrows */}
             <g className={styles.flowIn} stroke="var(--clear)" strokeWidth="3" fill="none" strokeLinecap="round">
@@ -126,7 +128,13 @@ function DiyFilter() {
               ))}
             </g>
             {/* fan */}
-            <path d="M52 100 130 76l78 24-78 24z" fill="var(--sky)" stroke="var(--ink)" strokeWidth="2.5" strokeLinejoin="round" />
+            <path
+              d="M52 100 130 76l78 24-78 24z"
+              fill="var(--sky)"
+              stroke="var(--ink)"
+              strokeWidth="2.5"
+              strokeLinejoin="round"
+            />
             <g transform="translate(130 100) scale(1 0.32)">
               <g className={styles.blades} fill="var(--ink)">
                 <ellipse cx="0" cy="-30" rx="12" ry="28" />
@@ -146,13 +154,16 @@ function DiyFilter() {
             <strong>Buy four MERV-13 filters</strong> the same size as a 20-inch box fan, and one box fan.
           </li>
           <li>
-            <strong>Tape the filters into a cube</strong> with the airflow arrows pointing inward. Cardboard makes the base.
+            <strong>Tape the filters into a cube</strong> with the airflow arrows pointing inward. Cardboard makes the
+            base.
           </li>
           <li>
-            <strong>Tape the fan on top</strong>, blowing up and out. Seal every gap with tape so air must pass through the filters.
+            <strong>Tape the fan on top</strong>, blowing up and out. Seal every gap with tape so air must pass through
+            the filters.
           </li>
           <li>
-            <strong>Run it on medium in the bedroom</strong> with the door shut. Swap filters when they turn grey, about every 3 to 6 months in smog season.
+            <strong>Run it on medium in the bedroom</strong> with the door shut. Swap filters when they turn grey, about
+            every 3 to 6 months in smog season.
           </li>
         </ol>
       </div>
@@ -259,17 +270,29 @@ function RoomChecklist() {
 /* ---------- Buying guide ---------- */
 
 const BUYING_TIPS = [
-  { title: "True HEPA (H13 or better)", text: "Captures at least 99.95% of the hardest-to-catch particles. \"HEPA-type\" or \"HEPA-like\" is marketing." },
-  { title: "A stated CADR", text: "No CADR on the box means no way to know if it suits your room. Use the sizer above." },
+  {
+    title: "True HEPA (H13 or better)",
+    text: 'Captures at least 99.95% of the hardest-to-catch particles. "HEPA-type" or "HEPA-like" is marketing.',
+  },
+  {
+    title: "A stated CADR",
+    text: "No CADR on the box means no way to know if it suits your room. Use the sizer above.",
+  },
   { title: "No ozone, no ioniser", text: "Skip anything that advertises ozone or relies on ions instead of a filter." },
-  { title: "Filter cost and noise", text: "Check replacement filter prices and noise on the setting you will use overnight." },
+  {
+    title: "Filter cost and noise",
+    text: "Check replacement filter prices and noise on the setting you will use overnight.",
+  },
 ];
 
 function BuyingGuide() {
   const id = useId();
   return (
     <section className={styles.guide} aria-labelledby={`${id}-t`}>
-      <Photo photo={PHOTOS.hepaFilter} caption="Left, a carbon pre-filter for odours. Right, the pleated HEPA filter that traps PM2.5." />
+      <Photo
+        photo={PHOTOS.hepaFilter}
+        caption="Left, a carbon pre-filter for odours. Right, the pleated HEPA filter that traps PM2.5."
+      />
       <div>
         <h2 id={`${id}-t`}>What to look for in a purifier</h2>
         <dl className={styles.tips}>
@@ -297,27 +320,32 @@ const MYTHS = [
   {
     claim: "A wet cloth on the window traps the smog.",
     verdict: "Mostly myth",
-    truth: "It catches some coarse dust, but fine PM2.5 passes around and through it. Sealing gaps and filtering works far better.",
+    truth:
+      "It catches some coarse dust, but fine PM2.5 passes around and through it. Sealing gaps and filtering works far better.",
   },
   {
     claim: "A surgical or cloth mask is enough outside.",
     verdict: "Myth",
-    truth: "Loose masks let most fine particles leak around the edges. Only a well-fitted N95 or FFP2 gives real protection.",
+    truth:
+      "Loose masks let most fine particles leak around the edges. Only a well-fitted N95 or FFP2 gives real protection.",
   },
   {
     claim: "Ionisers and 'ozone purifiers' are the strongest cleaners.",
     verdict: "Avoid",
-    truth: "Ozone irritates the lungs it is supposed to protect. Choose a purifier with a true HEPA filter and a stated CADR.",
+    truth:
+      "Ozone irritates the lungs it is supposed to protect. Choose a purifier with a true HEPA filter and a stated CADR.",
   },
   {
     claim: "Staying indoors means I'm breathing clean air.",
     verdict: "Only if you act",
-    truth: "In a leaky home, indoor PM2.5 is often 60 to 90% of the outdoor level. Indoors gets clean when you seal and filter.",
+    truth:
+      "In a leaky home, indoor PM2.5 is often 60 to 90% of the outdoor level. Indoors gets clean when you seal and filter.",
   },
   {
     claim: "Jaggery or steam clears pollution out of your lungs.",
     verdict: "Myth",
-    truth: "No food or steam removes particles already deposited in the lungs. Lowering what you breathe in is what helps.",
+    truth:
+      "No food or steam removes particles already deposited in the lungs. Lowering what you breathe in is what helps.",
   },
 ];
 
@@ -332,7 +360,10 @@ function Myths() {
             <details>
               <summary>
                 <span className={styles.claim}>{m.claim}</span>
-                <span className={styles.verdict} data-verdict={m.verdict === "Myth" || m.verdict === "Avoid" ? "myth" : "nuance"}>
+                <span
+                  className={styles.verdict}
+                  data-verdict={m.verdict === "Myth" || m.verdict === "Avoid" ? "myth" : "nuance"}
+                >
                   {m.verdict}
                 </span>
               </summary>

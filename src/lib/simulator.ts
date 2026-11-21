@@ -24,7 +24,14 @@ export interface FuelProfile {
 
 /** Winter heating for one room, about 4 hours a day. */
 export const HEATING: Record<HeatingSource, FuelProfile> = {
-  none: { label: "No heating", co2KgPerWeek: 0, smogGPerWeek: 0, indoorSpike: 0, hoursPerDay: 0, note: "Layers and a warm cap do a lot." },
+  none: {
+    label: "No heating",
+    co2KgPerWeek: 0,
+    smogGPerWeek: 0,
+    indoorSpike: 0,
+    hoursPerDay: 0,
+    note: "Layers and a warm cap do a lot.",
+  },
   electric: {
     label: "Electric heater",
     co2KgPerWeek: Math.round(1.5 * 4 * 7 * GRID_CO2_PER_KWH * 10) / 10,
